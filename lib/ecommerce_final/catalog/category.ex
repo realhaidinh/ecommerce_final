@@ -13,7 +13,7 @@ defmodule EcommerceFinal.Catalog.Category do
   @doc false
   def changeset(category, attrs) do
     category
-    |> cast(attrs, [:title, :path, :level])
-    |> validate_required([:title, :path, :level])
+    |> cast(attrs, [:title, :path])
+    |> validate_required([:title, :path])
   end
 end

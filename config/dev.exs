@@ -3,7 +3,7 @@ import Config
 # Configure your database
 config :ecommerce_final, EcommerceFinal.Repo,
   username: "postgres",
-  password: "postgres",
+  password: "admin",
   hostname: "localhost",
   database: "ecommerce_final_dev",
   stacktrace: true,

@@ -11,6 +11,7 @@ defmodule EcommerceFinal.Catalog.Product do
     field :sold, :integer, default: 0
     field :rating, :decimal, virtual: true
     field :rating_count, :integer, virtual: true
+    field :title_unaccented, :string
 
     many_to_many :categories, Category,
       join_through: "product_categories",

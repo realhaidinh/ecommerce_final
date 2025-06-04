@@ -11,6 +11,8 @@ config :ecommerce_final,
   ecto_repos: [EcommerceFinal.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+
 # Configures the endpoint
 config :ecommerce_final, EcommerceFinalWeb.Endpoint,
   url: [host: "localhost"],

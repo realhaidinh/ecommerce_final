@@ -1,0 +1,51 @@
+<.header class="p-4">
+  Mã đơn hàng: {@order.id} |
+  Trạng thái đơn hàng: {@order.status}
+</.header>
+<button
+  :if={@order.status == :"Đã thanh toán"}
+  type="submit"
+  phx-click="delivering-confirm"
+  data-confirm="Xác nhận giao hàng"
+  class="bg-black rounded-md p-2 text-white"
+>
+  Xác nhận giao hàng
+</button>
+<button
+  :if={@order.status == :"Đang giao hàng"}
+  type="submit"
+  phx-click="delivered-confirm"
+  data-confirm="Xác nhận đã giao hàng"
+  class="bg-black rounded-md p-2 text-white"
+>
+  Xác nhận đã giao hàng
+</button>
+<.data_table
+  table_id="order-products-search-table"
+  id="order-products"
+  rows={@order.line_items}
+  searchable="true"
+  sortable="true"
+  row_click={fn item -> JS.patch(~p"/admin/dashboard/catalog/products/#{item.product.id}") end}
+>
+  <:col :let={item} label="Sản phẩm">{item.product.title}</:col>
+
+  <:col :let={item} label="Đơn giá">
+    <span>
+      {EcommerceFinal.Utils.FormatUtil.money_to_vnd(item.price)}
+    </span>
+  </:col>
+
+  <:col :let={item} label="Số lượng">{item.quantity}</:col>
+
+  <:col :let={item} label="Thành tiền">
+    {EcommerceFinal.Utils.FormatUtil.money_to_vnd(item.price * item.quantity)}
+  </:col>
+</.data_table>
+
+<h1>Tổng tiền {@order.total_price}</h1>
+<p>Họ tên người nhận: {@order.buyer_name}</p>
+<p>Địa chỉ nhận hàng: {@order.buyer_address}</p>
+<p>Số điện thoại nhận hàng: {@order.buyer_phone}</p>
+<p>Ngày đặt hàng: {EcommerceFinal.Utils.TimeUtil.pretty_print_with_time(@order.inserted_at)}</p>
+<p>Phương thức thanh toán: {@order.payment_type}</p>

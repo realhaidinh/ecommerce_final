@@ -1,0 +1,42 @@
+<div class="flex justify-between">
+  <.back navigate={~p"/admin/dashboard/catalog/categories"}>
+    Trở về trang quản lý danh mục
+  </.back>
+  <div class="mt-16">
+    <.link patch={~p"/admin/dashboard/catalog/categories/#{@category.id}/edit"}>
+      <.button>Chỉnh sửa danh mục</.button>
+    </.link>
+
+    <.link patch={~p"/admin/dashboard/catalog/categories/#{@category.id}/new"}>
+      <.button>Tạo danh mục con</.button>
+    </.link>
+  </div>
+</div>
+
+<div class="category-information">
+  <.list>
+    <:item title="Tên danh mục">{@category.title}</:item>
+    <:item title="Số sản phẩm">{@category.product_count}</:item>
+  </.list>
+</div>
+
+<.live_component
+  id="category-table"
+  module={EcommerceFinalWeb.Admin.Dashboard.CategoryLive.Table}
+  categories={@streams.categories}
+/>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="category-modal"
+  show
+  on_cancel={JS.patch(~p"/admin/dashboard/catalog/categories/#{@category}")}
+>
+  <.live_component
+    module={EcommerceFinalWeb.Admin.Dashboard.CategoryLive.FormComponent}
+    id={@category.id || :category}
+    action={@live_action}
+    patch={~p"/admin/dashboard/catalog/categories/#{@category}"}
+    category={if @live_action == :edit, do: @category, else: @subcategory}
+  />
+</.modal>

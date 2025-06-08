@@ -8,13 +8,15 @@ defmodule EcommerceFinal.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"EcommerceFinal", "contact@example.com"})
+      |> from(Mailer.get_sender())
       |> subject(subject)
       |> text_body(body)
 
-    with {:ok, _metadata} <- Mailer.deliver(email) do
-      {:ok, email}
-    end
+    Task.Supervisor.start_child(EcommerceFinal.TaskSupervisor, fn ->
+      with {:ok, _metadata} <- Mailer.deliver(email) do
+        {:ok, email}
+      end
+    end)
   end
 
   @doc """
@@ -25,13 +27,12 @@ defmodule EcommerceFinal.Accounts.UserNotifier do
 
     ==============================
 
-    Hi #{user.email},
+    Xin chào #{user.email},
 
-    You can confirm your account by visiting the URL below:
+    Để kích hoạt tài khoản vui lòng truy cập vào đường link sau:
 
     #{url}
 
-    If you didn't create an account with us, please ignore this.
 
     ==============================
     """)
@@ -45,13 +46,11 @@ defmodule EcommerceFinal.Accounts.UserNotifier do
 
     ==============================
 
-    Hi #{user.email},
+    Xin chào #{user.email},
 
-    You can reset your password by visiting the URL below:
+    Để thay đổi mật khẩu vui lòng truy cập đường link sau
 
     #{url}
-
-    If you didn't request this change, please ignore this.
 
     ==============================
     """)
@@ -65,13 +64,12 @@ defmodule EcommerceFinal.Accounts.UserNotifier do
 
     ==============================
 
-    Hi #{user.email},
+    Xin chào #{user.email},
 
-    You can change your email by visiting the URL below:
+    Để thay đổi email vui lòng truy cập đường link sau
 
     #{url}
 
-    If you didn't request this change, please ignore this.
 
     ==============================
     """)

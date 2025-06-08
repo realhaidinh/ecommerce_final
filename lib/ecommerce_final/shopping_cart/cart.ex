@@ -3,9 +3,7 @@ defmodule EcommerceFinal.ShoppingCart.Cart do
   import Ecto.Changeset
 
   schema "carts" do
-
     field :user_id, :id
-
     has_many :cart_items, EcommerceFinal.ShoppingCart.CartItem
 
     timestamps(type: :utc_datetime)

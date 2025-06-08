@@ -1,0 +1,21 @@
+<.breadcrumb current_page="Tất cả danh mục" />
+<div class="bg-slate-50 p-2">
+  <div
+    :for={{dom_id, category} <- @streams.categories}
+    id={dom_id}
+    class="flex flex-row flex-wrap my-8 "
+    phx-update="stream"
+  >
+    <.link
+      class="w-full font-semibold mb-1 hover:underline"
+      navigate={~p"/categories/#{category}"}
+    >
+      {category.title}
+    </.link>
+    <div :for={cat <- category.subcategories} class="w-1/4">
+      <.link id={"category-#{cat.id}"} navigate={~p"/categories/#{cat}"} class="hover:underline">
+        {cat.title}
+      </.link>
+    </div>
+  </div>
+</div>

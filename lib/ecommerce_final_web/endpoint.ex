@@ -22,7 +22,7 @@ defmodule EcommerceFinalWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :ecommerce_final,
-    gzip: false,
+    gzip: true,
     only: EcommerceFinalWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the

@@ -1,0 +1,12 @@
+<header class="sticky top-0 z-50">
+  <.navbar current_user={@current_user} cart={@cart} role={:user} />
+</header>
+
+<main class="sm:mx-16 lg:mx-24">
+  <div>
+    <.flash_group flash={@flash} />
+    {@inner_content}
+  </div>
+</main>
+
+<.public_footer />

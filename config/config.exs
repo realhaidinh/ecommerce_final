@@ -9,7 +9,10 @@ import Config
 
 config :ecommerce_final,
   ecto_repos: [EcommerceFinal.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [timestamp_type: :utc_datetime],
+  payos_client_id: System.fetch_env!("PAYOS_CLIENT_ID"),
+  payos_api_key: System.fetch_env!("PAYOS_API_KEY"),
+  payos_checksum_key: System.fetch_env!("PAYOS_CHECKSUM_KEY")
 
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
 
@@ -61,8 +64,11 @@ config :logger, :console,
   metadata: [:request_id]
 
 # Use Jason for JSON parsing in Phoenix
-config :phoenix, :json_library, Jason
+config :phoenix, :json_library, JSON
+config :swoosh, :json_library, JSON
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
+
+config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase

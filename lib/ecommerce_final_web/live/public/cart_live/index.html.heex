@@ -1,0 +1,15 @@
+<div class="mt-8 bg-slate-50">
+  <%= if Enum.empty?(@cart.cart_items) do %>
+    <.header>
+      <:subtitle>Giỏ hàng trống</:subtitle>
+    </.header>
+  <% else %>
+    <.live_component
+      module={EcommerceFinalWeb.Public.CartLive.FormComponent}
+      id={@cart.id}
+      title={@page_title}
+      cart={@cart}
+      patch={~p"/cart"}
+    />
+  <% end %>
+</div>

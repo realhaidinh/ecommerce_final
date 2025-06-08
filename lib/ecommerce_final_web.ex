@@ -17,7 +17,7 @@ defmodule EcommerceFinalWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+  def static_paths, do: ~w(assets fonts images uploads favicon.ico robots.txt)
 
   def router do
     quote do
@@ -42,9 +42,8 @@ defmodule EcommerceFinalWeb do
         formats: [:html, :json],
         layouts: [html: EcommerceFinalWeb.Layouts]
 
-      use Gettext, backend: EcommerceFinalWeb.Gettext
-
       import Plug.Conn
+      import EcommerceFinalWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -82,14 +81,12 @@ defmodule EcommerceFinalWeb do
 
   defp html_helpers do
     quote do
-      # Translation
-      use Gettext, backend: EcommerceFinalWeb.Gettext
-
       # HTML escaping functionality
       import Phoenix.HTML
-      # Core UI components
+      # Core UI components and translation
       import EcommerceFinalWeb.CoreComponents
-
+      import EcommerceFinalWeb.Gettext
+      import EcommerceFinalWeb.Components
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
 

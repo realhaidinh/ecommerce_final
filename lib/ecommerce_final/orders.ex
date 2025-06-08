@@ -4,8 +4,10 @@ defmodule EcommerceFinal.Orders do
   """
 
   import Ecto.Query, warn: false
+  alias EcommerceFinal.Orders.LineItem
+  alias EcommerceFinal.ShoppingCart
   alias EcommerceFinal.Repo
-
+  alias EcommerceFinal.Catalog.Product
   alias EcommerceFinal.Orders.Order
 
   @doc """
@@ -19,6 +21,17 @@ defmodule EcommerceFinal.Orders do
   """
   def list_orders do
     Repo.all(Order)
+  end
+
+  def list_user_orders(user_id) do
+    Repo.all(
+      from o in Order,
+        where: o.user_id == ^user_id,
+        left_join: i in assoc(o, :line_items),
+        left_join: p in assoc(i, :product),
+        order_by: [asc: i.inserted_at],
+        preload: [line_items: {i, product: p}]
+    )
   end
 
   @doc """
@@ -35,7 +48,13 @@ defmodule EcommerceFinal.Orders do
       ** (Ecto.NoResultsError)
 
   """
-  def get_order!(id), do: Repo.get!(Order, id)
+  def get_order!(id), do: Repo.get!(Order, id) |> Repo.preload([:user, line_items: [:product]])
+
+  def get_user_order_by_id!(user_id, id) do
+    Order
+    |> Repo.get_by!(id: id, user_id: user_id)
+    |> Repo.preload([:user, line_items: [:product]])
+  end
 
   @doc """
   Creates a order.
@@ -53,6 +72,42 @@ defmodule EcommerceFinal.Orders do
     %Order{}
     |> Order.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def insert_order(changeset) do
+    Repo.insert(changeset)
+  end
+
+  def make_order(%ShoppingCart.Cart{} = cart, attrs \\ %{}) do
+    line_items =
+      Enum.map(cart.cart_items, fn item ->
+        %LineItem{
+          product_id: item.product_id,
+          price: item.price_when_carted,
+          quantity: item.quantity
+        }
+      end)
+
+    order =
+      change_order(
+        %Order{
+          user_id: cart.user_id,
+          total_price: ShoppingCart.total_cart_price(cart),
+          line_items: line_items
+        },
+        attrs
+      )
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(:order, order)
+    |> Ecto.Multi.run(:prune_cart, fn _repo, _changes ->
+      ShoppingCart.prune_cart_items(cart)
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{order: order}} -> {:ok, order}
+      {:error, name, value, _changes_so_far} -> {:error, {name, value}}
+    end
   end
 
   @doc """
@@ -102,7 +157,33 @@ defmodule EcommerceFinal.Orders do
     Order.changeset(order, attrs)
   end
 
-  alias EcommerceFinal.Orders.LineItem
+  def get_order_by_transaction_id(transaction_id) do
+    Repo.one(from o in Order, where: o.transaction_id == ^transaction_id)
+    |> Repo.preload([:user, line_items: [:product]])
+  end
+
+  def complete_order(order) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(:order, update_order(order, %{status: "Đã giao hàng"}))
+    |> Ecto.Multi.update_all(
+      :reduce_product_stock,
+      fn %{order: order} ->
+        from(p in Product,
+          left_join: i in LineItem,
+          on: p.id == i.product_id,
+          where: i.order_id == ^order.id,
+          update: [inc: [sold: i.quantity], inc: [stock: -i.quantity]]
+        )
+      end,
+      []
+    )
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{order: order}} -> {:ok, order}
+      {1, _} -> :ok
+      {:error, name, value, _changes_so_far} -> {:error, {name, value}}
+    end
+  end
 
   @doc """
   Returns the list of order_line_items.

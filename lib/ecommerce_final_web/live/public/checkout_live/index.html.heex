@@ -1,0 +1,21 @@
+<div>
+  <%= if Enum.empty?(@cart.cart_items) do %>
+    <.header>
+      Giỏ hàng trống
+    </.header>
+  <% else %>
+    <.header>
+      Thanh toán
+    </.header>
+
+    <.live_component
+      module={EcommerceFinalWeb.Public.CheckoutLive.FormComponent}
+      id="checkout"
+      title="Checkout page"
+      cart={@cart}
+      patch={~p"/checkout"}
+    />
+  <% end %>
+
+  <.back navigate={~p"/cart"}>Trở về giỏ hàng</.back>
+</div>

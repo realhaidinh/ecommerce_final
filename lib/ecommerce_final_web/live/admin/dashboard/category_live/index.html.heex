@@ -1,0 +1,23 @@
+<.link patch={~p"/admin/dashboard/catalog/categories/new"}>
+  <.button class="m-8">Thêm danh mục</.button>
+</.link>
+
+<.live_component
+  id="category-table"
+  module={EcommerceFinalWeb.Admin.Dashboard.CategoryLive.Table}
+  categories={@streams.categories}
+/>
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="category-modal"
+  show
+  on_cancel={JS.patch(~p"/admin/dashboard/catalog/categories")}
+>
+  <.live_component
+    module={EcommerceFinalWeb.Admin.Dashboard.CategoryLive.FormComponent}
+    id={@category.id || :new}
+    action={@live_action}
+    category={@category}
+    patch={~p"/admin/dashboard/catalog/categories"}
+  />
+</.modal>

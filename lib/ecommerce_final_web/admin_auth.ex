@@ -158,7 +158,7 @@ defmodule EcommerceFinalWeb.AdminAuth do
       socket =
         socket
         |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
-        |> Phoenix.LiveView.redirect(to: ~p"/admins/log_in")
+        |> Phoenix.LiveView.redirect(to: ~p"/admin/log_in")
 
       {:halt, socket}
     end
@@ -208,7 +208,7 @@ defmodule EcommerceFinalWeb.AdminAuth do
       conn
       |> put_flash(:error, "You must log in to access this page.")
       |> maybe_store_return_to()
-      |> redirect(to: ~p"/admins/log_in")
+      |> redirect(to: ~p"/admin/log_in")
       |> halt()
     end
   end
@@ -216,7 +216,7 @@ defmodule EcommerceFinalWeb.AdminAuth do
   defp put_token_in_session(conn, token) do
     conn
     |> put_session(:admin_token, token)
-    |> put_session(:live_socket_id, "admins_sessions:#{Base.url_encode64(token)}")
+    |> put_session(:live_socket_id, "admin_sessions:#{Base.url_encode64(token)}")
   end
 
   defp maybe_store_return_to(%{method: "GET"} = conn) do

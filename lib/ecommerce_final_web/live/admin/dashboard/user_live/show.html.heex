@@ -1,0 +1,32 @@
+<div class="user-information">
+  <span>
+    Mã khách hàng {@user.id}
+  </span>
+
+  <span>
+    Email {@user.email}
+  </span>
+</div>
+
+<div class="orders">
+  <.header>Danh sách đơn hàng của khách hàng</.header>
+
+  <.data_table
+    table_id="user-orders-search-table"
+    id="user-orders-table"
+    rows={@streams.orders}
+    searchable="true"
+    sortable="true"
+    row_click={fn {_id, order} -> JS.patch(~p"/admin/dashboard/sales/orders/#{order}") end}
+  >
+    <:col :let={{_id, order}} label="Mã đơn hàng">{order.id}</:col>
+
+    <:col :let={{_id, order}} label="Tổng tiền">
+      <span>
+        {EcommerceFinal.Utils.FormatUtil.money_to_vnd(order.total_price)}
+      </span>
+    </:col>
+
+    <:col :let={{_id, order}} label="Trạng thái">{order.status}</:col>
+  </.data_table>
+</div>

@@ -1,0 +1,50 @@
+<div class="p-8 flex flex-col">
+  <div class="flex justify-between">
+    <span>Mã đơn hàng: {@order.id}</span>
+    <button
+      :if={@order.status == :"Chờ thanh toán"}
+      type="submit"
+      phx-click="cancel-order"
+      data-confirm="Xác nhận hủy đơn hàng"
+      class="bg-black rounded-md p-2 text-white"
+    >
+      Hủy đơn hàng
+    </button>
+  </div>
+  <.table
+    id="order-products"
+    rows={@order.line_items}
+    row_click={fn item -> JS.navigate(~p"/products/#{item.product.id}") end}
+  >
+    <:col :let={item} label="Sản phẩm">{item.product.title}</:col>
+
+    <:col :let={item} label="Đơn giá">{EcommerceFinal.Utils.FormatUtil.money_to_vnd(item.price)}</:col>
+
+    <:col :let={item} label="Số lượng">{item.quantity}</:col>
+
+    <:col :let={item} label="Thành tiền">{item.price * item.quantity}</:col>
+  </.table>
+
+  <div class="self-end">
+    Tổng tiền
+    <span>
+      {EcommerceFinal.Utils.FormatUtil.money_to_vnd(@order.total_price)}
+    </span>
+  </div>
+  <span class="self-end">Trạng thái đơn hàng: {@order.status}</span>
+  <div class="buyer-information">
+    <p>Họ tên người nhận: {@order.buyer_name}</p>
+    <p>Địa chỉ nhận hàng: {@order.buyer_address}</p>
+    <p>Số điện thoại nhận hàng: {@order.buyer_phone}</p>
+    <p>Phương thức thanh toán: {@order.payment_type}</p>
+  </div>
+  <a
+    :if={@order.status == :"Chờ thanh toán"}
+    href={"#{Payos.get_checkout_url(@order.transaction_id)}"}
+    rel="noopener noreferrer"
+    target="_blank"
+    class="self-end bg-black text-white rounded-md p-2"
+  >
+    Thanh toán đơn hàng ngay
+  </a>
+</div>

@@ -1,0 +1,12 @@
+<.data_table
+  table_id="users-search-table"
+  id="users-table"
+  rows={@users}
+  searchable="true"
+  sortable="true"
+  row_click={fn user -> JS.patch(~p"/admin/dashboard/customers/#{user}") end}
+>
+  <:col :let={user} label="Mã khách hàng">{user.id}</:col>
+
+  <:col :let={user} label="Email của khách hàng">{user.email}</:col>
+</.data_table>

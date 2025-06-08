@@ -6,6 +6,7 @@ defmodule EcommerceFinal.Catalog.Category do
     field :path, :string
     field :level, :integer
     field :title, :string
+    field :product_count, :integer, virtual: true
 
     timestamps(type: :utc_datetime)
   end

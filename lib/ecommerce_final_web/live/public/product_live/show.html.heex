@@ -1,0 +1,203 @@
+<.breadcrumb prev_pages={get_category_pages(@product.categories)} current_page={@product.title} />
+<section class="pb-8 bg-slate-50 md:pb-16 dark:bg-gray-900 antialiased">
+  <div class="max-w-screen-xl p-4 mx-auto 2xl:px-0">
+    <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
+      <.image_gallery images={@product.images} title={@product.title} />
+      <div class="mt-6 sm:mt-8 lg:mt-0">
+        <h1
+          id="product-title"
+          class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white"
+        >
+          {@product.title}
+        </h1>
+        <div class="mt-4 sm:items-center sm:gap-4 sm:flex">
+          <div class="flex items-center gap-2 mt-2 sm:mt-0">
+            <div class="flex items-center gap-1">
+              <span
+                :for={rating <- 1..5}
+                aria-hidden="true"
+                data-rating={if rating <= round(@product.rating), do: "true"}
+                class="hero-star-solid w-4 h-4 data-[rating=true]:text-yellow-300 text-gray-200"
+              >
+              </span>
+            </div>
+            <p
+              id="product-rating"
+              class="text-sm font-medium leading-none text-gray-500 dark:text-gray-400"
+            >
+              ({@product.rating}) |
+            </p>
+            <a
+              href="#product-reviews"
+              class="text-sm font-medium leading-none text-gray-900 underline hover:no-underline dark:text-white"
+            >
+              <%= if @product.rating_count == 0 do %>
+                Chưa có lượt đánh giá
+              <% else %>
+                {@product.rating_count} lượt đánh giá
+              <% end %>
+              |
+            </a>
+            <span>
+              <b id="product-sold">{@product.sold}</b> Đã bán
+            </span>
+          </div>
+        </div>
+        <p class="text-xl font-semibold text-orange-500 sm:text-2xl">
+          {EcommerceFinal.Utils.FormatUtil.money_to_vnd(@product.price)}
+        </p>
+        <div class="mt-6 sm:gap-4 sm:items-center sm:flex sm:mt-8">
+          <button
+            phx-click="add"
+            disabled={@product.stock == 0}
+            class="rounded-lg py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80 bg-zinc-900 hover:bg-zinc-700 disabled:bg-zinc-600 disabled:hover:cursor-not-allowed"
+          >
+            Thêm vào giỏ hàng
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="product-content" class=" my-8 m-b-8 bg-slate-50 p-4">
+  <section class="mt-8 m-b-8">
+    <h2>CHI TIẾT SẢN PHẨM</h2>
+    <div>
+      <div class="flex">
+        <label class="w-36">Danh mục</label>
+        <div class="flex items-center ">
+          <%= for category <- @product.categories do %>
+            <span class="first:hidden hero-chevron-right-mini"></span>
+            <.link
+              navigate={~p"/categories/#{category}"}
+              class="text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
+            >
+              {category.title}
+            </.link>
+          <% end %>
+        </div>
+      </div>
+      <div class="flex">
+        <label class="w-36">Kho</label>
+        <p id="product-stock">{@product.stock}</p>
+      </div>
+    </div>
+  </section>
+  <section class="mt-8 m-b-8">
+    <h2>MÔ TẢ SẢN PHẨM</h2>
+    <p id="product-description">
+      {@product.description}
+    </p>
+  </section>
+</div>
+<.link
+  :if={@current_user}
+  class="bg-black rounded-md p-2 text-white"
+  patch={~p"/products/#{@product}/review"}
+>
+  Đăng đánh giá
+</.link>
+<.modal
+  :if={@live_action == :review && @current_user}
+  id="review-modal"
+  show
+  on_cancel={JS.patch(~p"/products/#{@product}")}
+>
+  <.live_component
+    module={EcommerceFinalWeb.Public.ProductLive.ReviewFormComponent}
+    id="review_form_component"
+    current_user={@current_user}
+    product={@product}
+  />
+</.modal>
+<div>
+  <section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
+    <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+      <div class="my-6 gap-8 sm:flex sm:items-start md:my-8">
+        <div class="shrink-0 space-y-4">
+          <p class="text-2xl font-semibold leading-none text-gray-900 dark:text-white">
+            {@product.rating} trên 5
+          </p>
+          <span
+            :for={rating <- 1..5}
+            aria-hidden="true"
+            data-rating={if rating <= round(@product.rating), do: "true"}
+            class="hero-star-solid w-4 h-4 data-[rating=true]:text-yellow-300 text-gray-200"
+          >
+          </span>
+        </div>
+        <div
+          class="mt-6 min-w-0 flex gap-8 sm:mt-0 justify-items-center"
+          id="reviews-rating"
+          phx-update="stream"
+        >
+          <div
+            :for={{id, %{rating: rating, count: count}} <- @streams.review_freq}
+            id={id}
+            class="text-gray-900"
+          >
+            {rating} Sao ({count})
+          </div>
+        </div>
+      </div>
+      <div
+        id="product-reviews"
+        class="mt-6 divide-y divide-gray-200 dark:divide-gray-700"
+        phx-update="stream"
+      >
+        <div
+          :for={{id, review} <- @streams.reviews}
+          id={id}
+          class="gap-3 pb-6 sm:flex sm:items-start"
+        >
+          <div class="shrink-0 space-y-2 sm:w-48 md:w-72">
+            <div class="flex items-center gap-0.5">
+              <span
+                :for={rating <- 1..5}
+                data-rating={if rating <= review.rating, do: "true"}
+                class="hero-star-solid w-4 h-4 data-[rating=true]:text-yellow-300 text-gray-200"
+                aria-hidden="true"
+              >
+              </span>
+            </div>
+
+            <div class="space-y-0.5">
+              <p class="text-base font-semibold text-gray-900 dark:text-white">
+                {review.user.email}
+              </p>
+              <p class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                {EcommerceFinal.Utils.TimeUtil.pretty_print(review.inserted_at)}
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-4 min-w-0 flex-1 space-y-4 sm:mt-0">
+            <p class="text-base font-norma">
+              {review.content}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 text-center hidden">
+        <button
+          type="button"
+          class="mb-2 me-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+        >
+          Xem thêm đánh giá
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<span class="my-8">Sản phẩm liên quan</span>
+<div class="grid grid-cols-4 gap-8" id="related-products" phx-update="stream">
+  <.product_card
+    click={JS.patch("/products/#{product.id}")}
+    :for={{dom_id, product} <- @streams.related_products}
+    id={dom_id}
+    product={product}
+  />
+</div>

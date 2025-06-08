@@ -114,4 +114,12 @@ if config_env() == :prod do
   #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+  config :ecommerce_final, ECommerce.Mailer,
+  adapter: Swoosh.Adapters.Mua,
+  relay: "smtp.mailersend.net",
+  port: 587,
+  auth: [
+    username: System.fetch_env!("SMTP_USERNAME"),
+    password: System.fetch_env!("SMTP_PASSWORD")
+  ]
 end

@@ -1,0 +1,55 @@
+<.link patch={~p"/admin/dashboard/catalog/products/new"}>
+  <.button class="m-8">Tạo sản phẩm mới</.button>
+</.link>
+<.data_table
+  table_id="products-search-table"
+  id="products-table"
+  rows={@streams.products}
+  searchable="true"
+  sortable="true"
+  row_click={fn {_id, product} -> JS.patch(~p"/admin/dashboard/catalog/products/#{product}") end}
+>
+  <:col :let={{_id, product}} label="Tên sản phẩm">{product.title}</:col>
+
+  <:col :let={{_id, product}} label="Giá">
+    <span>
+      {EcommerceFinal.Utils.FormatUtil.money_to_vnd(product.price)}
+    </span>
+  </:col>
+
+  <:col :let={{_id, product}} label="Tồn kho">{product.stock}</:col>
+
+  <:col :let={{_id, product}} label="Đã bán">{product.sold}</:col>
+
+  <:col :let={{_id, product}} label="Đánh giá">{product.rating}</:col>
+  <:action :let={{_id, product}}>
+    <div class="sr-only">
+      <.link patch={~p"/admin/dashboard/catalog/products/#{product}"}>Chi tiết</.link>
+    </div>
+    <.link patch={~p"/admin/dashboard/catalog/products/edit/#{product}"}>Sửa</.link>
+  </:action>
+
+  <:action :let={{_id, product}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: product.id})}
+      data-confirm="Xác nhận xóa sản phẩm?"
+    >
+      Xóa
+    </.link>
+  </:action>
+</.data_table>
+
+<.modal
+  :if={@live_action in [:edit, :new]}
+  id="product-modal"
+  show
+  on_cancel={JS.patch(~p"/admin/dashboard/catalog/products")}
+>
+  <.live_component
+    module={EcommerceFinalWeb.Admin.Dashboard.ProductLive.FormComponent}
+    id={@product.id || :new}
+    action={@live_action}
+    patch={~p"/admin/dashboard/catalog/products"}
+    product={@product}
+  />
+</.modal>

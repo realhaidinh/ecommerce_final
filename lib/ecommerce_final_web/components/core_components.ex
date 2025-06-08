@@ -15,9 +15,9 @@ defmodule EcommerceFinalWeb.CoreComponents do
   Icons are provided by [heroicons](https://heroicons.com). See `icon/1` for usage.
   """
   use Phoenix.Component
-  use Gettext, backend: EcommerceFinalWeb.Gettext
 
   alias Phoenix.LiveView.JS
+  use Gettext, backend: EcommerceFinalWeb.Gettext
 
   @doc """
   Renders a modal.
@@ -78,7 +78,8 @@ defmodule EcommerceFinalWeb.CoreComponents do
                   <.icon name="hero-x-mark-solid" class="h-5 w-5" />
                 </button>
               </div>
-              <div id={"#{@id}-content"}>
+
+              <div id={"#{@id}-content"} class="flex justify-center">
                 {render_slot(@inner_block)}
               </div>
             </.focus_wrap>
@@ -123,10 +124,11 @@ defmodule EcommerceFinalWeb.CoreComponents do
     >
       <p :if={@title} class="flex items-center gap-1.5 text-sm font-semibold leading-6">
         <.icon :if={@kind == :info} name="hero-information-circle-mini" class="h-4 w-4" />
-        <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="h-4 w-4" />
-        {@title}
+        <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="h-4 w-4" /> {@title}
       </p>
+
       <p class="mt-2 text-sm leading-5">{msg}</p>
+
       <button type="button" class="group absolute top-1 right-1 p-2" aria-label={gettext("close")}>
         <.icon name="hero-x-mark-solid" class="h-5 w-5 opacity-40 group-hover:opacity-70" />
       </button>
@@ -196,13 +198,14 @@ defmodule EcommerceFinalWeb.CoreComponents do
     include: ~w(autocomplete name rel action enctype method novalidate target multipart),
     doc: "the arbitrary HTML attributes to apply to the form tag"
 
+  attr :classes, :list, default: []
   slot :inner_block, required: true
   slot :actions, doc: "the slot for form actions, such as a submit button"
 
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="mt-10 space-y-8 bg-white">
+      <div class={@classes}>
         {render_slot(@inner_block, f)}
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           {render_slot(action, f)}
@@ -286,6 +289,8 @@ defmodule EcommerceFinalWeb.CoreComponents do
   attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
   attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
+  attr :classes, :list, default: []
+  attr :label_class, :string, default: ""
 
   attr :rest, :global,
     include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
@@ -320,9 +325,9 @@ defmodule EcommerceFinalWeb.CoreComponents do
           checked={@checked}
           class="rounded border-zinc-300 text-zinc-900 focus:ring-0"
           {@rest}
-        />
-        {@label}
+        /> {@label}
       </label>
+
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
@@ -332,16 +337,21 @@ defmodule EcommerceFinalWeb.CoreComponents do
     ~H"""
     <div>
       <.label for={@id}>{@label}</.label>
+
       <select
         id={@id}
         name={@name}
-        class="mt-2 block w-full rounded-md border border-gray-300 bg-white shadow-sm focus:border-zinc-400 focus:ring-0 sm:text-sm"
+        class={[
+          "mt-2 block rounded-md border border-gray-300 bg-white shadow-sm focus:border-zinc-400 focus:ring-0 sm:text-sm"
+          | @classes
+        ]}
         multiple={@multiple}
         {@rest}
       >
         <option :if={@prompt} value="">{@prompt}</option>
         {Phoenix.HTML.Form.options_for_select(@options, @value)}
       </select>
+
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
@@ -355,12 +365,12 @@ defmodule EcommerceFinalWeb.CoreComponents do
         id={@id}
         name={@name}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6 min-h-[6rem]",
+          "mt-2 block rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6 min-h-[6rem]",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
         {@rest}
-      >{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
+      ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
@@ -370,16 +380,17 @@ defmodule EcommerceFinalWeb.CoreComponents do
   def input(assigns) do
     ~H"""
     <div>
-      <.label for={@id}>{@label}</.label>
+      <.label for={@id} class={@label_class}>{@label}</.label>
       <input
         type={@type}
         name={@name}
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "mt-2 block rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
+          | @classes
         ]}
         {@rest}
       />
@@ -392,11 +403,12 @@ defmodule EcommerceFinalWeb.CoreComponents do
   Renders a label.
   """
   attr :for, :string, default: nil
+  attr :class, :string, default: ""
   slot :inner_block, required: true
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class={["block text-sm font-semibold leading-6 text-zinc-800", @class]}>
       {render_slot(@inner_block)}
     </label>
     """
@@ -410,8 +422,9 @@ defmodule EcommerceFinalWeb.CoreComponents do
   def error(assigns) do
     ~H"""
     <p class="mt-3 flex gap-3 text-sm leading-6 text-rose-600">
-      <.icon name="hero-exclamation-circle-mini" class="mt-0.5 h-5 w-5 flex-none" />
-      {render_slot(@inner_block)}
+      <.icon name="hero-exclamation-circle-mini" class="mt-0.5 h-5 w-5 flex-none" /> {render_slot(
+        @inner_block
+      )}
     </p>
     """
   end
@@ -432,10 +445,12 @@ defmodule EcommerceFinalWeb.CoreComponents do
         <h1 class="text-lg font-semibold leading-8 text-zinc-800">
           {render_slot(@inner_block)}
         </h1>
+
         <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
           {render_slot(@subtitle)}
         </p>
       </div>
+
       <div class="flex-none">{render_slot(@actions)}</div>
     </header>
     """
@@ -447,8 +462,8 @@ defmodule EcommerceFinalWeb.CoreComponents do
   ## Examples
 
       <.table id="users" rows={@users}>
-        <:col :let={user} label="id">{user.id}</:col>
-        <:col :let={user} label="username">{user.username}</:col>
+        <:col :let={user} label="id"><%= user.id %></:col>
+        <:col :let={user} label="username"><%= user.username %></:col>
       </.table>
   """
   attr :id, :string, required: true
@@ -478,11 +493,13 @@ defmodule EcommerceFinalWeb.CoreComponents do
         <thead class="text-sm text-left leading-6 text-zinc-500">
           <tr>
             <th :for={col <- @col} class="p-0 pb-4 pr-6 font-normal">{col[:label]}</th>
+
             <th :if={@action != []} class="relative p-0 pb-4">
               <span class="sr-only">{gettext("Actions")}</span>
             </th>
           </tr>
         </thead>
+
         <tbody
           id={@id}
           phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
@@ -501,6 +518,7 @@ defmodule EcommerceFinalWeb.CoreComponents do
                 </span>
               </div>
             </td>
+
             <td :if={@action != []} class="relative w-14 p-0">
               <div class="relative whitespace-nowrap py-4 text-right text-sm font-medium">
                 <span class="absolute -inset-y-px -right-4 left-0 group-hover:bg-zinc-50 sm:rounded-r-xl" />
@@ -525,8 +543,8 @@ defmodule EcommerceFinalWeb.CoreComponents do
   ## Examples
 
       <.list>
-        <:item title="Title">{@post.title}</:item>
-        <:item title="Views">{@post.views}</:item>
+        <:item title="Title"><%= @post.title %></:item>
+        <:item title="Views"><%= @post.views %></:item>
       </.list>
   """
   slot :item, required: true do
@@ -539,6 +557,7 @@ defmodule EcommerceFinalWeb.CoreComponents do
       <dl class="-my-4 divide-y divide-zinc-100">
         <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
           <dt class="w-1/4 flex-none text-zinc-500">{item.title}</dt>
+
           <dd class="text-zinc-700">{render_slot(item)}</dd>
         </div>
       </dl>
@@ -563,8 +582,7 @@ defmodule EcommerceFinalWeb.CoreComponents do
         navigate={@navigate}
         class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
       >
-        <.icon name="hero-arrow-left-solid" class="h-3 w-3" />
-        {render_slot(@inner_block)}
+        <.icon name="hero-arrow-left-solid" class="h-3 w-3" /> {render_slot(@inner_block)}
       </.link>
     </div>
     """

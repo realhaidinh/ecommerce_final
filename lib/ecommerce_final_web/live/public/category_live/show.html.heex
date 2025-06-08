@@ -1,0 +1,26 @@
+<.breadcrumb prev_pages={@parents} current_page={@category.title} />
+<div class="content flex flex-row justify-between py-4">
+  <div class="category-tree basis-1/5 bg-slate-50 p-2">
+    <h1 class="mb-2 text-lg font-semibold">
+      Khám phá theo danh mục
+    </h1>
+    <div class="tree-items flex flex-col">
+      <div class="font-semibold mb-2">
+        {@category.title}
+      </div>
+      <.link
+        :for={category <- @subcategories}
+        patch={~p"/categories/#{category}"}
+        class="mb-2 hover:underline pl-2"
+      >
+        {category.title}
+      </.link>
+    </div>
+  </div>
+  <.live_component
+    id="product-gallery"
+    module={EcommerceFinalWeb.Public.ProductGalleryComponent}
+    params={@params}
+    current_path={@current_path}
+  />
+</div>

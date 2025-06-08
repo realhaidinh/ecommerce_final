@@ -1,0 +1,7 @@
+{
+  "main": "tailwind.config.js",
+  "dependencies": {
+    "flowbite": "^2.5.2",
+    "simple-datatables": "^9.2.1"
+  }
+}

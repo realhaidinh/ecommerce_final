@@ -12,7 +12,8 @@ config :ecommerce_final,
   generators: [timestamp_type: :utc_datetime],
   payos_client_id: System.fetch_env!("PAYOS_CLIENT_ID"),
   payos_api_key: System.fetch_env!("PAYOS_API_KEY"),
-  payos_checksum_key: System.fetch_env!("PAYOS_CHECKSUM_KEY")
+  payos_checksum_key: System.fetch_env!("PAYOS_CHECKSUM_KEY"),
+  smtp_username: System.fetch_env!("SMTP_USERNAME")
 
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
 

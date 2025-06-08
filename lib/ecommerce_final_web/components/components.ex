@@ -64,7 +64,7 @@ defmodule EcommerceFinalWeb.Components do
               phx-click={@row_click && @row_click.(row)}
               class={[
                 "relative p-0",
-                "font-medium text-gray-900 whitespace-nowrap dark:text-white",
+                "font-medium text-gray-900 whitespace-nowrap ",
                 @row_click && "hover:cursor-pointer"
               ]}
             >
@@ -106,7 +106,7 @@ defmodule EcommerceFinalWeb.Components do
             <div class="flex items-center">
               <.link
                 navigate="/"
-                class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white"
+                class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2  "
               >
                 Trang chủ
               </.link>
@@ -116,7 +116,7 @@ defmodule EcommerceFinalWeb.Components do
           <li :for={page <- @prev_pages}>
             <div class="flex items-center">
               <svg
-                class="w-6 h-6 text-gray-800 dark:text-white"
+                class="w-6 h-6 text-gray-800 "
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -135,7 +135,7 @@ defmodule EcommerceFinalWeb.Components do
 
               <.link
                 navigate={page.url}
-                class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white"
+                class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2  "
               >
                 {page.title}
               </.link>
@@ -144,7 +144,7 @@ defmodule EcommerceFinalWeb.Components do
 
           <svg
             :if={@current_page}
-            class="w-6 h-6 text-gray-800 dark:text-white"
+            class="w-6 h-6 text-gray-800 "
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -163,7 +163,7 @@ defmodule EcommerceFinalWeb.Components do
 
           <li :if={@current_page} aria-current="page">
             <div class="flex items-center">
-              <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">
+              <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2 ">
                 {@current_page}
               </span>
             </div>
@@ -180,7 +180,7 @@ defmodule EcommerceFinalWeb.Components do
 
   def navbar(assigns) do
     ~H"""
-    <div class="border border-b border-gray-200 bg-gray-200 dark:border-gray-600 lg:py-4 dark:bg-gray-700">
+    <div class="border border-b border-gray-200 bg-gray-200  lg:py-4 ">
       <nav>
         <%= if @role == :user do %>
           <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -188,7 +188,7 @@ defmodule EcommerceFinalWeb.Components do
               <%= if @current_user do %>
                 <button
                   type="button"
-                  class="block text-sm  text-black-500 truncate dark:text-gray-400 hover:shadow"
+                  class="block text-sm  text-black-500 truncate  hover:shadow"
                   id="user-menu-button"
                   aria-expanded="false"
                   data-dropdown-toggle="user-dropdown"
@@ -198,14 +198,14 @@ defmodule EcommerceFinalWeb.Components do
                 </button>
                 <!-- Dropdown menu -->
                 <div
-                  class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+                  class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow  "
                   id="user-dropdown"
                 >
                   <ul class="py-2" aria-labelledby="user-menu-button">
                     <li>
                       <.link
                         href="/users/settings"
-                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100   "
                       >
                         Thông tin tài khoản
                       </.link>
@@ -214,7 +214,7 @@ defmodule EcommerceFinalWeb.Components do
                     <li>
                       <.link
                         href="/users/orders"
-                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100   "
                       >
                         Đơn mua
                       </.link>
@@ -224,7 +224,7 @@ defmodule EcommerceFinalWeb.Components do
                       <.link
                         href="/users/log_out"
                         method="delete"
-                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                        class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100   "
                       >
                         Đăng xuất
                       </.link>
@@ -235,14 +235,14 @@ defmodule EcommerceFinalWeb.Components do
                 <div class="flex items-center space-x-6 rtl:space-x-reverse">
                   <.link
                     href="/users/log_in"
-                    class="text-sm font-medium text-gray-900 md:my-0 dark:text-white"
+                    class="text-sm font-medium text-gray-900 md:my-0 "
                   >
                     Đăng nhập
                   </.link>
 
                   <.link
                     href="/users/register"
-                    class="text-sm font-medium text-gray-900 md:my-0 dark:text-white"
+                    class="text-sm font-medium text-gray-900 md:my-0 "
                   >
                     Đăng ký
                   </.link>
@@ -252,7 +252,7 @@ defmodule EcommerceFinalWeb.Components do
               <button
                 data-collapse-toggle="navbar"
                 type="button"
-                class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200   "
                 aria-controls="navbar"
                 aria-expanded="false"
               >
@@ -277,7 +277,7 @@ defmodule EcommerceFinalWeb.Components do
 
             <div id="navbar" class="justify-between hidden w-full md:flex md:w-auto md:order-1">
               <.link
-                class="text-sm font-medium text-gray-900 md:my-0 dark:text-white"
+                class="text-sm font-medium text-gray-900 md:my-0 "
                 navigate="/"
                 aria-current="page"
               >
@@ -321,12 +321,12 @@ defmodule EcommerceFinalWeb.Components do
               <!-- Dropdown menu -->
               <div
                 id="dropdownDelay"
-                class="grid grid-cols-1 justify-items-stretch w-1/5 z-10 hidden bg-white divide-y divide-gray-100 shadow dark:bg-gray-700"
+                class="grid grid-cols-1 justify-items-stretch w-1/5 z-10 hidden bg-white divide-y divide-gray-100 shadow "
               >
                 <p class="p-4">Sản phẩm mới thêm</p>
 
                 <ul
-                  class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                  class="py-2 text-sm text-gray-700 "
                   aria-labelledby="dropdownDelayButton"
                 >
                   <li :for={item <- @cart.cart_items}>
@@ -356,14 +356,14 @@ defmodule EcommerceFinalWeb.Components do
               <%= if @current_user do %>
                 <.link
                   navigate="/admin/settings"
-                  class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                  class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100   "
                 >
                   Thông tin tài khoản {@current_user.email}
                 </.link>
                 <.link
                   href="/admin/log_out"
                   method="delete"
-                  class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                  class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100   "
                 >
                   Đăng xuất
                 </.link>
@@ -371,7 +371,7 @@ defmodule EcommerceFinalWeb.Components do
                 <div class="flex items-center space-x-6 rtl:space-x-reverse">
                   <.link
                     href="/admin/log_in"
-                    class="text-sm font-medium text-gray-900 md:my-0 dark:text-white"
+                    class="text-sm font-medium text-gray-900 md:my-0 "
                   >
                     Đăng nhập
                   </.link>
@@ -393,7 +393,7 @@ defmodule EcommerceFinalWeb.Components do
     <div
       phx-click={@click}
       id={@id}
-      class="flex h-full flex-col hover:cursor-pointer w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+      class="flex h-full flex-col hover:cursor-pointer w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow  "
     >
       <img
         class="p-2 self-center sm:h-40 sm:w-40 md:h-50 md:w-50"
@@ -408,7 +408,7 @@ defmodule EcommerceFinalWeb.Components do
                   -webkit-box-orient: vertical;
                   overflow: hidden;
                   text-overflow: ellipsis;"
-            class="text-lg min-h-14 font-semibold tracking-tight text-gray-900 dark:text-white"
+            class="text-lg min-h-14 font-semibold tracking-tight text-gray-900 "
           >
             {@product.title}
           </p>
@@ -478,7 +478,7 @@ defmodule EcommerceFinalWeb.Components do
         >
           <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-800/30 hover:bg-gray-800 group-focus:outline-none">
             <svg
-              class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180"
+              class="w-4 h-4 text-white  rtl:rotate-180"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -502,7 +502,7 @@ defmodule EcommerceFinalWeb.Components do
         >
           <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-800/30 hover:bg-gray-800  group-focus:outline-none">
             <svg
-              class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180"
+              class="w-4 h-4 text-white  rtl:rotate-180"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -529,8 +529,8 @@ defmodule EcommerceFinalWeb.Components do
 
   def public_footer(assigns) do
     ~H"""
-    <footer class="bg-white rounded-lg shadow dark:bg-gray-900 my-8">
-      <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
+    <footer class="bg-white rounded-lg shadow  my-8">
+      <hr class="my-6 border-gray-200 sm:mx-auto  lg:my-8" />
       <div class="w-full p-4">
         <div class="sm:flex sm:items-center sm:justify-between">
           <.link href="/" class="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
@@ -539,13 +539,13 @@ defmodule EcommerceFinalWeb.Components do
               class="sm:h-16 sm:w-16 md:h-24 md:w-24"
               alt="UIT EcommerceFinal Logo"
             />
-            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+            <span class="self-center text-2xl font-semibold whitespace-nowrap ">
               UIT EcommerceFinal
             </span>
           </.link>
         </div>
 
-        <span class="block text-sm text-gray-500 sm:text-center dark:text-gray-400">
+        <span class="block text-sm text-gray-500 sm:text-center ">
           © 2024 <.link navigate="/" class="hover:underline">UIT EcommerceFinal™</.link>. All Rights Reserved.
         </span>
       </div>

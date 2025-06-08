@@ -3,9 +3,9 @@ defmodule EcommerceFinal.Payos do
   alias EcommerceFinal.Utils.TimeUtil
   alias EcommerceFinal.Utils.SignatureUtil
 
-  @api_key Application.compile_env(:e_commerce, :payos_api_key)
-  @client_id Application.compile_env(:e_commerce, :payos_client_id)
-  @checksum_key Application.compile_env(:e_commerce, :payos_checksum_key)
+  @api_key Application.compile_env!(:ecommerce_final, :payos_api_key)
+  @client_id Application.compile_env!(:ecommerce_final, :payos_client_id)
+  @checksum_key Application.compile_env!(:ecommerce_final, :payos_checksum_key)
   @payos_api_url "https://api-merchant.payos.vn"
 
   def create_payment_data(%{return_url: return_url, amount: amount, description: description}) do
@@ -19,7 +19,7 @@ defmodule EcommerceFinal.Payos do
     }
   end
 
-  def create_payment_link(payment_data) do
+  def create_payment_link(payment_data) when is_map(payment_data) do
     try do
       body =
         payment_data

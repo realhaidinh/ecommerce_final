@@ -4,7 +4,8 @@ defmodule EcommerceFinal.Utils.SignatureUtil do
     generate_hmac_sha256(checksum, data)
   end
 
-  def create_signature_of_payment_request(data, checksum) do
+  def create_signature_of_payment_request(data, checksum)
+      when is_map(data) and is_binary(checksum) do
     data =
       "amount=#{data.amount}&cancelUrl=#{data.cancelUrl}&description=#{data.description}&orderCode=#{data.orderCode}&returnUrl=#{data.returnUrl}"
 

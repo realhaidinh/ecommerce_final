@@ -1,4 +1,4 @@
-defmodule EcommerceFinalWeb.Admin.SessionController do
+defmodule EcommerceFinalWeb.AdminSessionController do
   use EcommerceFinalWeb, :controller
 
   alias EcommerceFinal.Accounts

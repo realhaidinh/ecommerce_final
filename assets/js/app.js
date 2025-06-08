@@ -18,18 +18,79 @@
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
 // Establish Phoenix Socket and LiveView configuration.
-import {Socket} from "phoenix"
-import {LiveSocket} from "phoenix_live_view"
+import { Socket } from "phoenix"
+import { LiveSocket } from "phoenix_live_view"
 import topbar from "../vendor/topbar"
+import "flowbite/dist/flowbite.phoenix.js";
+import { DataTable } from "simple-datatables";
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+
+let Hooks = {}
+Hooks.DataTable = {
+  createDataTable(element) {
+    new DataTable(element, {
+      searchable: element.dataset.searchable === "true",
+      sortable: element.dataset.sortable === "true"
+    })
+    const tbody = element.querySelector('tbody')
+    tbody.setAttribute("id", element.dataset.tbodyId)
+    element.dataset.tbodyPhxUpdate && tbody.setAttribute("phx-update", element.dataset.tbodyPhxUpdate)
+  },
+  mounted() {
+    this.createDataTable(this.el)
+  },
+  updated() {
+    this.createDataTable(this.el)
+  }
+}
+
+Hooks.SearchInput = {
+  mounted() {
+    this.products = document.querySelector("#product_preview")
+    this.selectedIndex = -1
+    this.el.addEventListener("keydown", (e) => {
+      if(this.getProductsLength() == 0) {
+        this.selectedIndex = -1
+        return;
+      }
+      const prevIndex = this.selectedIndex
+      switch (e.key) {
+        case "ArrowUp":
+          this.selectedIndex = this.selectedIndex >= 0 ? this.selectedIndex - 1 : this.getProductsLength() - 1
+          this.selectedIndex >= 0 && this.products.children[this.selectedIndex].classList.add("bg-gray-200")
+          prevIndex >= 0 && this.products.children[prevIndex].classList.remove("bg-gray-200")
+          this.el.value = this.products.children[this.selectedIndex].children[0].innerText
+          break;
+        case "ArrowDown":
+          this.selectedIndex = this.selectedIndex < this.getProductsLength() - 1 ? this.selectedIndex + 1 : 0
+          this.products.children[this.selectedIndex].classList.add("bg-gray-200")
+          prevIndex >= 0 && this.products.children[prevIndex].classList.remove("bg-gray-200")
+          this.el.value = this.products.children[this.selectedIndex].children[0].innerText
+          break;
+        case "Enter":
+          if(this.selectedIndex != -1) {
+            e.preventDefault()
+            window.location.href = this.products.children[this.selectedIndex].href
+          }
+          break;
+        default:
+          break
+      }
+    })
+  },
+  getProductsLength() {
+    return this.products.children.length
+  }
+}
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
-  params: {_csrf_token: csrfToken}
+  params: { _csrf_token: csrfToken },
+  hooks: Hooks,
 })
 
 // Show progress bar on live navigation and form submits
-topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
+topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" })
 window.addEventListener("phx:page-loading-start", _info => topbar.show(300))
 window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
 

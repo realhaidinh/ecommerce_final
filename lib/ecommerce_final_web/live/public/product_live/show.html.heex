@@ -1,12 +1,12 @@
 <.breadcrumb prev_pages={get_category_pages(@product.categories)} current_page={@product.title} />
-<section class="pb-8 bg-slate-50 md:pb-16 dark:bg-gray-900 antialiased">
+<section class="pb-8 bg-slate-50 md:pb-16  antialiased">
   <div class="max-w-screen-xl p-4 mx-auto 2xl:px-0">
     <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
       <.image_gallery images={@product.images} title={@product.title} />
       <div class="mt-6 sm:mt-8 lg:mt-0">
         <h1
           id="product-title"
-          class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white"
+          class="text-xl font-semibold text-gray-900 sm:text-2xl "
         >
           {@product.title}
         </h1>
@@ -23,13 +23,13 @@
             </div>
             <p
               id="product-rating"
-              class="text-sm font-medium leading-none text-gray-500 dark:text-gray-400"
+              class="text-sm font-medium leading-none text-gray-500 "
             >
               ({@product.rating}) |
             </p>
             <a
               href="#product-reviews"
-              class="text-sm font-medium leading-none text-gray-900 underline hover:no-underline dark:text-white"
+              class="text-sm font-medium leading-none text-gray-900 underline hover:no-underline "
             >
               <%= if @product.rating_count == 0 do %>
                 Chưa có lượt đánh giá
@@ -71,7 +71,7 @@
             <span class="first:hidden hero-chevron-right-mini"></span>
             <.link
               navigate={~p"/categories/#{category}"}
-              class="text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
+              class="text-sm font-medium text-gray-700 hover:text-blue-600  "
             >
               {category.title}
             </.link>
@@ -112,11 +112,11 @@
   />
 </.modal>
 <div>
-  <section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
+  <section class="bg-white py-8 antialiased  md:py-16">
     <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
       <div class="my-6 gap-8 sm:flex sm:items-start md:my-8">
         <div class="shrink-0 space-y-4">
-          <p class="text-2xl font-semibold leading-none text-gray-900 dark:text-white">
+          <p class="text-2xl font-semibold leading-none text-gray-900 ">
             {@product.rating} trên 5
           </p>
           <span
@@ -143,7 +143,7 @@
       </div>
       <div
         id="product-reviews"
-        class="mt-6 divide-y divide-gray-200 dark:divide-gray-700"
+        class="mt-6 divide-y divide-gray-200 "
         phx-update="stream"
       >
         <div
@@ -163,10 +163,10 @@
             </div>
 
             <div class="space-y-0.5">
-              <p class="text-base font-semibold text-gray-900 dark:text-white">
+              <p class="text-base font-semibold text-gray-900 ">
                 {review.user.email}
               </p>
-              <p class="text-sm font-normal text-gray-500 dark:text-gray-400">
+              <p class="text-sm font-normal text-gray-500 ">
                 {EcommerceFinal.Utils.TimeUtil.pretty_print(review.inserted_at)}
               </p>
             </div>
@@ -183,7 +183,7 @@
       <div class="mt-6 text-center hidden">
         <button
           type="button"
-          class="mb-2 me-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 -600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+          class="mb-2 me-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 -600     "
         >
           Xem thêm đánh giá
         </button>

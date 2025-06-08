@@ -1,4 +1,4 @@
-defmodule EcommerceFinalWeb.WebhookController do
+defmodule EcommerceFinalWeb.Webhooks.Payment do
   use EcommerceFinalWeb, :controller
   import EcommerceFinal.Payos
   alias EcommerceFinal.Orders.OrderNotifier

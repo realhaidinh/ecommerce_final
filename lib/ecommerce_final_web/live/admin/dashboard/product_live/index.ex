@@ -1,6 +1,7 @@
 defmodule EcommerceFinalWeb.Admin.Dashboard.ProductLive.Index do
   alias EcommerceFinal.Catalog.Product
   alias EcommerceFinal.Catalog
+  alias EcommerceFinal.Utils.FormatUtil
   use EcommerceFinalWeb, :live_view
 
   @impl true

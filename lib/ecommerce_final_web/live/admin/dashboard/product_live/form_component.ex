@@ -8,7 +8,7 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.ProductLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <section class="bg-white dark:bg-gray-900">
+      <section class="bg-white">
         <.simple_form
           for={@form}
           id="product-form"

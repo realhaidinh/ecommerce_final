@@ -48,13 +48,10 @@ defmodule EcommerceFinalWeb.Router do
   end
 
   ## Authentication routes
-  scope "/webhook", EcommerceFinalWeb do
-    pipe_through [:api]
-    post "/payment", WebhookController, :payment_confirm
-  end
   scope "/api/webhook", EcommerceFinalWeb do
     pipe_through [:api]
-    post "/chatbot", ChatBotController, :webhook
+    post "/chatbot", Webhooks.ChatBot, :webhook
+    post "/payment", Webhooks.Payment, :payment_confirm
   end
   scope "/", EcommerceFinalWeb do
     pipe_through [:browser, :user, :redirect_if_user_is_authenticated]

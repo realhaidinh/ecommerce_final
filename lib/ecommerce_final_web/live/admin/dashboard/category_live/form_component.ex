@@ -5,7 +5,7 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.CategoryLive.FormComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <section class="bg-white dark:bg-gray-900">
+    <section class="bg-white ">
       <.simple_form for={@form} id="category-form" phx-target={@myself} phx-submit="save">
         <.input field={@form[:title]} type="text" label="Tên danh mục" />
         <:actions>

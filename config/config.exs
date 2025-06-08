@@ -13,7 +13,7 @@ config :ecommerce_final,
   payos_client_id: System.fetch_env!("PAYOS_CLIENT_ID"),
   payos_api_key: System.fetch_env!("PAYOS_API_KEY"),
   payos_checksum_key: System.fetch_env!("PAYOS_CHECKSUM_KEY"),
-  smtp_username: System.fetch_env!("SMTP_USERNAME")
+  host_email: System.fetch_env!("HOST_EMAIL")
 
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
 
@@ -35,7 +35,10 @@ config :ecommerce_final, EcommerceFinalWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :ecommerce_final, EcommerceFinal.Mailer, adapter: Swoosh.Adapters.Local
+
+config :ecommerce_final, EcommerceFinal.Mailer,
+  adapter: Resend.Swoosh.Adapter,
+  api_key: System.fetch_env!("RESEND_API_KEY")
 
 # Configure esbuild (the version is required)
 config :esbuild,

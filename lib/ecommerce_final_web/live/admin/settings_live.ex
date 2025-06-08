@@ -86,10 +86,18 @@ defmodule EcommerceFinalWeb.Admin.SettingsLive do
     socket =
       case Accounts.update_admin_email(socket.assigns.current_admin, token) do
         :ok ->
-          put_flash(socket, :info, "Đổi email thành công. Vui lòng đăng nhập lại với email mới của bạn.")
+          put_flash(
+            socket,
+            :info,
+            "Đổi email thành công. Vui lòng đăng nhập lại với email mới của bạn."
+          )
 
         :error ->
-          put_flash(socket, :error, "Link đổi email không hợp lệ hoặc đã hết hạn. Vui lòng thử lại.")
+          put_flash(
+            socket,
+            :error,
+            "Link đổi email không hợp lệ hoặc đã hết hạn. Vui lòng thử lại."
+          )
       end
 
     {:ok, push_navigate(socket, to: ~p"/admin/settings")}
@@ -137,7 +145,9 @@ defmodule EcommerceFinalWeb.Admin.SettingsLive do
           &url(~p"/admin/settings/confirm_email/#{&1}")
         )
 
-        info = "Vui lòng kiểm tra email của bạn để xác nhận thay đổi email. Nếu không thấy email, hãy kiểm tra thư mục spam hoặc thử lại."
+        info =
+          "Vui lòng kiểm tra email của bạn để xác nhận thay đổi email. Nếu không thấy email, hãy kiểm tra thư mục spam hoặc thử lại."
+
         {:noreply, socket |> put_flash(:info, info) |> assign(email_form_current_password: nil)}
 
       {:error, changeset} ->

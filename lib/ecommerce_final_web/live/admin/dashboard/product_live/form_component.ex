@@ -31,9 +31,11 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.ProductLive.FormComponent do
             <label for={@uploads.uploaded_files.ref}>Ảnh sản phẩm</label>
             <.live_file_input upload={@uploads.uploaded_files} />
           </div>
+          
           <%= for entry <- @uploads.uploaded_files.entries do %>
             <.live_img_preview entry={entry} width="75" />
             <div class="py-5">{entry.progress}%</div>
+            
             <button
               type="button"
               phx-click="cancel-upload"
@@ -44,6 +46,7 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.ProductLive.FormComponent do
               &times;
             </button>
           <% end %>
+          
           <:actions>
             <.button phx-disable-with="...">Lưu</.button>
           </:actions>

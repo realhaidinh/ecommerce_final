@@ -28,8 +28,8 @@ defmodule EcommerceFinalWeb.Public.HomeLive do
         <span class="font-semibold">Sản phẩm bạn có thể quan tâm</span>
         <div class="grid grid-cols-4 gap-8 mt-8" id="catalog-products" phx-update="stream">
           <.product_card
-            click={JS.patch("/products/#{product.id}")}
             :for={{dom_id, product} <- @streams.landing_products}
+            click={JS.patch("/products/#{product.id}")}
             id={dom_id}
             product={product}
           />

@@ -2,6 +2,7 @@ defmodule EcommerceFinal.ShoppingCart.CartItem do
   use Ecto.Schema
   import Ecto.Changeset
   alias EcommerceFinal.Catalog
+
   schema "cart_items" do
     field :price_when_carted, :integer
     field :quantity, :integer

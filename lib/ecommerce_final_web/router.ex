@@ -53,6 +53,7 @@ defmodule EcommerceFinalWeb.Router do
     post "/chatbot", Webhooks.ChatBot, :webhook
     post "/payment", Webhooks.Payment, :payment_confirm
   end
+
   scope "/", EcommerceFinalWeb do
     pipe_through [:browser, :user, :redirect_if_user_is_authenticated]
 
@@ -76,7 +77,10 @@ defmodule EcommerceFinalWeb.Router do
 
     live_session :require_authenticated_user,
       layout: {EcommerceFinalWeb.Layouts, :public},
-      on_mount: [{EcommerceFinalWeb.UserAuth, :ensure_authenticated}, EcommerceFinalWeb.Public.Cart] do
+      on_mount: [
+        {EcommerceFinalWeb.UserAuth, :ensure_authenticated},
+        EcommerceFinalWeb.Public.Cart
+      ] do
       live "/cart", Public.CartLive.Index, :index
       live "/users/orders", Public.OrderLive.Index, :order_index
       live "/users/orders/:id", Public.OrderLive.Show, :order_show
@@ -104,7 +108,6 @@ defmodule EcommerceFinalWeb.Router do
       live "/users/confirm", Public.UserConfirmationInstructionsLive, :new
       live "/", Public.HomeLive
     end
-
   end
 
   ## Authentication routes

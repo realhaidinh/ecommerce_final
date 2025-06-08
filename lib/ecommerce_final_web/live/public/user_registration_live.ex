@@ -31,8 +31,14 @@ defmodule EcommerceFinalWeb.Public.UserRegistrationLive do
           Oops, something went wrong! Please check the errors below.
         </.error>
 
-        <.input field={@form[:email]} type="email" label="Email" required />
-        <.input field={@form[:password]} type="password" label="Password" required />
+        <.input classes={["w-full"]} field={@form[:email]} type="email" label="Email" required />
+        <.input
+          classes={["w-full"]}
+          field={@form[:password]}
+          type="password"
+          label="Password"
+          required
+        />
 
         <:actions>
           <.button phx-disable-with="..." class="w-full">Đăng ký tài khoản</.button>

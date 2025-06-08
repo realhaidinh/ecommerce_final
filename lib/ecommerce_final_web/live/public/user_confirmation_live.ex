@@ -6,18 +6,18 @@ defmodule EcommerceFinalWeb.Public.UserConfirmationLive do
   def render(%{live_action: :edit} = assigns) do
     ~H"""
     <div class="mx-auto max-w-sm">
-      <.header class="text-center">Confirm Account</.header>
+      <.header class="text-center">Xác nhận tài khoản</.header>
 
       <.simple_form for={@form} id="confirmation_form" phx-submit="confirm_account">
-        <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
+        <input class="w-full" type="hidden" name={@form[:token].name} value={@form[:token].value} />
         <:actions>
-          <.button phx-disable-with="Confirming..." class="w-full">Confirm my account</.button>
+          <.button phx-disable-with="..." class="w-full">Xác nhận tài khoản</.button>
         </:actions>
       </.simple_form>
 
-      <p class="text-center mt-4">
-        <.link href={~p"/users/register"}>Register</.link>
-        | <.link href={~p"/users/log_in"}>Log in</.link>
+      <p :if={@current_user == nil} class="text-center mt-4">
+        <.link href={~p"/users/register"}>Đăng ký</.link>
+        | <.link href={~p"/users/log_in"}>Đăng nhập</.link>
       </p>
     </div>
     """

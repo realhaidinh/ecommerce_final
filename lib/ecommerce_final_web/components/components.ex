@@ -46,13 +46,13 @@ defmodule EcommerceFinalWeb.Components do
             <th :for={col <- @col} class="p-0 pb-4 pr-6 font-normal">
               <span class="flex items-center">{col[:label]}</span>
             </th>
-
+            
             <th :if={@action != []} class="relative p-0 pb-4">
               <span class="sr-only">{gettext("Actions")}</span>
             </th>
           </tr>
         </thead>
-
+        
         <tbody
           id={@id}
           phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
@@ -75,7 +75,7 @@ defmodule EcommerceFinalWeb.Components do
                 </span>
               </div>
             </td>
-
+            
             <td :if={@action != []} class="relative w-14 p-0">
               <div class="relative whitespace-nowrap py-4 text-right text-sm font-medium">
                 <span class="absolute -inset-y-px -right-4 left-0 group-hover:bg-zinc-50 sm:rounded-r-xl" />
@@ -112,7 +112,7 @@ defmodule EcommerceFinalWeb.Components do
               </.link>
             </div>
           </li>
-
+          
           <li :for={page <- @prev_pages}>
             <div class="flex items-center">
               <svg
@@ -132,7 +132,7 @@ defmodule EcommerceFinalWeb.Components do
                   d="m9 5 7 7-7 7"
                 />
               </svg>
-
+              
               <.link
                 navigate={page.url}
                 class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2  "
@@ -141,7 +141,7 @@ defmodule EcommerceFinalWeb.Components do
               </.link>
             </div>
           </li>
-
+          
           <svg
             :if={@current_page}
             class="w-6 h-6 text-gray-800 "
@@ -160,7 +160,7 @@ defmodule EcommerceFinalWeb.Components do
               d="m9 5 7 7-7 7"
             />
           </svg>
-
+          
           <li :if={@current_page} aria-current="page">
             <div class="flex items-center">
               <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2 ">
@@ -210,7 +210,7 @@ defmodule EcommerceFinalWeb.Components do
                         Thông tin tài khoản
                       </.link>
                     </li>
-
+                    
                     <li>
                       <.link
                         href="/users/orders"
@@ -219,7 +219,7 @@ defmodule EcommerceFinalWeb.Components do
                         Đơn mua
                       </.link>
                     </li>
-
+                    
                     <li>
                       <.link
                         href="/users/log_out"
@@ -233,22 +233,16 @@ defmodule EcommerceFinalWeb.Components do
                 </div>
               <% else %>
                 <div class="flex items-center space-x-6 rtl:space-x-reverse">
-                  <.link
-                    href="/users/log_in"
-                    class="text-sm font-medium text-gray-900 md:my-0 "
-                  >
+                  <.link href="/users/log_in" class="text-sm font-medium text-gray-900 md:my-0 ">
                     Đăng nhập
                   </.link>
-
-                  <.link
-                    href="/users/register"
-                    class="text-sm font-medium text-gray-900 md:my-0 "
-                  >
+                  
+                  <.link href="/users/register" class="text-sm font-medium text-gray-900 md:my-0 ">
                     Đăng ký
                   </.link>
                 </div>
               <% end %>
-
+              
               <button
                 data-collapse-toggle="navbar"
                 type="button"
@@ -274,7 +268,7 @@ defmodule EcommerceFinalWeb.Components do
                 </svg>
               </button>
             </div>
-
+            
             <div id="navbar" class="justify-between hidden w-full md:flex md:w-auto md:order-1">
               <.link
                 class="text-sm font-medium text-gray-900 md:my-0 "
@@ -285,10 +279,9 @@ defmodule EcommerceFinalWeb.Components do
               </.link>
             </div>
           </div>
-
+          
           <div class="max-w-screen-xl grid grid-cols-6 justify-between items-center mx-auto">
             <.live_component module={EcommerceFinalWeb.Public.SearchComponent} id="search-bar" />
-
             <div :if={@current_user} class="order-3 flex col-start-6 justify-center">
               <a
                 id="dropdownDelayButton"
@@ -313,7 +306,7 @@ defmodule EcommerceFinalWeb.Components do
                     d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
                   />
                 </svg>
-
+                
                 <span class="-top-3 relative bg-white border-2 border-solid rounded-xl px-2">
                   {length(@cart.cart_items)}
                 </span>
@@ -324,11 +317,8 @@ defmodule EcommerceFinalWeb.Components do
                 class="grid grid-cols-1 justify-items-stretch w-1/5 z-10 hidden bg-white divide-y divide-gray-100 shadow "
               >
                 <p class="p-4">Sản phẩm mới thêm</p>
-
-                <ul
-                  class="py-2 text-sm text-gray-700 "
-                  aria-labelledby="dropdownDelayButton"
-                >
+                
+                <ul class="py-2 text-sm text-gray-700 " aria-labelledby="dropdownDelayButton">
                   <li :for={item <- @cart.cart_items}>
                     <div class="flex justify-between m-1.5 p-2">
                       <p
@@ -337,13 +327,14 @@ defmodule EcommerceFinalWeb.Components do
                       >
                         {item.product.title}
                       </p>
+                      
                       <p class="text-orange-500">
                         {FormatUtil.money_to_vnd(item.price_when_carted)}
                       </p>
                     </div>
                   </li>
                 </ul>
-
+                
                 <.button class="justify-self-end w-2/3 m-1.5" phx-click={JS.patch("/cart")}>
                   Xem giỏ hàng
                 </.button>
@@ -360,6 +351,7 @@ defmodule EcommerceFinalWeb.Components do
                 >
                   Thông tin tài khoản {@current_user.email}
                 </.link>
+                
                 <.link
                   href="/admin/log_out"
                   method="delete"
@@ -369,10 +361,7 @@ defmodule EcommerceFinalWeb.Components do
                 </.link>
               <% else %>
                 <div class="flex items-center space-x-6 rtl:space-x-reverse">
-                  <.link
-                    href="/admin/log_in"
-                    class="text-sm font-medium text-gray-900 md:my-0 "
-                  >
+                  <.link href="/admin/log_in" class="text-sm font-medium text-gray-900 md:my-0 ">
                     Đăng nhập
                   </.link>
                 </div>
@@ -388,6 +377,7 @@ defmodule EcommerceFinalWeb.Components do
   attr :product, Product, required: true
   attr :id, :string
   attr :click, :any
+
   def product_card(assigns) do
     ~H"""
     <div
@@ -412,10 +402,12 @@ defmodule EcommerceFinalWeb.Components do
           >
             {@product.title}
           </p>
+          
           <p class="text-xl font-semibold text-orange-500">
             {FormatUtil.money_to_vnd(@product.price)}
           </p>
         </div>
+        
         <div class="flex">
           <div class="space-x-1 rtl:space-x-reverse">
             <svg
@@ -428,9 +420,11 @@ defmodule EcommerceFinalWeb.Components do
               <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
             </svg>
           </div>
+          
           <span class="text-sm">
             {@product.rating}
           </span>
+          
           <span class="ml-1 text-sm">
             Đã bán {@product.sold}
           </span>
@@ -459,6 +453,7 @@ defmodule EcommerceFinalWeb.Components do
             />
           </div>
         </div>
+        
         <div class="bg-slate-500 w-full justify-center absolute z-10 flex -translate-x-1/2 left-1/2 space-x-3 rtl:space-x-reverse">
           <button
             :for={{_, id} <- Enum.with_index(@images)}
@@ -492,9 +487,10 @@ defmodule EcommerceFinalWeb.Components do
                 d="M5 1 1 5l4 4"
               />
             </svg>
-            <span class="sr-only">Previous</span>
+             <span class="sr-only">Previous</span>
           </span>
         </button>
+        
         <button
           type="button"
           class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
@@ -516,10 +512,11 @@ defmodule EcommerceFinalWeb.Components do
                 d="m1 9 4-4-4-4"
               />
             </svg>
-            <span class="sr-only">Next</span>
+             <span class="sr-only">Next</span>
           </span>
         </button>
       </div>
+      
       <.modal id="modal-image">
         <img id="image-modal" class="self-center" src="" alt={@title} loading="lazy" />
       </.modal>
@@ -534,19 +531,15 @@ defmodule EcommerceFinalWeb.Components do
       <div class="w-full p-4">
         <div class="sm:flex sm:items-center sm:justify-between">
           <.link href="/" class="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
-            <img
-              src="/uploads/logo.png"
-              class="sm:h-16 sm:w-16 md:h-24 md:w-24"
-              alt="UIT EcommerceFinal Logo"
-            />
+            <img src="/uploads/logo.png" class="sm:h-16 sm:w-16 md:h-24 md:w-24" alt="Eshop UIT Logo" />
             <span class="self-center text-2xl font-semibold whitespace-nowrap ">
-              UIT EcommerceFinal
+              Eshop UIT
             </span>
           </.link>
         </div>
-
+        
         <span class="block text-sm text-gray-500 sm:text-center ">
-          © 2024 <.link navigate="/" class="hover:underline">UIT EcommerceFinal™</.link>. All Rights Reserved.
+          © 2024 <.link navigate="/" class="hover:underline">Eshop UIT™</.link>. All Rights Reserved.
         </span>
       </div>
     </footer>

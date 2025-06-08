@@ -60,7 +60,7 @@ defmodule EcommerceFinal.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:tzdata, "~> 1.1"},
-      {:mua, "~> 0.2.0"},
+      {:resend, "~> 0.4.0"},
       {:mail, "~> 0.3.0"},
       {:unidecode, "~> 1.0.0"}
     ]

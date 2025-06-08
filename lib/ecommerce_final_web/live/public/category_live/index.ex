@@ -12,12 +12,11 @@ defmodule EcommerceFinalWeb.Public.CategoryLive.Index do
           [Map.put(category, :subcategories, []) | acc]
 
         %{path: path} = category, acc ->
-          path_id = Enum.find_index(acc, fn cat ->
-            String.starts_with?(path, "#{cat.path}.#{cat.id}")
-          end)
-          if path_id == nil do
-            raise "Category with path #{path} not found in accumulator"
-          end
+          path_id =
+            Enum.find_index(acc, fn cat ->
+              String.starts_with?(path, "#{cat.path}.#{cat.id}")
+            end)
+
           List.update_at(
             acc,
             path_id,

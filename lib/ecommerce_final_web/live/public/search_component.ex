@@ -88,5 +88,4 @@ defmodule EcommerceFinalWeb.Public.SearchComponent do
 
     {:noreply, socket}
   end
-
 end

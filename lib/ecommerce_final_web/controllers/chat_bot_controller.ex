@@ -8,7 +8,7 @@ defmodule EcommerceFinalWeb.ChatBotController do
          {:ok, fulfillment_text} <- Map.fetch(query_result, "fulfillmentText"),
          {:ok, params} <- Map.fetch(query_result, "parameters"),
          {:ok, response} <- handle_intent(name, params) do
-         fulfillment_text = fulfillment_text <> response
+      fulfillment_text = fulfillment_text <> response
       json(conn, %{fulfillmentText: fulfillment_text})
     else
       :error ->

@@ -23,6 +23,7 @@
               <span class="flex-1 ms-3 whitespace-nowrap">Thống kê doanh thu</span>
             </.link>
           </li>
+          
           <li
             data-selected={if @page_title == "Quản lý sản phẩm", do: "true"}
             class="data-[selected=true]:bg-gray-100"
@@ -34,7 +35,7 @@
               <span class="flex-1 ms-3 whitespace-nowrap">Quản lý sản phẩm</span>
             </.link>
           </li>
-
+          
           <li
             data-selected={if @page_title == "Quản lý danh mục", do: "true"}
             class="data-[selected=true]:bg-gray-100"
@@ -46,7 +47,7 @@
               <span class="flex-1 ms-3 whitespace-nowrap">Quản lý danh mục</span>
             </.link>
           </li>
-
+          
           <li
             data-selected={if @page_title == "Quản lý khách hàng", do: "true"}
             class="data-[selected=true]:bg-gray-100"
@@ -58,7 +59,7 @@
               <span class="flex-1 ms-3 whitespace-nowrap">Quản lý khách hàng</span>
             </.link>
           </li>
-
+          
           <li
             data-selected={if @page_title == "Quản lý đơn hàng", do: "true"}
             class="data-[selected=true]:bg-gray-100"
@@ -73,7 +74,7 @@
         </ul>
       </div>
     </aside>
-
+    
     <div class="p-4 sm:ml-64">
       {@inner_content}
     </div>

@@ -10,9 +10,7 @@ defmodule EcommerceFinal.ShoppingCartFixtures do
   def cart_fixture(attrs \\ %{}) do
     {:ok, cart} =
       attrs
-      |> Enum.into(%{
-
-      })
+      |> Enum.into(%{})
       |> EcommerceFinal.ShoppingCart.create_cart()
 
     cart

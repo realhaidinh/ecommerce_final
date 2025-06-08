@@ -703,7 +703,11 @@ defmodule EcommerceFinal.AccountsTest do
 
       token =
         extract_admin_token(fn url ->
-          Accounts.deliver_admin_update_email_instructions(%{admin | email: email}, admin.email, url)
+          Accounts.deliver_admin_update_email_instructions(
+            %{admin | email: email},
+            admin.email,
+            url
+          )
         end)
 
       %{admin: admin, token: token, email: email}
@@ -991,7 +995,9 @@ defmodule EcommerceFinal.AccountsTest do
     end
 
     test "updates the password", %{admin: admin} do
-      {:ok, updated_admin} = Accounts.reset_admin_password(admin, %{password: "new valid password"})
+      {:ok, updated_admin} =
+        Accounts.reset_admin_password(admin, %{password: "new valid password"})
+
       assert is_nil(updated_admin.password)
       assert Accounts.get_admin_by_email_and_password(admin.email, "new valid password")
     end

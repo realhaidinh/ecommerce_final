@@ -78,14 +78,15 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.Index do
   defp load_data(socket) do
     filters = %{"year" => socket.assigns.selected_year}
 
-    [summary, chart_data] = Task.await_many([
-      Task.async(fn ->
-        Orders.summary(filters)
-      end),
-      Task.async(fn ->
-        Orders.revenue_by_month(filters)
-      end)
-    ])
+    [summary, chart_data] =
+      Task.await_many([
+        Task.async(fn ->
+          Orders.summary(filters)
+        end),
+        Task.async(fn ->
+          Orders.revenue_by_month(filters)
+        end)
+      ])
 
     labels = Enum.map(chart_data, fn {date, _} -> Calendar.strftime(date, "%m") end)
     values = Enum.map(chart_data, fn {_, value} -> value end)

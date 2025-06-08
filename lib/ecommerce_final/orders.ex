@@ -242,7 +242,6 @@ defmodule EcommerceFinal.Orders do
   end
 
   def filter_by_date(query, %{"year" => year}) do
-
     where(query, [o], fragment("extract(year from ?)", o.inserted_at) == ^year)
   end
 

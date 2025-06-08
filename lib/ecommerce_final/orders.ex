@@ -185,6 +185,67 @@ defmodule EcommerceFinal.Orders do
     end
   end
 
+  def distinct_years do
+    Repo.all(
+      from o in Order,
+        select: fragment("extract(year from ?) as year", o.inserted_at),
+        distinct: true,
+        order_by: fragment("year desc")
+    )
+    |> Enum.map(&String.to_integer/1)
+  end
+
+  def summary(filters) do
+    query = filter_by_date(Order, filters)
+
+    total_revenue =
+      Repo.one(
+        from o in query,
+          where: o.status == :"Đã thanh toán" or o.status == :"Đã giao hàng",
+          select: sum(o.total_price)
+      ) || 0
+
+    total_orders = Repo.aggregate(query, :count, :id)
+
+    unique_customers =
+      Repo.one(from o in query, select: count(o.user_id), distinct: true) || 0
+
+    %{
+      total_revenue: total_revenue,
+      total_orders: total_orders,
+      unique_customers: unique_customers
+    }
+  end
+
+  def revenue_by_month(%{"year" => year} = filters) do
+    months = for m <- 1..12, do: Date.new!(year, m, 1)
+
+    revenue_map = raw_revenue_by_month(filters)
+
+    Enum.map(months, fn month ->
+      {month, Map.get(revenue_map, month, 0)}
+    end)
+  end
+
+  def revenue_by_month(_), do: []
+
+  def raw_revenue_by_month(filters) do
+    from(o in Order)
+    |> filter_by_date(filters)
+    |> where([o], o.status == :"Đã thanh toán" or o.status == :"Đã giao hàng")
+    |> group_by([o], fragment("date_trunc('month', ?)", o.inserted_at))
+    |> select([o], {fragment("date_trunc('month', ?)", o.inserted_at), sum(o.total_price)})
+    |> Repo.all()
+    |> Enum.into(%{}, fn {date_str, total} ->
+      {Date.from_iso8601!(date_str), total}
+    end)
+  end
+
+  def filter_by_date(query, %{"year" => year}) do
+
+    where(query, [o], fragment("extract(year from ?)", o.inserted_at) == ^year)
+  end
+
   @doc """
   Returns the list of order_line_items.
 

@@ -7,18 +7,29 @@
     <.flash_group flash={@flash} />
     <aside
       id="sidebar-multi-level-sidebar"
-      class="fixed left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 border border-b border-gray-200 bg-gray-50 -600 lg:py-4 "
+      class="fixed left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 border border-b border-gray-200 bg-gray-50 dark:border-gray-600 lg:py-4 dark:bg-gray-700"
       aria-label="Sidebar"
     >
-      <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 ">
+      <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
         <ul class="space-y-2 font-medium">
+          <li
+            data-selected={if @page_title == "Thống kê doanh thu", do: "true"}
+            class="data-[selected=true]:bg-gray-100"
+          >
+            <.link
+              patch={~p"/admin/dashboard"}
+              class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+            >
+              <span class="flex-1 ms-3 whitespace-nowrap">Thống kê doanh thu</span>
+            </.link>
+          </li>
           <li
             data-selected={if @page_title == "Quản lý sản phẩm", do: "true"}
             class="data-[selected=true]:bg-gray-100"
           >
             <.link
               patch={~p"/admin/dashboard/catalog/products"}
-              class="flex items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group"
+              class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <span class="flex-1 ms-3 whitespace-nowrap">Quản lý sản phẩm</span>
             </.link>
@@ -30,7 +41,7 @@
           >
             <.link
               patch={~p"/admin/dashboard/catalog/categories"}
-              class="flex items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group"
+              class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <span class="flex-1 ms-3 whitespace-nowrap">Quản lý danh mục</span>
             </.link>
@@ -42,7 +53,7 @@
           >
             <.link
               patch={~p"/admin/dashboard/customers"}
-              class="flex items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group"
+              class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <span class="flex-1 ms-3 whitespace-nowrap">Quản lý khách hàng</span>
             </.link>
@@ -54,7 +65,7 @@
           >
             <.link
               patch={~p"/admin/dashboard/sales/orders"}
-              class="flex items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group"
+              class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <span class="flex-1 ms-3 whitespace-nowrap">Quản lý đơn hàng</span>
             </.link>

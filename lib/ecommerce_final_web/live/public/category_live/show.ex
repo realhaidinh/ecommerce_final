@@ -12,7 +12,7 @@ defmodule EcommerceFinalWeb.Public.CategoryLive.Show do
   @impl true
   def handle_params(%{"category_id" => id} = params, _uri, socket) do
     category = Catalog.get_category!(id)
-    params = Map.put(params, "category_ids", [id])
+    params = Map.put(params, "category_ids", [String.to_integer(id)])
 
     {:noreply,
      socket

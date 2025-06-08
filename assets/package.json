@@ -1,6 +1,15 @@
 {
+  "name": "assets",
+  "version": "1.0.0",
+  "description": "",
   "main": "tailwind.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
   "dependencies": {
+    "chart.js": "^4.4.9",
     "flowbite": "^2.5.2",
     "simple-datatables": "^9.2.1"
   }

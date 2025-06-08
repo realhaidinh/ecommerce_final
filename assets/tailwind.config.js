@@ -12,6 +12,7 @@ module.exports = {
     "../lib/ecommerce_final_web/**/*.*ex",
     "./node_modules/flowbite/**/*.js"
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {

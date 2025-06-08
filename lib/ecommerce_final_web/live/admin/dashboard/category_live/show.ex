@@ -25,8 +25,7 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.CategoryLive.Show do
     %{category: category} = socket.assigns
 
     subcategory = %Category{
-      path: Catalog.get_subcategory_path(category),
-      level: category.level + 1
+      path: Catalog.get_subcategory_path(category)
     }
 
     assign(socket, :subcategory, subcategory)

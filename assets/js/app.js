@@ -23,10 +23,15 @@ import { LiveSocket } from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import "flowbite/dist/flowbite.phoenix.js";
 import { DataTable } from "simple-datatables";
+import Chart from 'chart.js/auto'
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 
 let Hooks = {}
+const currencyFormatter = new Intl.NumberFormat('vi-VN', {
+  style: 'currency',
+  currency: 'VND'
+})
 Hooks.DataTable = {
   createDataTable(element) {
     new DataTable(element, {
@@ -44,13 +49,54 @@ Hooks.DataTable = {
     this.createDataTable(this.el)
   }
 }
-
+Hooks.MonthlyChart = {
+  mounted() {
+    this.self = this
+    this.handleEvent("update_chart", (data) => {
+      const { labels, values } = data
+      if (self.chart) {
+        self.chart.destroy()
+      }
+      self.chart = new Chart(this.el.getContext("2d"), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Doanh thu',
+            data: values,
+            backgroundColor: 'rgba(59, 130, 246, 0.6)',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Tháng',
+              }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function (value) {
+                  return currencyFormatter.format(value);
+                }
+              }
+            }
+          }
+        }
+      })
+    })
+  }
+}
 Hooks.SearchInput = {
   mounted() {
     this.products = document.querySelector("#product_preview")
     this.selectedIndex = -1
     this.el.addEventListener("keydown", (e) => {
-      if(this.getProductsLength() == 0) {
+      if (this.getProductsLength() == 0) {
         this.selectedIndex = -1
         return;
       }
@@ -69,7 +115,7 @@ Hooks.SearchInput = {
           this.el.value = this.products.children[this.selectedIndex].children[0].innerText
           break;
         case "Enter":
-          if(this.selectedIndex != -1) {
+          if (this.selectedIndex != -1) {
             e.preventDefault()
             window.location.href = this.products.children[this.selectedIndex].href
           }

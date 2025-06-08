@@ -6,8 +6,7 @@ defmodule EcommerceFinalWeb.Admin.SettingsLive do
   def render(assigns) do
     ~H"""
     <.header class="text-center">
-      Account Settings
-      <:subtitle>Manage your account email address and password settings</:subtitle>
+      Thông tin tài khoản
     </.header>
 
     <div class="space-y-12 divide-y">
@@ -18,18 +17,19 @@ defmodule EcommerceFinalWeb.Admin.SettingsLive do
           phx-submit="update_email"
           phx-change="validate_email"
         >
-          <.input field={@email_form[:email]} type="email" label="Email" required />
+          <.input classes={["w-1/3"]} field={@email_form[:email]} type="email" label="Email" required />
           <.input
+            classes={["w-1/3"]}
             field={@email_form[:current_password]}
             name="current_password"
             id="current_password_for_email"
             type="password"
-            label="Current password"
+            label="Mật khẩu hiện tại"
             value={@email_form_current_password}
             required
           />
           <:actions>
-            <.button phx-disable-with="Changing...">Change Email</.button>
+            <.button phx-disable-with="...">Đổi email</.button>
           </:actions>
         </.simple_form>
       </div>
@@ -48,24 +48,33 @@ defmodule EcommerceFinalWeb.Admin.SettingsLive do
             type="hidden"
             id="hidden_admin_email"
             value={@current_email}
+            classs="w-1/3"
           />
-          <.input field={@password_form[:password]} type="password" label="New password" required />
           <.input
+            classes={["w-1/3"]}
+            field={@password_form[:password]}
+            type="password"
+            label="Mât khẩu mới"
+            required
+          />
+          <.input
+            classes={["w-1/3"]}
             field={@password_form[:password_confirmation]}
             type="password"
-            label="Confirm new password"
+            label="Xác nhận mật khẩu mới"
           />
           <.input
+            classes={["w-1/3"]}
             field={@password_form[:current_password]}
             name="current_password"
             type="password"
-            label="Current password"
+            label="Mật khẩu hiện tại"
             id="current_password_for_password"
             value={@current_password}
             required
           />
           <:actions>
-            <.button phx-disable-with="Changing...">Change Password</.button>
+            <.button phx-disable-with="...">Đổi mật khẩu</.button>
           </:actions>
         </.simple_form>
       </div>
@@ -77,10 +86,10 @@ defmodule EcommerceFinalWeb.Admin.SettingsLive do
     socket =
       case Accounts.update_admin_email(socket.assigns.current_admin, token) do
         :ok ->
-          put_flash(socket, :info, "Email changed successfully.")
+          put_flash(socket, :info, "Đổi email thành công. Vui lòng đăng nhập lại với email mới của bạn.")
 
         :error ->
-          put_flash(socket, :error, "Email change link is invalid or it has expired.")
+          put_flash(socket, :error, "Link đổi email không hợp lệ hoặc đã hết hạn. Vui lòng thử lại.")
       end
 
     {:ok, push_navigate(socket, to: ~p"/admin/settings")}
@@ -99,6 +108,7 @@ defmodule EcommerceFinalWeb.Admin.SettingsLive do
       |> assign(:email_form, to_form(email_changeset))
       |> assign(:password_form, to_form(password_changeset))
       |> assign(:trigger_submit, false)
+      |> assign(:page_title, "Thông tin tài khoản")
 
     {:ok, socket}
   end
@@ -127,7 +137,7 @@ defmodule EcommerceFinalWeb.Admin.SettingsLive do
           &url(~p"/admin/settings/confirm_email/#{&1}")
         )
 
-        info = "A link to confirm your email change has been sent to the new address."
+        info = "Vui lòng kiểm tra email của bạn để xác nhận thay đổi email. Nếu không thấy email, hãy kiểm tra thư mục spam hoặc thử lại."
         {:noreply, socket |> put_flash(:info, info) |> assign(email_form_current_password: nil)}
 
       {:error, changeset} ->

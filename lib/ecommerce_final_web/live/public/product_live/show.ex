@@ -3,7 +3,7 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
 
   alias EcommerceFinal.Catalog
   alias EcommerceFinal.ShoppingCart
-
+  alias EcommerceFinal.Utils.TimeUtil
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket}

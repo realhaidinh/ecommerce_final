@@ -31,7 +31,7 @@ defmodule EcommerceFinal.Catalog do
 
     query =
       from p in Product,
-        where: fragment("text_like(unaccent(?), unaccent(?))", ^pattern, p.title),
+        where: fragment("? like unaccent(?)", p.title_unaccented, ^pattern),
         limit: 5
 
     Repo.all(query)
@@ -53,7 +53,7 @@ defmodule EcommerceFinal.Catalog do
 
         keyword ->
           pattern = keyword <> "%"
-          where(query, [p], fragment("text_like(unaccent(?), unaccent(?))", ^pattern, p.title))
+          where(query, [p], fragment("? like unaccent(?)", p.title_unaccented, ^pattern))
       end
 
     total_products =
@@ -283,7 +283,7 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def list_categories do
-    Repo.all(Category)
+    Repo.all(Category, order_by: [desc: :id])
   end
 
   def list_categories_by_ids(category_ids) do

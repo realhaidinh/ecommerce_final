@@ -34,6 +34,7 @@ defmodule EcommerceFinal.MixProject do
     [
       {:pbkdf2_elixir, "~> 2.0"},
       {:phoenix, "~> 1.7.20"},
+      {:goth, "~> 1.4"},
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},

@@ -26,7 +26,7 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
     id = trunc(id)
     product = Catalog.get_product(id)
 
-    if product.id do
+    if product do
       detail =
         """
         \nTên: #{product.title}

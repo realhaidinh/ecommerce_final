@@ -2,14 +2,19 @@ defmodule EcommerceFinal.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
-
   use Application
+
+  @google_auth_json Application.compile_env!(:ecommerce_final, :google_auth_json)
 
   @impl true
   def start(_type, _args) do
+    credentials = File.read!(@google_auth_json) |> JSON.decode!()
+    source = {:service_account, credentials}
+
     children = [
       EcommerceFinalWeb.Telemetry,
       EcommerceFinal.Repo,
+      {Goth, name: EcommerceFinal.Goth, source: source},
       {DNSCluster, query: Application.get_env(:ecommerce_final, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: EcommerceFinal.PubSub},
       # Start the Finch HTTP client for sending emails

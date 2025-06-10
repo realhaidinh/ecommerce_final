@@ -15,6 +15,7 @@ config :ecommerce_final,
   payos_checksum_key: System.fetch_env!("PAYOS_CHECKSUM_KEY"),
   host_email: System.fetch_env!("HOST_EMAIL"),
   google_auth_json: System.fetch_env!("GOOGLE_AUTH_JSON"),
+  chat_bot_secret_key: System.fetch_env!("CHAT_BOT_SECRET_KEY"),
   dialogflow_project_id: System.fetch_env!("DIALOGFLOW_PROJECT_ID")
 
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase

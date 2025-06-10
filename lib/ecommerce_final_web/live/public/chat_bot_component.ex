@@ -95,10 +95,10 @@ defmodule EcommerceFinalWeb.Public.ChatBotComponent do
     socket =
       if message != "" do
         new_message = create_message(message, :user)
-
+        user_id = if socket.assigns.current_user, do: socket.assigns.current_user.id, else: nil
         socket
         |> stream_insert(:messages, new_message)
-        |> start_async(:ask_bot, fn -> DialogFlow.ask(message) end)
+        |> start_async(:ask_bot, fn -> DialogFlow.ask(message, user_id) end)
       else
         socket
       end

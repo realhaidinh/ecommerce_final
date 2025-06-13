@@ -1,4 +1,17 @@
-<.breadcrumb prev_pages={get_category_pages(@product.categories)} current_page={@product.title} />
+<div class="m-4">
+  <nav class="flex" aria-label="Breadcrumb">
+    <div class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+      <.link
+        navigate="/"
+        class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2  "
+      >
+        Trang chủ
+      </.link>
+      <.icon name="hero-chevron-right-mini" />
+      <.breadcrumb enum={@product.categories} />
+    </div>
+  </nav>
+</div>
 <section class="pb-8 bg-slate-50 md:pb-16  antialiased">
   <div class="max-w-screen-xl p-4 mx-auto 2xl:px-0">
     <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
@@ -7,7 +20,7 @@
         <h1 id="product-title" class="text-xl font-semibold text-gray-900 sm:text-2xl ">
           {@product.title}
         </h1>
-        
+
         <div class="mt-4 sm:items-center sm:gap-4 sm:flex">
           <div class="flex items-center gap-2 mt-2 sm:mt-0">
             <div class="flex items-center gap-1">
@@ -19,11 +32,11 @@
               >
               </span>
             </div>
-            
+
             <p id="product-rating" class="text-sm font-medium leading-none text-gray-500 ">
               ({@product.rating}) |
             </p>
-            
+
             <a
               href="#reviews"
               class="text-sm font-medium leading-none text-gray-900 underline hover:no-underline "
@@ -35,17 +48,17 @@
               <% end %>
               |
             </a>
-            
+
             <span>
               <b id="product-sold">{@product.sold}</b> Đã bán
             </span>
           </div>
         </div>
-        
+
         <p class="text-xl font-semibold text-orange-500 sm:text-2xl">
           {EcommerceFinal.Utils.FormatUtil.money_to_vnd(@product.price)}
         </p>
-        
+
         <div class="mt-6 sm:gap-4 sm:items-center sm:flex sm:mt-8">
           <button
             phx-click="add"
@@ -61,41 +74,32 @@
 </section>
 
 <div id="product-content" class=" my-8 m-b-8 bg-slate-50 p-4">
-  <section class="mt-8 m-b-8">
+  <section>
     <h2>CHI TIẾT SẢN PHẨM</h2>
-    
     <div>
       <div class="flex">
         <label class="w-36">Danh mục</label>
         <div class="flex items-center ">
-          <%= for category <- @product.categories do %>
-            <span class="first:hidden hero-chevron-right-mini"></span>
-            <.link
-              navigate={~p"/categories/#{category}"}
-              class="text-sm font-medium text-gray-700 hover:text-blue-600  "
-            >
-              {category.title}
-            </.link>
-          <% end %>
+          <.breadcrumb enum={@product.categories} />
         </div>
       </div>
-      
+
       <div class="flex">
         <label class="w-36">Kho</label>
         <p id="product-stock">{@product.stock}</p>
       </div>
     </div>
   </section>
-  
+
   <section class="mt-8 m-b-8">
     <h2>MÔ TẢ SẢN PHẨM</h2>
-    
+
     <p id="product-description">
       {@product.description}
     </p>
   </section>
 </div>
-
+<div class="my-8">
 <.link
   :if={@current_user}
   class="bg-black rounded-md p-2 text-white"
@@ -103,7 +107,7 @@
 >
   Đăng đánh giá
 </.link>
-
+</div>
 <.modal
   :if={@live_action == :review && @current_user}
   id="review-modal"
@@ -119,14 +123,14 @@
 </.modal>
 
 <div id="reviews">
-  <section class="bg-white py-8 antialiased  md:py-16">
+  <section class="bg-slate-50 mb-8 py-8 antialiased  md:py-16">
     <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
       <div class="my-6 gap-8 sm:flex sm:items-start md:my-8">
         <div class="shrink-0 space-y-4">
           <p class="text-2xl font-semibold leading-none text-gray-900 ">
             {@product.rating} trên 5
           </p>
-          
+
           <span
             :for={rating <- 1..5}
             aria-hidden="true"
@@ -135,7 +139,7 @@
           >
           </span>
         </div>
-        
+
         <div
           class="mt-6 min-w-0 flex gap-8 sm:mt-0 justify-items-center"
           id="reviews-rating"
@@ -144,13 +148,13 @@
           <div
             :for={{id, %{rating: rating, count: count}} <- @streams.review_freq}
             id={id}
-            class="text-gray-900"
+            class="text-gray-900 bg-white p-2 border-2 text-sm"
           >
             {rating} Sao ({count})
           </div>
         </div>
       </div>
-      
+
       <div id="product-reviews" class="mt-6 divide-y divide-gray-200 " phx-update="stream">
         <div
           :for={{id, review} <- @streams.reviews}
@@ -167,18 +171,18 @@
               >
               </span>
             </div>
-            
+
             <div class="space-y-0.5">
               <p class="text-base font-semibold text-gray-900 ">
                 {review.user.email}
               </p>
-              
+
               <p class="text-sm font-normal text-gray-500 ">
                 {TimeUtil.pretty_print(review.inserted_at)}
               </p>
             </div>
           </div>
-          
+
           <div class="mt-4 min-w-0 flex-1 space-y-4 sm:mt-0">
             <p class="text-base font-norma">
               {review.content}
@@ -186,7 +190,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="mt-6 text-center hidden">
         <button
           type="button"
@@ -198,12 +202,14 @@
     </div>
   </section>
 </div>
- <span class="my-8">Sản phẩm liên quan</span>
-<div class="grid grid-cols-4 gap-8" id="related-products" phx-update="stream">
-  <.product_card
-    :for={{dom_id, product} <- @streams.related_products}
-    click={JS.patch("/products/#{product.id}")}
-    id={dom_id}
-    product={product}
-  />
+<div class="p-4 bg-slate-50 gap-4">
+  <div class="mb-8 ">Sản phẩm liên quan</div>
+  <div class="grid grid-cols-4 gap-8" id="related-products" phx-update="stream">
+    <.product_card
+      :for={{dom_id, product} <- @streams.related_products}
+      click={JS.patch("/products/#{product.id}")}
+      id={dom_id}
+      product={product}
+    />
+  </div>
 </div>

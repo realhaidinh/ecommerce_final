@@ -1,5 +1,17 @@
-<.breadcrumb current_page={"Kết quả tìm kiếm '#{@page_title}' "} />
-
+<div class="m-4">
+  <nav class="flex" aria-label="Breadcrumb">
+    <div class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+      <.link
+        navigate="/"
+        class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2  "
+      >
+        Trang chủ
+      </.link>
+      <.icon name="hero-chevron-right-mini" />
+      <.breadcrumb enum={[%{title: "Kết quả tìm kiếm", url: "/"}]} />
+    </div>
+  </nav>
+</div>
 <.live_component
   id="product-gallery"
   module={EcommerceFinalWeb.Public.ProductGalleryComponent}

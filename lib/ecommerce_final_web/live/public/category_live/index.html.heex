@@ -1,4 +1,18 @@
-<.breadcrumb current_page="Tất cả danh mục" />
+<div class="m-4">
+  <nav class="flex" aria-label="Breadcrumb">
+    <div class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+      <.link
+        navigate="/"
+        class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2  "
+      >
+        Trang chủ
+      </.link>
+      <.icon name="hero-chevron-right-mini" />
+      <.breadcrumb enum={[%{title: "Tất cả danh mục", url: "/categories"}]} />
+    </div>
+  </nav>
+</div>
+
 <div class="bg-slate-50 p-2">
   <div
     :for={{dom_id, category} <- @streams.categories}

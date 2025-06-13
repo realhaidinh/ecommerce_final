@@ -13,7 +13,12 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
     product = Catalog.get_product!(id, [:rating, :categories, :images])
-    category_ids = Enum.map(product.categories, & &1.id)
+
+    product =
+      Map.update!(product, :categories, fn categories ->
+        Enum.map(categories, &%{title: &1.title, url: "/categories/#{&1.id}"})
+      end)
+
     product_id = product.id
 
     socket =
@@ -69,10 +74,6 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
 
   def handle_async(:fetch_related_products, {:ok, related_products}, socket) do
     {:noreply, stream(socket, :related_products, related_products, reset: true)}
-  end
-
-  defp get_category_pages(categories) do
-    Enum.map(categories, &Map.put(&1, :url, "/categories/#{&1.id}"))
   end
 
   defp fetch_related_product(product_id) do

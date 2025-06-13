@@ -19,18 +19,18 @@ defmodule EcommerceFinalWeb.Public.CategoryLive.Show do
      |> assign(:page_title, category.title)
      |> assign(:category, category)
      |> assign(:current_path, "/categories/#{id}")
-     |> assign_parents_category(category)
+     |> assign_categories(category)
      |> assign(:subcategories, Catalog.get_subcategories(category))
      |> assign(:params, params)}
   end
 
-  defp assign_parents_category(socket, %Category{} = category) do
+  defp assign_categories(socket, %Category{} = category) do
     parent_ids = String.split(category.path, ".", trim: true)
 
-    parents =
-      Catalog.list_categories_by_ids(parent_ids)
-      |> Enum.map(fn cat -> Map.put(cat, :url, "/categories/#{cat.id}") end)
+    categories =
+      Catalog.list_categories_by_ids(parent_ids) ++ [category]
+      |> Enum.map(&(%{title: &1.title, url: "/categories/#{&1.id}"}))
 
-    assign(socket, :parents, parents)
+    assign(socket, :categories, categories)
   end
 end

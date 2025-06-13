@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, joinedload
 from sqlalchemy.sql import func
 from models import Base, Product, Rating
-from schemas import ProductOut
+from schemas import Image, ProductOut
 from recommender import ProductRecommender
 import os
 from dotenv import load_dotenv
@@ -60,13 +60,16 @@ def get_recommendations(
         for pid in recommended_ids:
             p = id_to_product.get(pid)
             if p:
-                cover_url = p.images[0].url if p.images else None
+                images= p.images if p.images else []
+                images = [Image(url =i.url) for i in images]
                 result.append(ProductOut(
                     id=p.id,
                     title=p.title,
+                    price=p.price,
+                    sold=p.sold,
                     description=p.description,
-                    average_rating=rating_map.get(p.id),
-                    cover_image_url=cover_url
+                    rating=rating_map.get(p.id),
+                    images=images
                 ))
         return result
     finally:

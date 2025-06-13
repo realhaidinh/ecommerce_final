@@ -2,6 +2,7 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
   use EcommerceFinalWeb, :live_view
 
   alias EcommerceFinal.Catalog
+  alias EcommerceFinal.Catalog.Product
   alias EcommerceFinal.ShoppingCart
   alias EcommerceFinal.Utils.TimeUtil
   @impl true
@@ -21,7 +22,7 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
       |> assign(:product, product)
       |> start_async(:fetch_reviews, fn -> Catalog.list_reviews_by_product(id) end)
       |> start_async(:fetch_related_products, fn ->
-        fetch_related_product(product_id, category_ids)
+        fetch_related_product(product_id)
       end)
       |> stream(:reviews, [])
       |> stream(:related_products, [])
@@ -74,9 +75,35 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
     Enum.map(categories, &Map.put(&1, :url, "/categories/#{&1.id}"))
   end
 
-  defp fetch_related_product(product_id, category_ids) do
-    Catalog.search_product(%{"category_ids" => category_ids, "limit" => 5})
-    |> Map.get(:products)
-    |> Enum.reject(&(&1.id == product_id))
+  defp fetch_related_product(product_id) do
+    url = get_recommend_url(product_id)
+    request = Finch.build(:get, url)
+    response = Finch.request(request, EcommerceFinal.Finch)
+
+    case response do
+      {:ok, %Finch.Response{body: body, status: 200}} ->
+        body
+        |> JSON.decode!()
+        |> Enum.map(fn product ->
+          %Product{
+            id: product["id"],
+            title: product["title"],
+            price: product["price"],
+            rating: get_rating(product["rating"]),
+            sold: product["sold"],
+            images: product["images"]
+          }
+        end)
+
+      _ ->
+        []
+    end
   end
+
+  defp get_recommend_url(id) do
+    Application.get_env(:ecommerce_final, :recommend_api_url) <> "/#{id}"
+  end
+
+  defp get_rating(nil), do: 0
+  defp get_rating(rating), do: rating
 end

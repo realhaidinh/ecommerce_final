@@ -15,7 +15,8 @@ class Product(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String)
     description = Column(Text)
-
+    sold = Column(Integer)
+    price = Column(Integer)
     categories = relationship("Category", secondary=product_category)
     ratings = relationship("Rating")
     images = relationship("ProductImage")

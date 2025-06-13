@@ -13,7 +13,7 @@ class ProductOut(BaseModel):
     sold: int
     price: int
     rating: Optional[float] = None
-    images: list[Image]
+    cover: Optional[str] = None
 
     class Config:
         orm_mode = True

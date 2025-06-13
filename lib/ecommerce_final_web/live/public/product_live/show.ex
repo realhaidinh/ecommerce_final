@@ -79,9 +79,8 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
   defp fetch_related_product(product_id) do
     url = get_recommend_url(product_id)
     request = Finch.build(:get, url)
-    response = Finch.request(request, EcommerceFinal.Finch)
 
-    case response do
+    case Finch.request(request, EcommerceFinal.Finch) do
       {:ok, %Finch.Response{body: body, status: 200}} ->
         body
         |> JSON.decode!()
@@ -92,7 +91,7 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
             price: product["price"],
             rating: get_rating(product["rating"]),
             sold: product["sold"],
-            images: product["images"]
+            images: [%{url: product["cover"]}]
           }
         end)
 
@@ -102,7 +101,7 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
   end
 
   defp get_recommend_url(id) do
-    Application.get_env(:ecommerce_final, :recommend_api_url) <> "/#{id}"
+    Application.get_env(:ecommerce_final, :recommend_api_url) <> "/#{id}?top_k=8"
   end
 
   defp get_rating(nil), do: 0

@@ -123,7 +123,7 @@ defmodule EcommerceFinalWeb.Components do
     <div class="border border-b border-gray-200 bg-gray-200  lg:py-4 ">
       <nav>
         <%= if @role == :user do %>
-          <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+          <div class="max-w-screen-xl flex flex-wrap items-center justify-end mx-auto p-4">
             <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
               <%= if @current_user do %>
                 <button
@@ -208,19 +208,18 @@ defmodule EcommerceFinalWeb.Components do
                 </svg>
               </button>
             </div>
+          </div>
 
-            <div id="navbar" class="justify-between hidden w-full md:flex md:w-auto md:order-1">
+          <div class="max-w-screen-xl grid grid-cols-6 justify-between items-center mx-auto">
+            <div id="navbar" class="justify-center hidden w-full md:flex md:w-auto md:order-1">
               <.link
-                class="text-sm font-medium text-gray-900 md:my-0 "
+                class="text-2xl font-medium text-gray-900 md:my-0 "
                 navigate="/"
                 aria-current="page"
               >
                 Trang chủ
               </.link>
             </div>
-          </div>
-
-          <div class="max-w-screen-xl grid grid-cols-6 justify-between items-center mx-auto">
             <.live_component module={EcommerceFinalWeb.Public.SearchComponent} id="search-bar" />
             <div :if={@current_user} class="order-3 flex col-start-6 justify-center">
               <a
@@ -254,7 +253,7 @@ defmodule EcommerceFinalWeb.Components do
               <!-- Dropdown menu -->
               <div
                 id="dropdownDelay"
-                class="grid grid-cols-1 justify-items-stretch w-1/5 z-10 hidden bg-white divide-y divide-gray-100 shadow "
+                class="grid grid-cols-1 justify-items-stretch w-1/4 z-10 hidden bg-white divide-y divide-gray-100 shadow"
               >
                 <p class="p-4">Sản phẩm mới thêm</p>
 
@@ -348,8 +347,8 @@ defmodule EcommerceFinalWeb.Components do
           </p>
         </div>
 
-        <div class="flex">
-          <div class="space-x-1 rtl:space-x-reverse">
+        <div class="flex justify-between mt-2">
+          <div class="flex">
             <svg
               class="w-4 h-4 text-yellow-300"
               aria-hidden="true"
@@ -359,12 +358,10 @@ defmodule EcommerceFinalWeb.Components do
             >
               <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
             </svg>
+            <span class="text-sm">
+              {@product.rating}
+            </span>
           </div>
-
-          <span class="text-sm">
-            {@product.rating}
-          </span>
-
           <span class="ml-1 text-sm">
             Đã bán {@product.sold}
           </span>

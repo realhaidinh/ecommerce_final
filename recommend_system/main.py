@@ -60,8 +60,7 @@ def get_recommendations(
         for pid in recommended_ids:
             p = id_to_product.get(pid)
             if p:
-                images= p.images if p.images else []
-                images = [Image(url =i.url) for i in images]
+                image= p.images[0].url if p.images else None
                 result.append(ProductOut(
                     id=p.id,
                     title=p.title,
@@ -69,7 +68,7 @@ def get_recommendations(
                     sold=p.sold,
                     description=p.description,
                     rating=rating_map.get(p.id),
-                    images=images
+                    cover=image
                 ))
         return result
     finally:

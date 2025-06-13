@@ -25,5 +25,5 @@ defmodule EcommerceFinal.Cache do
     Cachex.del(@cache_name, key)
   end
 
-  def prune, do: Cachex.reset(@cache_name)
+  def reset, do: Cachex.reset(@cache_name)
 end

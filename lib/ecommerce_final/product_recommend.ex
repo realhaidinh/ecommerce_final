@@ -18,7 +18,7 @@ defmodule EcommerceFinal.ProductRecommend do
   end
 
   def reload_system() do
-    EcommerceFinal.Cache.prune()
+    EcommerceFinal.Cache.reset()
     url = @api_url <> "/refresh"
 
     headers = [

@@ -6,7 +6,7 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.CategoryLive.Table do
     ~H"""
     <div>
       <div class="grid grid-cols-6 bg-gray-300 p-4">
-        <span class="col-span-2">Tên danh mục</span> <span>Sản phẩm</span>
+        <span class="col-span-2">Tên danh mục</span> <span>Số sản phẩm</span>
         <span class="col-start-5 col-span-2 justify-self-center">Thao tác</span>
       </div>
 

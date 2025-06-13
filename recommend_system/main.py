@@ -24,7 +24,7 @@ DATABASE_URL = os.getenv("DATABASE_URL") or ""
 
 engine = create_async_engine(DATABASE_URL, pool_size=10, max_overflow=20)
 
-recommender = ProductRecommender(text_weight=0.7, category_weight=0.3)
+recommender = ProductRecommender(text_weight=0.3, category_weight=0.7)
 
 security = HTTPBearer()
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")

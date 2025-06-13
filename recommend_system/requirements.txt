@@ -1,7 +1,7 @@
 fastapi
 uvicorn
-sqlalchemy
-psycopg2-binary
+sqlmodel
 scikit-learn
 pydantic
 dotenv
+asyncpg

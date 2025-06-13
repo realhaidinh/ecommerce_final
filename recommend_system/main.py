@@ -1,26 +1,33 @@
+from typing import Annotated
 from fastapi import FastAPI, HTTPException, Query, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, joinedload
-from sqlalchemy.sql import func
-from models import Base, Product, Rating
-from schemas import Image, ProductOut
+from sqlmodel import select
+from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.orm import joinedload
+from models import Product
+from schemas import ProductOut
 from recommender import ProductRecommender
 import os
+import sys
+import asyncio
 from dotenv import load_dotenv
+from contextlib import asynccontextmanager
 
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+    
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL") or ""
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(bind=engine)
+engine = create_async_engine(DATABASE_URL, pool_size=10, max_overflow=20)
 
-app = FastAPI()
 recommender = ProductRecommender(text_weight=0.7, category_weight=0.3)
 
 security = HTTPBearer()
-ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")  # 🔐 Store securely in .env in production
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 
 def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     if credentials.credentials != ACCESS_TOKEN:
@@ -29,68 +36,59 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
             detail="Invalid or missing token",
         )
 
-@app.on_event("startup")
-def startup():
-    db = SessionLocal()
-    load_data(db)
+async def get_session():
+    async with AsyncSession(engine) as session:
+        yield session
+        
+SessionDep = Annotated[AsyncSession, Depends(get_session)]
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with AsyncSession(engine) as session:
+        await load_data(session)
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 @app.get("/api/recommend/{product_id}", response_model=list[ProductOut])
-def get_recommendations(
+async def get_recommendations(
+    session: SessionDep,
     product_id: int,
     top_k: int = Query(5, ge=1, le=20),
 ):
-    db = SessionLocal()
-    try:
-        recommended_ids = recommender.recommend(product_id, top_k=top_k)
+    recommended_ids = recommender.recommend(product_id, top_k=top_k)
+    statement = select(Product).options(
+        joinedload(Product.reviews), joinedload(Product.images), joinedload(Product.categories)
+    ).where(Product.id.in_(recommended_ids))
+    products = (await session.exec(statement)).unique().all()
 
-        products = db.query(Product)\
-            .options(joinedload(Product.images))\
-            .filter(Product.id.in_(recommended_ids)).all()
-
-        avg_ratings = (
-            db.query(Rating.product_id, func.avg(Rating.rating).label("avg_rating"))
-            .filter(Rating.product_id.in_(recommended_ids))
-            .group_by(Rating.product_id)
-            .all()
+    result = []
+    for product in products:
+        avg_rating = (
+            sum([r.rating for r in product.reviews]) / len(product.reviews)
+            if product.reviews else 0
         )
-        rating_map = {pid: avg for pid, avg in avg_ratings}
-
-        id_to_product = {p.id: p for p in products}
-        result = []
-        for pid in recommended_ids:
-            p = id_to_product.get(pid)
-            if p:
-                image= p.images[0].url if p.images else None
-                result.append(ProductOut(
-                    id=p.id,
-                    title=p.title,
-                    price=p.price,
-                    sold=p.sold,
-                    description=p.description,
-                    rating=rating_map.get(p.id),
-                    cover=image
-                ))
-        return result
-    finally:
-        db.close()
+        image_url = product.images[0].url if product.images else None
+        result.append(ProductOut(
+            id=product.id,
+            title=product.title,
+            sold=product.sold,
+            price=product.price,
+            description=product.description,
+            rating=avg_rating,
+            cover=image_url,
+        ))
+    return result
 
 @app.post("/api/recommend/refresh", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(verify_token)])
-def refresh():
-    db = SessionLocal()
-    load_data(db)
+async def refresh(session: SessionDep):
+    await load_data(session)
     
 
-def load_data(db):
-    try:
-        products = db.query(Product).options(joinedload(Product.categories)).all()
-        product_data = []
-        for p in products:
-            product_data.append({
-                "id": p.id,
-                "title": p.title or "",
-                "description": p.description or "",
-                "category_ids": [c.id for c in p.categories]
-            })
-        recommender.fit(product_data)
-    finally:
-        db.close()
+async def load_data(session: AsyncSession):
+    result = await session.exec(
+        select(Product).options(joinedload(Product.categories))  # Eagerly load categories
+    )
+    products = result.unique().all()
+    recommender.fit(products)
+        

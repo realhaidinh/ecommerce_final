@@ -253,11 +253,11 @@ defmodule EcommerceFinalWeb.Components do
               <!-- Dropdown menu -->
               <div
                 id="dropdownDelay"
-                class="grid grid-cols-1 justify-items-stretch w-1/4 z-10 hidden bg-white divide-y divide-gray-100 shadow"
+                class="flex flex-col justify-between w-1/4 z-10 hidden bg-white divide-y divide-gray-100 shadow"
               >
                 <p class="p-4">Sản phẩm mới thêm</p>
 
-                <ul class="py-2 text-sm text-gray-700 " aria-labelledby="dropdownDelayButton">
+                <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownDelayButton">
                   <li :for={item <- @cart.cart_items}>
                     <div class="flex justify-between m-1.5 p-2">
                       <p
@@ -266,17 +266,18 @@ defmodule EcommerceFinalWeb.Components do
                       >
                         {item.product.title}
                       </p>
-
                       <p class="text-orange-500">
                         {FormatUtil.money_to_vnd(item.price_when_carted)}
                       </p>
                     </div>
                   </li>
                 </ul>
-
-                <.button class="justify-self-end w-2/3 m-1.5" phx-click={JS.patch("/cart")}>
+                <.link
+                  class="self-end text-center w-2/3 m-1.5 py-2 bg-black text-white rounded-xl"
+                  navigate="/cart"
+                >
                   Xem giỏ hàng
-                </.button>
+                </.link>
               </div>
             </div>
           </div>
@@ -315,59 +316,56 @@ defmodule EcommerceFinalWeb.Components do
 
   attr :product, Product, required: true
   attr :id, :string
-  attr :click, :any
 
   def product_card(assigns) do
     ~H"""
-    <div
-      phx-click={@click}
-      id={@id}
-      class="flex h-full flex-col hover:cursor-pointer w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow  "
-    >
-      <img
-        class="p-2 self-center sm:h-40 sm:w-40 md:h-50 md:w-50"
-        src={@product.images |> List.first(%{}) |> Map.get(:url, "")}
-        alt={@product.title}
-      />
-      <div class="px-2 pb-2 flex flex-col h-[42.5%]">
-        <div class="flex flex-col flex-1">
-          <p
-            style="display: -webkit-box;
-                  -webkit-line-clamp: 2;
-                  -webkit-box-orient: vertical;
-                  overflow: hidden;
-                  text-overflow: ellipsis;"
-            class="text-lg min-h-14 font-semibold tracking-tight text-gray-900 "
-          >
-            {@product.title}
-          </p>
-
-          <p class="text-xl font-semibold text-orange-500">
-            {FormatUtil.money_to_vnd(@product.price)}
-          </p>
-        </div>
-
-        <div class="flex justify-between mt-2">
-          <div class="flex">
-            <svg
-              class="w-4 h-4 text-yellow-300"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 22 20"
+    <.link id={@id} patch={"/products/#{@product.id}"}>
+      <div class="flex h-full flex-col hover:cursor-pointer w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow  ">
+        <img
+          class="p-2 self-center sm:h-40 sm:w-40 md:h-50 md:w-50"
+          src={@product.images |> List.first(%{}) |> Map.get(:url, "")}
+          alt={@product.title}
+        />
+        <div class="px-2 pb-2 flex flex-col h-[42.5%]">
+          <div class="flex flex-col flex-1">
+            <p
+              style="display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-overflow: ellipsis;"
+              class="text-lg min-h-14 font-semibold tracking-tight text-gray-900 "
             >
-              <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
-            </svg>
-            <span class="text-sm">
-              {@product.rating}
+              {@product.title}
+            </p>
+
+            <p class="text-xl font-semibold text-orange-500">
+              {FormatUtil.money_to_vnd(@product.price)}
+            </p>
+          </div>
+
+          <div class="flex justify-between mt-2">
+            <div class="flex">
+              <svg
+                class="w-4 h-4 text-yellow-300"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 22 20"
+              >
+                <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+              </svg>
+              <span class="text-sm">
+                {@product.rating}
+              </span>
+            </div>
+            <span class="ml-1 text-sm">
+              Đã bán {@product.sold}
             </span>
           </div>
-          <span class="ml-1 text-sm">
-            Đã bán {@product.sold}
-          </span>
         </div>
       </div>
-    </div>
+    </.link>
     """
   end
 

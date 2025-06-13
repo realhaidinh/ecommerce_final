@@ -2,9 +2,10 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
   use EcommerceFinalWeb, :live_view
 
   alias EcommerceFinal.Catalog
-  alias EcommerceFinal.Catalog.Product
   alias EcommerceFinal.ShoppingCart
   alias EcommerceFinal.Utils.TimeUtil
+  alias EcommerceFinal.ProductRecommend
+  alias EcommerceFinal.Cache
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket}
@@ -12,7 +13,12 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
-    product = Catalog.get_product!(id, [:rating, :categories, :images])
+    product_key = "product:#{id}"
+
+    product =
+      Cache.get(product_key, fn ->
+        Catalog.get_product!(id, [:rating, :categories, :images])
+      end)
 
     product =
       Map.update!(product, :categories, fn categories ->
@@ -26,8 +32,8 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
       |> assign(:page_title, product.title)
       |> assign(:product, product)
       |> start_async(:fetch_reviews, fn -> Catalog.list_reviews_by_product(id) end)
-      |> start_async(:fetch_related_products, fn ->
-        fetch_related_product(product_id)
+      |> start_async(:get_related_products, fn ->
+        get_related_product(product_id)
       end)
       |> stream(:reviews, [])
       |> stream(:related_products, [])
@@ -72,38 +78,13 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
     {:noreply, socket}
   end
 
-  def handle_async(:fetch_related_products, {:ok, related_products}, socket) do
+  def handle_async(:get_related_products, {:ok, related_products}, socket) do
     {:noreply, stream(socket, :related_products, related_products, reset: true)}
   end
 
-  defp fetch_related_product(product_id) do
-    url = get_recommend_url(product_id)
-    request = Finch.build(:get, url)
-
-    case Finch.request(request, EcommerceFinal.Finch) do
-      {:ok, %Finch.Response{body: body, status: 200}} ->
-        body
-        |> JSON.decode!()
-        |> Enum.map(fn product ->
-          %Product{
-            id: product["id"],
-            title: product["title"],
-            price: product["price"],
-            rating: get_rating(product["rating"]),
-            sold: product["sold"],
-            images: [%{url: product["cover"]}]
-          }
-        end)
-
-      _ ->
-        []
-    end
+  defp get_related_product(product_id) do
+    Cache.get("product-related:#{product_id}", fn ->
+      ProductRecommend.get_product_recommend(product_id)
+    end)
   end
-
-  defp get_recommend_url(id) do
-    Application.get_env(:ecommerce_final, :recommend_api_url) <> "/#{id}?top_k=8"
-  end
-
-  defp get_rating(nil), do: 0
-  defp get_rating(rating), do: rating
 end

@@ -207,7 +207,6 @@
   <div class="grid grid-cols-4 gap-8" id="related-products" phx-update="stream">
     <.product_card
       :for={{dom_id, product} <- @streams.related_products}
-      click={JS.patch("/products/#{product.id}")}
       id={dom_id}
       product={product}
     />

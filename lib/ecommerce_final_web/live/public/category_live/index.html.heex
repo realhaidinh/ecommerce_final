@@ -13,12 +13,11 @@
   </nav>
 </div>
 
-<div class="bg-slate-50 p-2">
+<div id="categories-container" class="bg-slate-50 p-2" phx-update="stream">
   <div
     :for={{dom_id, category} <- @streams.categories}
     id={dom_id}
     class="flex flex-row flex-wrap my-8 "
-    phx-update="stream"
   >
     <.link
       class="w-full font-semibold mb-1 hover:underline"

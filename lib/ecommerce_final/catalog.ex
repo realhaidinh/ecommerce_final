@@ -4,9 +4,10 @@ defmodule EcommerceFinal.Catalog do
   """
 
   import Ecto.Query, warn: false
+  import EcommerceFinal.Utils.FormatUtil
   alias EcommerceFinal.Repo
   alias EcommerceFinal.Catalog.{Category, ProductImage, Product, Review}
-  import EcommerceFinal.Utils.FormatUtil
+  alias EcommerceFinal.ProductRecommend
 
   @doc """
   Returns the list of products.
@@ -197,6 +198,7 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def create_product(attrs \\ %{}) do
+    ProductRecommend.reload_system()
     %Product{}
     |> change_product(attrs)
     |> Repo.insert()
@@ -215,6 +217,7 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def update_product(%Product{} = product, attrs) do
+    ProductRecommend.reload_system()
     product
     |> change_product(attrs)
     |> Repo.update()
@@ -381,6 +384,7 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def update_category(%Category{} = category, attrs) do
+    ProductRecommend.reload_system()
     category
     |> change_category(attrs)
     |> Repo.update()
@@ -399,11 +403,11 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def delete_category(%Category{} = category) do
-    subpath = get_subcategory_path(category) <> "%"
-
+    sub_path = get_subcategory_path(category)
+    ProductRecommend.reload_system()
     Repo.delete_all(
       from c in Category,
-        where: c.id == ^category.id or like(c.path, ^subpath)
+        where: c.id == ^category.id or fragment("path <@ ?", ^sub_path)
     )
   end
 

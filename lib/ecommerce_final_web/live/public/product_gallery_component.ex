@@ -24,7 +24,6 @@ defmodule EcommerceFinalWeb.Public.ProductGalleryComponent do
         <.product_card
           :for={{dom_id, product} <- @streams.products}
           id={dom_id}
-          click={JS.navigate("/products/#{product.id}")}
           product={product}
         />
       </div>

@@ -29,7 +29,6 @@ defmodule EcommerceFinalWeb.Public.HomeLive do
         <div class="grid grid-cols-4 gap-8 mt-8" id="catalog-products" phx-update="stream">
           <.product_card
             :for={{dom_id, product} <- @streams.landing_products}
-            click={JS.patch("/products/#{product.id}")}
             id={dom_id}
             product={product}
           />

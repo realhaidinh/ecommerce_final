@@ -4,6 +4,7 @@ defmodule EcommerceFinal.Orders do
   """
 
   import Ecto.Query, warn: false
+  alias EcommerceFinal.Cache
   alias EcommerceFinal.Orders.LineItem
   alias EcommerceFinal.ShoppingCart
   alias EcommerceFinal.Repo
@@ -163,6 +164,7 @@ defmodule EcommerceFinal.Orders do
   end
 
   def complete_order(order) do
+    Cache.prune()
     Ecto.Multi.new()
     |> Ecto.Multi.update(:order, update_order(order, %{status: "Đã giao hàng"}))
     |> Ecto.Multi.update_all(
@@ -179,11 +181,17 @@ defmodule EcommerceFinal.Orders do
     )
     |> Repo.transaction()
     |> case do
-      {:ok, %{order: order}} -> {:ok, order}
-      {1, _} -> :ok
-      {:error, name, value, _changes_so_far} -> {:error, {name, value}}
+      {:ok, %{order: order}} ->
+        {:ok, order}
+
+      {1, _} ->
+        :ok
+
+      {:error, name, value, _changes_so_far} ->
+        {:error, {name, value}}
     end
   end
+
 
   def distinct_years do
     Repo.all(

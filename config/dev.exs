@@ -83,4 +83,6 @@ config :phoenix_live_view,
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
-config :ecommerce_final, :recommend_api_url, "http://127.0.0.1:8000/api/recommend"
+config :ecommerce_final,
+  recommend_api_url: "http://127.0.0.1:8000/api/recommend",
+  recommend_api_access_token: "EH8+5DdXI36UB2cL4wAgbgQJDSuYQPTGp3UhoKLeMvUhOGUSmNgiJa6Gvs9UXVyW"

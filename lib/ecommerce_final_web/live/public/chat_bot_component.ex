@@ -6,10 +6,10 @@ defmodule EcommerceFinalWeb.Public.ChatBotComponent do
     ~H"""
     <div
       id="chat-box"
-      class="fixed bottom-4 right-4 rounded-full shadow-lg w-16 h-16 bg-white flex flex-col overflow-hidden transition-all duration-0 data-[open=true]:h-[75vh] data-[open=true]:w-1/3 data-[open=true]:rounded-lg"
+      class="fixed bottom-2 right-4 rounded-full shadow-lg w-16 h-16 bg-white flex flex-col overflow-hidden transition-all duration-0 data-[open=true]:h-[75vh] data-[open=true]:w-1/3 data-[open=true]:rounded-lg"
     >
       <div
-        class="p-3 bg-gray-200 border-b border-gray-200 flex justify-center cursor-pointer"
+        class="p-3 bg-blue-500 border-b border-blue-500 flex justify-center cursor-pointer"
         phx-click={
           JS.toggle_attribute({"data-open", "true", "false"}, to: "#chat-box")
           |> JS.toggle_attribute({"data-open", "true", "false"}, to: ".hero-chat-bubble-oval-left")
@@ -31,29 +31,28 @@ defmodule EcommerceFinalWeb.Public.ChatBotComponent do
         id="chatbox-message-container"
         phx-hook="ScrollToBottom"
       >
-        <div phx-update="stream" id="box-messages" class="space-y-3">
+        <div phx-update="stream" id="box-messages" class="space-y-3 flex flex-col">
           <div
             :for={{_id, message} <- @streams.messages}
             id={"message-box-#{message.id}"}
             class={[
-              "flex flex-col",
-              if(message.sender == :user, do: "items-end", else: "items-start")
+              "flex",
+              if(message.sender == :user, do: "justify-end ", else: "justify-start ")
             ]}
           >
-            <div class={[
-              "p-3 rounded-2xl shadow-sm break-words",
-              if(message.sender == :user,
-                do: "bg-blue-500 text-white",
-                else: "bg-white text-gray-800"
-              )
-            ]}>
-              <span class={[
-                "block leading-relaxed",
-                if(message.sender == :bot, do: "whitespace-pre", else: nil)
-              ]}>{message.content}</span>
-            </div>
+              <div class={[
+                "leading-relaxed p-3 rounded-2xl shadow-sm break-words",
+                if(message.sender == :bot, do: "whitespace-pre-wrap bg-white text-gray-800", else: "bg-blue-500 text-white")
+              ]}>{message.content}</div>
+
           </div>
         </div>
+        <div id="loading-skeleton" :if={@is_answering} class="flex justify-start items-center space-x-2">
+            <div
+              class="w-6 h-6 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin">
+            </div>
+            <div class="text-gray-600 bg-white py-1 pl-2 pr-3 rounded-lg shadow-sm italic">...</div>
+          </div>
       </div>
 
       <form
@@ -68,7 +67,11 @@ defmodule EcommerceFinalWeb.Public.ChatBotComponent do
           autocomplete="off"
           class="flex-1 p-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
         />
-        <button type="submit" class="text-blue-500 hover:text-blue-600" title="Send message">
+        <button
+          disabled={@is_answering}
+          type="submit"
+          class="text-blue-500 hover:text-blue-600 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+          title="Send message">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
           </svg>
@@ -83,6 +86,7 @@ defmodule EcommerceFinalWeb.Public.ChatBotComponent do
     socket =
       socket
       |> assign(assigns)
+      |> assign(:is_answering, false)
       |> stream(:messages, [], reset: true)
 
     {:ok, socket}
@@ -98,6 +102,7 @@ defmodule EcommerceFinalWeb.Public.ChatBotComponent do
         user_id = if socket.assigns.current_user, do: socket.assigns.current_user.id, else: nil
         socket
         |> stream_insert(:messages, new_message)
+        |> assign(:is_answering, true)
         |> start_async(:ask_bot, fn -> DialogFlow.ask(message, user_id) end)
       else
         socket
@@ -106,19 +111,23 @@ defmodule EcommerceFinalWeb.Public.ChatBotComponent do
     {:noreply, socket}
   end
 
-  def handle_event("update_message", %{"message" => message}, socket) do
-    {:noreply, assign(socket, :current_msg, message)}
-  end
-
   @impl true
   def handle_async(:ask_bot, {:ok, response}, socket) do
     bot_response = create_message(response, :bot)
-    {:noreply, stream_insert(socket, :messages, bot_response)}
+    socket =
+      socket
+      |> assign(:is_answering, false)
+      |> stream_insert(:messages, bot_response)
+    {:noreply, socket}
   end
 
   def handle_async(:ask_bot, {:exit, _reason}, socket) do
     bot_response = create_message("Xin lỗi quý khách, đã có lỗi xảy ra.", :bot)
-    {:noreply, stream_insert(socket, :messages, bot_response)}
+    socket =
+      socket
+      |> assign(:is_answering, false)
+      |> stream_insert(:messages, bot_response)
+    {:noreply, socket}
   end
 
   defp create_message(content, sender) do

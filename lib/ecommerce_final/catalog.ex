@@ -70,8 +70,7 @@ defmodule EcommerceFinal.Catalog do
       |> filter_product_where(params)
       |> Repo.all()
 
-    product_per_page = if total_products > limit, do: limit, else: total_products
-    total_page = if product_per_page == 0, do: 1, else: ceil(total_products / product_per_page)
+    total_page = if total_products == 0, do: 1, else: ceil(total_products / limit)
 
     %{products: products, total_page: total_page}
   end

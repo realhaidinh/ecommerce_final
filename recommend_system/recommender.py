@@ -2,6 +2,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MultiLabelBinarizer
 import numpy as np
+from scipy.sparse import csr_matrix
+
 
 class ProductRecommender:
     def __init__(self, text_weight=0.7, category_weight=0.3):
@@ -15,27 +17,26 @@ class ProductRecommender:
 
     def fit(self, products):
         self.products = products
-        self.id_to_index = {p.id: i for i, p in enumerate(products)}
+        self.id_to_index = dict(zip(products["id"], range(len(products))))
 
-        text_data = [f"{p.title} {p.description}" for p in products]
+        text_data = products[["title", "description"]].agg(" ".join, axis=1)
 
-        text_matrix = self.vectorizer.fit_transform(text_data)
+        text_matrix = csr_matrix(self.vectorizer.fit_transform(text_data))
 
-        category_ids = [[cat.id for cat in p.categories] for p in products]
+        category_matrix = csr_matrix(self.mlb.fit_transform(products["category_ids"]))
 
-        category_matrix = self.mlb.fit_transform(category_ids)
+        text_sim = cosine_similarity(text_matrix, dense_output=False)
+        category_sim = cosine_similarity(category_matrix, dense_output=False)
 
-        text_sim = cosine_similarity(text_matrix)
-        category_sim = cosine_similarity(category_matrix)
-
-
-        self.sim_matrix = (text_sim * self.text_weight) + (category_sim * self.category_weight)
+        self.sim_matrix = text_sim.multiply(self.text_weight) + category_sim.multiply(self.category_weight)
 
     def recommend(self, product_id, top_k=5):
         if self.sim_matrix is None or product_id not in self.id_to_index:
             return []
 
         idx = self.id_to_index[product_id]
-        sim_scores = self.sim_matrix[idx]
-        similar_indices = np.argsort(sim_scores)[::-1][1:top_k + 1]
-        return [self.products[i].id for i in similar_indices]
+        sim_scores = self.sim_matrix[idx].toarray().flatten()
+
+        similar_indices = np.argsort(sim_scores)[::-1][1:min(top_k + 1, len(sim_scores))]
+
+        return self.products['id'].iloc[similar_indices].tolist()

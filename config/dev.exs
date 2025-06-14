@@ -22,7 +22,7 @@ config :ecommerce_final, EcommerceFinalWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4000],
   check_origin: false,
   code_reloader: true,
-  debug_errors: true,
+  debug_errors: false,
   secret_key_base: "eS0Y7bv3WzpS47FepdJVj+Y0yvCv8mzaKwk0tSg324rsFlDvK7LTbqfqazYzgx5o",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:ecommerce_final, ~w(--sourcemap=inline --watch)]},

@@ -15,30 +15,25 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
   def handle_params(%{"id" => id}, _, socket) do
     product_key = "product:#{id}"
 
-    product =
+    {_, product} =
       Cache.get(product_key, fn ->
         Catalog.get_product!(id, [:rating, :categories, :images])
       end)
 
     product =
       Map.update!(product, :categories, fn categories ->
-        Enum.map(categories, &%{id: &1.id , title: &1.title, url: "/categories/#{&1.id}"})
+        Enum.map(categories, &%{id: &1.id, title: &1.title, url: "/categories/#{&1.id}"})
       end)
 
-    product_id = product.id
     category_ids = Enum.map(product.categories, & &1.id)
 
     socket =
       socket
       |> assign(:page_title, product.title)
       |> assign(:product, product)
-      |> start_async(:fetch_reviews, fn -> Catalog.list_reviews_by_product(id) end)
-      |> start_async(:get_related_products, fn ->
-        get_related_product(product_id, category_ids)
-      end)
-      |> stream(:reviews, [])
-      |> stream(:related_products, [])
-      |> stream(:review_freq, [])
+      |> assign(:related_loading, %{reviews: true, products: true})
+      |> assign_reviews_async(id)
+      |> assign_related_products_async(id, category_ids)
 
     {:noreply, socket}
   end
@@ -60,6 +55,23 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
 
     {:noreply, socket}
   end
+  def handle_event("load_more_reviews", _, socket) do
+    {:noreply, socket}
+  end
+  defp assign_reviews_async(socket, product_id) do
+    socket
+    |> start_async(:fetch_reviews, fn -> Catalog.list_reviews_by_product(product_id) end)
+    |> stream(:reviews, [], reset: true)
+    |> stream(:review_freq, [], reset: true)
+  end
+
+  defp assign_related_products_async(socket, product_id, category_ids) do
+    socket
+    |> start_async(:get_related_products, fn ->
+      get_related_product(product_id, category_ids)
+    end)
+    |> stream(:related_products, [], reset: true)
+  end
 
   @impl true
   def handle_async(:fetch_reviews, {:ok, fetched_reviews}, socket) do
@@ -75,12 +87,20 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
       socket
       |> stream(:reviews, fetched_reviews, reset: true)
       |> stream(:review_freq, review_freq, reset: true)
+      |> update(:related_loading, &%{&1 | reviews: false})
 
     {:noreply, socket}
   end
 
-  def handle_async(:get_related_products, {:ok, related_products}, socket) do
-    {:noreply, stream(socket, :related_products, related_products, reset: true)}
+  def handle_async(:get_related_products, {:ok, result}, socket) do
+    {_, related_products} = result
+
+    socket =
+      socket
+      |> stream(:related_products, related_products, reset: true)
+      |> update(:related_loading, &%{&1 | products: false})
+
+    {:noreply, socket}
   end
 
   @impl true

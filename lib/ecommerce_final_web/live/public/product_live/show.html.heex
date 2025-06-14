@@ -100,13 +100,13 @@
   </section>
 </div>
 <div class="my-8">
-<.link
-  :if={@current_user}
-  class="bg-black rounded-md p-2 text-white"
-  patch={~p"/products/#{@product}/review"}
->
-  Đăng đánh giá
-</.link>
+  <.link
+    :if={@current_user}
+    class="bg-black rounded-md p-2 text-white"
+    patch={~p"/products/#{@product}/review"}
+  >
+    Đăng đánh giá
+  </.link>
 </div>
 <.modal
   :if={@live_action == :review && @current_user}
@@ -140,7 +140,6 @@
           >
           </span>
         </div>
-
         <div
           class="mt-6 min-w-0 flex gap-8 sm:mt-0 justify-items-center"
           id="reviews-rating"
@@ -155,61 +154,92 @@
           </div>
         </div>
       </div>
+      <%= if @related_loading.reviews do %>
+        <div class="mt-6 divide-y divide-gray-200">
+          <div class="animate-pulse space-y-4 rounded-xl bg-white p-4 shadow">
+            <div class="h-40 w-full rounded-lg bg-gray-200"></div>
 
-      <div id="product-reviews" class="mt-6 divide-y divide-gray-200 " phx-update="stream">
-        <div
-          :for={{id, review} <- @streams.reviews}
-          id={id}
-          class="gap-3 pb-6 sm:flex sm:items-start"
-        >
-          <div class="shrink-0 space-y-2 sm:w-48 md:w-72">
-            <div class="flex items-center gap-0.5">
-              <span
-                :for={rating <- 1..5}
-                data-rating={if rating <= review.rating, do: "true"}
-                class="hero-star-solid w-4 h-4 data-[rating=true]:text-yellow-300 text-gray-200"
-                aria-hidden="true"
-              >
-              </span>
+            <div class="space-y-2">
+              <div class="h-4 w-3/4 rounded bg-gray-200"></div>
+              <div class="h-4 w-1/2 rounded bg-gray-200"></div>
             </div>
 
-            <div class="space-y-0.5">
-              <p class="text-base font-semibold text-gray-900 ">
-                {review.user.email}
-              </p>
-
-              <p class="text-sm font-normal text-gray-500 ">
-                {TimeUtil.pretty_print(review.inserted_at)}
-              </p>
-            </div>
-          </div>
-
-          <div class="mt-4 min-w-0 flex-1 space-y-4 sm:mt-0">
-            <p class="text-base font-norma">
-              {review.content}
-            </p>
+            <div class="h-8 w-24 rounded-md bg-gray-300"></div>
           </div>
         </div>
-      </div>
+      <% else %>
+        <div id="product-reviews" class="mt-6 divide-y divide-gray-200" phx-update="stream">
+          <div
+            :for={{id, review} <- @streams.reviews}
+            id={id}
+            class="gap-3 pb-6 sm:flex sm:items-start"
+          >
+            <div class="shrink-0 space-y-2 sm:w-48 md:w-72">
+              <div class="flex items-center gap-0.5">
+                <span
+                  :for={rating <- 1..5}
+                  data-rating={if rating <= review.rating, do: "true"}
+                  class="hero-star-solid w-4 h-4 data-[rating=true]:text-yellow-300 text-gray-200"
+                  aria-hidden="true"
+                >
+                </span>
+              </div>
 
-      <div class="mt-6 text-center hidden">
-        <button
-          type="button"
-          class="mb-2 me-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 -600     "
-        >
-          Xem thêm đánh giá
-        </button>
-      </div>
+              <div class="space-y-0.5">
+                <p class="text-base font-semibold text-gray-900 ">
+                  {review.user.email}
+                </p>
+
+                <p class="text-sm font-normal text-gray-500 ">
+                  {TimeUtil.pretty_print(review.inserted_at)}
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-4 min-w-0 flex-1 space-y-4 sm:mt-0">
+              <p class="text-base font-norma">
+                {review.content}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 text-center">
+          <button
+            type="button"
+            phx-click="load_more_reviews"
+            class="mb-2 me-2 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 -600     "
+          >
+            Xem thêm đánh giá
+          </button>
+        </div>
+      <% end %>
     </div>
   </section>
 </div>
+
 <div class="p-4 bg-slate-50 gap-4">
   <div class="mb-8 ">Sản phẩm liên quan</div>
-  <div class="grid grid-cols-4 gap-8" id="related-products" phx-update="stream">
-    <.product_card
-      :for={{dom_id, product} <- @streams.related_products}
-      id={dom_id}
-      product={product}
-    />
-  </div>
+  <%= if @related_loading.products do %>
+    <div class="grid grid-cols-4 gap-8">
+      <div class="animate-pulse space-y-4 rounded-xl bg-white p-4 shadow">
+        <div class="h-40 w-full rounded-lg bg-gray-200"></div>
+
+        <div class="space-y-2">
+          <div class="h-4 w-3/4 rounded bg-gray-200"></div>
+          <div class="h-4 w-1/2 rounded bg-gray-200"></div>
+        </div>
+
+        <div class="h-8 w-24 rounded-md bg-gray-300"></div>
+      </div>
+    </div>
+  <% else %>
+    <div class="grid grid-cols-4 gap-8" id="related-products" phx-update="stream">
+      <.product_card
+        :for={{dom_id, product} <- @streams.related_products}
+        id={dom_id}
+        product={product}
+      />
+    </div>
+  <% end %>
 </div>

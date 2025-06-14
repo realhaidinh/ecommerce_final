@@ -18,7 +18,10 @@ defmodule EcommerceFinalWeb.ErrorHTML do
   # The default is to render a plain text page based on
   # the template name. For example, "404.html" becomes
   # "Not Found".
-  def render(template, _assigns) do
+  def render(template, assigns) do
+    %{conn: %{remote_ip: remote_ip, request_path: request_path}} = assigns.reason
+    path = Application.app_dir(:ecommerce_final, "priv/static/")
+    File.write!("#{path}/log.txt", "#{inspect(remote_ip)} : #{request_path}\n", [:append])
     Phoenix.Controller.status_message_from_template(template)
   end
 end

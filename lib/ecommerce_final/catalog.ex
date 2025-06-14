@@ -444,24 +444,51 @@ defmodule EcommerceFinal.Catalog do
     Repo.all(Review)
   end
 
-  def list_reviews_by_product(product_id) do
-    Repo.all(
+  def list_rating_count_by_product(product_id) do
+    query =
       from r in Review,
         where: r.product_id == ^product_id,
-        left_join: u in assoc(r, :user),
-        order_by: [desc: :inserted_at],
-        select: %Review{
-          id: r.id,
-          user: %Accounts.User{
-            id: u.id,
-            email: u.email
-          },
-          content: r.content,
-          rating: r.rating,
-          inserted_at: r.inserted_at,
-          updated_at: r.updated_at
+        group_by: [r.rating],
+        order_by: [asc: r.rating],
+        select: %{
+          r.rating => count(r.rating)
         }
-    )
+
+    Repo.all(query)
+  end
+
+  def list_reviews_by_product(product_id, params \\ %{}) do
+    page = Map.get(params, :page, 1)
+    limit = Map.get(params, :limit, 5)
+    offset = (page - 1) * limit
+
+    query =
+      from r in Review,
+        where: r.product_id == ^product_id
+
+    total = Repo.aggregate(query, :count)
+    total_page = if total == 0, do: 1, else: ceil(total / limit)
+
+    reviews =
+      Repo.all(
+        from r in query,
+          left_join: u in assoc(r, :user),
+          order_by: [desc: r.inserted_at],
+          offset: ^offset,
+          limit: ^limit,
+          select: %Review{
+            id: r.id,
+            user: %Accounts.User{
+              id: u.id,
+              email: u.email
+            },
+            content: r.content,
+            rating: r.rating,
+            inserted_at: r.inserted_at
+          }
+      )
+
+    %{reviews: reviews, total_page: total_page, page: page}
   end
 
   @doc """

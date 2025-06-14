@@ -31,9 +31,11 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
       socket
       |> assign(:page_title, product.title)
       |> assign(:product, product)
-      |> assign(:related_loading, %{reviews: true, products: true})
+      |> assign(:review_page, 1)
+      |> assign(:related_loading, %{reviews: true, products: true, rating_count: true})
       |> assign_reviews_async(id)
       |> assign_related_products_async(id, category_ids)
+      |> assign_rating_count_async(id)
 
     {:noreply, socket}
   end
@@ -55,14 +57,30 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
 
     {:noreply, socket}
   end
+
   def handle_event("load_more_reviews", _, socket) do
+    page = socket.assigns.review_page + 1
+    product_id = socket.assigns.product.id
+    socket =
+      socket
+      |> start_async(:get_reviews, fn ->
+        Catalog.list_reviews_by_product(product_id, %{page: page})
+      end)
+      |> assign(:review_page, page)
+
     {:noreply, socket}
   end
+
   defp assign_reviews_async(socket, product_id) do
     socket
-    |> start_async(:fetch_reviews, fn -> Catalog.list_reviews_by_product(product_id) end)
+    |> start_async(:get_reviews, fn -> Catalog.list_reviews_by_product(product_id) end)
     |> stream(:reviews, [], reset: true)
-    |> stream(:review_freq, [], reset: true)
+  end
+
+  defp assign_rating_count_async(socket, product_id) do
+    socket
+    |> start_async(:get_rating_count, fn -> Catalog.list_rating_count_by_product(product_id) end)
+    |> stream(:rating_count, [], reset: true)
   end
 
   defp assign_related_products_async(socket, product_id, category_ids) do
@@ -74,20 +92,38 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
   end
 
   @impl true
-  def handle_async(:fetch_reviews, {:ok, fetched_reviews}, socket) do
-    review_freq =
-      Enum.frequencies_by(fetched_reviews, & &1.rating)
-
-    review_freq =
-      for rating <- 1..5 do
-        %{id: rating, rating: rating, count: Map.get(review_freq, rating, 0)}
-      end
+  def handle_async(:get_reviews, {:ok, result}, socket) do
+    %{reviews: reviews, page: page, total_page: total_page} = result
 
     socket =
       socket
-      |> stream(:reviews, fetched_reviews, reset: true)
-      |> stream(:review_freq, review_freq, reset: true)
+      |> stream(:reviews, reviews)
       |> update(:related_loading, &%{&1 | reviews: false})
+      |> assign(:review_page, page)
+      |> assign(:has_more_reviews, page < total_page)
+
+    {:noreply, socket}
+  end
+
+  def handle_async(:get_rating_count, {:ok, rating_count}, socket) do
+    flatten =
+      Enum.reduce(rating_count, %{}, fn rating, acc ->
+        Map.merge(acc, rating)
+      end)
+
+    rating_count =
+      for index <- 1..5, reduce: [] do
+        acc ->
+          count = Map.get(flatten, index, 0)
+          rate = %{id: index, rating: index, count: count}
+          [rate | acc]
+      end
+      |> Enum.reverse()
+
+    socket =
+      socket
+      |> stream(:rating_count, rating_count, reset: true)
+      |> update(:related_loading, &%{&1 | rating_count: false})
 
     {:noreply, socket}
   end

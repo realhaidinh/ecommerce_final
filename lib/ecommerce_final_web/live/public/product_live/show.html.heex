@@ -140,30 +140,41 @@
           >
           </span>
         </div>
-        <div
-          class="mt-6 min-w-0 flex gap-8 sm:mt-0 justify-items-center"
-          id="reviews-rating"
-          phx-update="stream"
-        >
+        <%= if @related_loading.rating_count do %>
           <div
-            :for={{id, %{rating: rating, count: count}} <- @streams.review_freq}
-            id={id}
-            class="text-gray-900 bg-white p-2 border-2 text-sm"
+            class="mt-6 min-w-0 flex gap-8 sm:mt-0 justify-items-center"
           >
-            {rating} Sao ({count})
+            <div
+              :for={rating <- 1..5}
+              class="text-gray-900 bg-white p-2 border-2 text-sm"
+            >
+              {rating} Sao (?)
+            </div>
           </div>
-        </div>
+        <% else %>
+          <div
+            class="mt-6 min-w-0 flex gap-8 sm:mt-0 justify-items-center"
+            id="reviews-rating"
+            phx-update="stream"
+          >
+            <div
+              :for={{id, %{rating: rating, count: count}} <- @streams.rating_count}
+              id={id}
+              class="text-gray-900 bg-white p-2 border-2 text-sm"
+            >
+              {rating} Sao ({count})
+            </div>
+          </div>
+        <% end %>
       </div>
       <%= if @related_loading.reviews do %>
         <div class="mt-6 divide-y divide-gray-200">
           <div class="animate-pulse space-y-4 rounded-xl bg-white p-4 shadow">
             <div class="h-40 w-full rounded-lg bg-gray-200"></div>
-
             <div class="space-y-2">
               <div class="h-4 w-3/4 rounded bg-gray-200"></div>
               <div class="h-4 w-1/2 rounded bg-gray-200"></div>
             </div>
-
             <div class="h-8 w-24 rounded-md bg-gray-300"></div>
           </div>
         </div>
@@ -204,7 +215,7 @@
           </div>
         </div>
 
-        <div class="mt-6 text-center">
+        <div :if={@has_more_reviews} class="mt-6 text-center">
           <button
             type="button"
             phx-click="load_more_reviews"

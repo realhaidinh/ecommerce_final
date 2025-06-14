@@ -29,7 +29,7 @@ defmodule EcommerceFinal.Catalog do
   end
 
   def search_product(keyword) when is_binary(keyword) do
-    pattern = keyword <> "%"
+    pattern = "%" <> keyword <> "%"
 
     query =
       from p in Product,
@@ -54,7 +54,7 @@ defmodule EcommerceFinal.Catalog do
           query
 
         keyword ->
-          pattern = keyword <> "%"
+          pattern = "%" <> keyword <> "%"
           where(query, [p], fragment("? like unaccent(?)", p.title_unaccented, ^pattern))
       end
 

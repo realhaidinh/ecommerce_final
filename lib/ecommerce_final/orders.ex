@@ -164,7 +164,7 @@ defmodule EcommerceFinal.Orders do
   end
 
   def complete_order(order) do
-    Cache.prune()
+    Cache.reset()
     Ecto.Multi.new()
     |> Ecto.Multi.update(:order, update_order(order, %{status: "Đã giao hàng"}))
     |> Ecto.Multi.update_all(

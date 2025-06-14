@@ -323,7 +323,7 @@ defmodule EcommerceFinalWeb.Components do
       <div class="flex h-full flex-col hover:cursor-pointer w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow  ">
         <img
           class="p-2 self-center sm:h-40 sm:w-40 md:h-50 md:w-50"
-          src={@product.images |> List.first(%{}) |> Map.get(:url, "")}
+          src={@product.cover}
           alt={@product.title}
         />
         <div class="px-2 pb-2 flex flex-col h-[42.5%]">

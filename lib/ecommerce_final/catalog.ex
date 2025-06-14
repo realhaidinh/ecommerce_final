@@ -5,6 +5,7 @@ defmodule EcommerceFinal.Catalog do
 
   import Ecto.Query, warn: false
   import EcommerceFinal.Utils.FormatUtil
+  alias EcommerceFinal.Accounts
   alias EcommerceFinal.Repo
   alias EcommerceFinal.Catalog.{Category, ProductImage, Product, Review}
   alias EcommerceFinal.ProductRecommend
@@ -94,7 +95,7 @@ defmodule EcommerceFinal.Catalog do
     do: [asc: dynamic([p], p.price)]
 
   defp filter_product_order_by(_),
-    do: []
+    do: [desc: dynamic([p], p.id)]
 
   @doc """
   Gets a single product.
@@ -137,41 +138,40 @@ defmodule EcommerceFinal.Catalog do
     )
   end
 
-  def get_product!(id, params) do
+  def get_product!(id, opts) do
     query =
       from(p in Product,
         where: p.id == ^id
       )
 
-    params
+    opts
     |> Enum.reduce(query, fn param, acc -> product_preload(acc, param) end)
     |> Repo.one!()
   end
 
   defp product_preload(query, :categories), do: query |> preload(:categories)
 
-  defp product_preload(query, opts) when opts == :images or opts == :cover do
-    images_query =
-      case opts do
-        :cover ->
-          cover_query =
-            from i in ProductImage,
-              select: %{
-                id: i.id,
-                url: i.url,
-                row_number: over(row_number(), :images_partition)
-              },
-              windows: [images_partition: [partition_by: :id, order_by: :inserted_at]]
+  defp product_preload(query, :images) do
+    preload(query, images: ^from(i in ProductImage))
+  end
 
-          from i0 in ProductImage,
-            join: i1 in subquery(cover_query),
-            on: i0.id == i1.id and i1.row_number == 1
+  defp product_preload(query, :cover) do
+    first_image =
+      from pi in ProductImage,
+        distinct: pi.product_id,
+        order_by: [asc: pi.id],
+        select: %{
+          id: pi.id,
+          product_id: pi.product_id,
+          url: pi.url
+        }
 
-        _ ->
-          from(i in ProductImage)
-      end
-
-    preload(query, images: ^images_query)
+    from(p in query,
+      left_join: pi in subquery(first_image),
+      on: pi.product_id == p.id,
+      select_merge: %{cover: pi.url},
+      group_by: [p.id, pi.url]
+    )
   end
 
   defp product_preload(query, :rating) do
@@ -199,6 +199,7 @@ defmodule EcommerceFinal.Catalog do
   """
   def create_product(attrs \\ %{}) do
     ProductRecommend.reload_system()
+
     %Product{}
     |> change_product(attrs)
     |> Repo.insert()
@@ -218,6 +219,7 @@ defmodule EcommerceFinal.Catalog do
   """
   def update_product(%Product{} = product, attrs) do
     ProductRecommend.reload_system()
+
     product
     |> change_product(attrs)
     |> Repo.update()
@@ -236,6 +238,7 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def delete_product(%Product{} = product) do
+    ProductRecommend.reload_system()
     Repo.delete(product)
   end
 
@@ -385,6 +388,7 @@ defmodule EcommerceFinal.Catalog do
   """
   def update_category(%Category{} = category, attrs) do
     ProductRecommend.reload_system()
+
     category
     |> change_category(attrs)
     |> Repo.update()
@@ -405,6 +409,7 @@ defmodule EcommerceFinal.Catalog do
   def delete_category(%Category{} = category) do
     sub_path = get_subcategory_path(category)
     ProductRecommend.reload_system()
+
     Repo.delete_all(
       from c in Category,
         where: c.id == ^category.id or fragment("path <@ ?", ^sub_path)
@@ -446,7 +451,17 @@ defmodule EcommerceFinal.Catalog do
         where: r.product_id == ^product_id,
         left_join: u in assoc(r, :user),
         order_by: [desc: :inserted_at],
-        preload: [user: u]
+        select: %Review{
+          id: r.id,
+          user: %Accounts.User{
+            id: u.id,
+            email: u.email
+          },
+          content: r.content,
+          rating: r.rating,
+          inserted_at: r.inserted_at,
+          updated_at: r.updated_at
+        }
     )
   end
 

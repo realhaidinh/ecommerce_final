@@ -197,11 +197,13 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def create_product(attrs \\ %{}) do
-    ProductRecommend.reload_system()
+    product =
+      %Product{}
+      |> change_product(attrs)
+      |> Repo.insert()
 
-    %Product{}
-    |> change_product(attrs)
-    |> Repo.insert()
+    ProductRecommend.reload_system()
+    product
   end
 
   @doc """
@@ -217,11 +219,13 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def update_product(%Product{} = product, attrs) do
-    ProductRecommend.reload_system()
+    product =
+      product
+      |> change_product(attrs)
+      |> Repo.update()
 
+    ProductRecommend.reload_system()
     product
-    |> change_product(attrs)
-    |> Repo.update()
   end
 
   @doc """
@@ -237,8 +241,11 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def delete_product(%Product{} = product) do
+    product =
+      Repo.delete(product)
+
     ProductRecommend.reload_system()
-    Repo.delete(product)
+    product
   end
 
   @doc """
@@ -386,11 +393,13 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def update_category(%Category{} = category, attrs) do
-    ProductRecommend.reload_system()
+    category =
+      category
+      |> change_category(attrs)
+      |> Repo.update()
 
+    ProductRecommend.reload_system()
     category
-    |> change_category(attrs)
-    |> Repo.update()
   end
 
   @doc """
@@ -407,12 +416,15 @@ defmodule EcommerceFinal.Catalog do
   """
   def delete_category(%Category{} = category) do
     sub_path = get_subcategory_path(category)
-    ProductRecommend.reload_system()
 
-    Repo.delete_all(
-      from c in Category,
-        where: c.id == ^category.id or fragment("path <@ ?", ^sub_path)
-    )
+    result =
+      Repo.delete_all(
+        from c in Category,
+          where: c.id == ^category.id or fragment("path <@ ?", ^sub_path)
+      )
+
+    ProductRecommend.reload_system()
+    result
   end
 
   @doc """

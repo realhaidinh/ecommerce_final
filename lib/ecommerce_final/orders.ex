@@ -165,6 +165,7 @@ defmodule EcommerceFinal.Orders do
 
   def complete_order(order) do
     Cache.reset()
+
     Ecto.Multi.new()
     |> Ecto.Multi.update(:order, update_order(order, %{status: "Đã giao hàng"}))
     |> Ecto.Multi.update_all(
@@ -192,7 +193,6 @@ defmodule EcommerceFinal.Orders do
     end
   end
 
-
   def distinct_years do
     Repo.all(
       from o in Order,
@@ -200,23 +200,27 @@ defmodule EcommerceFinal.Orders do
         distinct: true,
         order_by: fragment("year desc")
     )
-    |> Enum.map(&String.to_integer/1)
   end
 
   def summary(filters) do
-    query = filter_by_date(Order, filters)
+    query =
+      filter_by_date(Order, filters)
+      |> where([o], o.status == :"Đã thanh toán" or o.status == :"Đã giao hàng")
 
     total_revenue =
       Repo.one(
         from o in query,
-          where: o.status == :"Đã thanh toán" or o.status == :"Đã giao hàng",
           select: sum(o.total_price)
       ) || 0
 
     total_orders = Repo.aggregate(query, :count, :id)
 
     unique_customers =
-      Repo.one(from o in query, select: count(o.user_id), distinct: true) || 0
+      Repo.one(
+        from o in query,
+          select: count(o.user_id),
+          distinct: true
+      ) || 0
 
     %{
       total_revenue: total_revenue,
@@ -244,8 +248,8 @@ defmodule EcommerceFinal.Orders do
     |> group_by([o], fragment("date_trunc('month', ?)", o.inserted_at))
     |> select([o], {fragment("date_trunc('month', ?)", o.inserted_at), sum(o.total_price)})
     |> Repo.all()
-    |> Enum.into(%{}, fn {date_str, total} ->
-      {Date.from_iso8601!(date_str), total}
+    |> Enum.into(%{}, fn {date, total} ->
+      {date, total}
     end)
   end
 

@@ -5,8 +5,7 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.Index do
   @impl true
   def mount(_params, _session, socket) do
     current_year = Date.utc_today().year
-    available_years = Orders.distinct_years()
-
+    available_years = Orders.distinct_years() |> Enum.map(&Decimal.to_integer/1)
     available_years =
       if Enum.member?(available_years, current_year) do
         available_years

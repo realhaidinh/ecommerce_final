@@ -9,7 +9,7 @@ defmodule EcommerceFinalWeb.Public.OrderLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _uri, socket) do
-    order = Orders.get_user_order_by_id!(socket.assigns.current_user.id, id)
+    order = Orders.get_user_order_by_id(socket.assigns.current_user.id, id)
 
     {:noreply,
      socket

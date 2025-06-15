@@ -87,7 +87,7 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.Index do
         end)
       ])
 
-    labels = Enum.map(chart_data, fn {date, _} -> Calendar.strftime(date, "%m") end)
+    labels = Enum.map(chart_data, fn {date, _} -> date end)
     values = Enum.map(chart_data, fn {_, value} -> value end)
 
     assign(socket,

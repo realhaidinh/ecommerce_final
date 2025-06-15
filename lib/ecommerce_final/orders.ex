@@ -229,17 +229,17 @@ defmodule EcommerceFinal.Orders do
     }
   end
 
-  def revenue_by_month(%{"year" => year} = filters) do
-    months = for m <- 1..12, do: Date.new!(year, m, 1)
+  def revenue_by_month(filters) do
+    [revenue_map] =
+      raw_revenue_by_month(filters)
+      |> Enum.map(fn {key, value} ->
+        %{key.month => value}
+      end)
 
-    revenue_map = raw_revenue_by_month(filters)
-
-    Enum.map(months, fn month ->
+    for month <- 1..12 do
       {month, Map.get(revenue_map, month, 0)}
-    end)
+    end
   end
-
-  def revenue_by_month(_), do: []
 
   def raw_revenue_by_month(filters) do
     from(o in Order)

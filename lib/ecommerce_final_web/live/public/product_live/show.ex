@@ -105,9 +105,9 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
     {:noreply, socket}
   end
 
-  def handle_async(:get_rating_count, {:ok, rating_count}, socket) do
+  def handle_async(:get_rating_count, {:ok, result}, socket) do
     flatten =
-      Enum.reduce(rating_count, %{}, fn rating, acc ->
+      Enum.reduce(result, %{}, fn rating, acc ->
         Map.merge(acc, rating)
       end)
 

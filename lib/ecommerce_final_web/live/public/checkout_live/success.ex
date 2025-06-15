@@ -52,10 +52,16 @@ defmodule EcommerceFinalWeb.Public.CheckoutLive.Success do
   @impl true
   def handle_params(params, _uri, socket) do
     %{current_user: %{id: user_id}} = socket.assigns
-    order = Orders.get_user_order_by_id!(user_id, params["order_id"])
+    order = Orders.get_user_order_by_id(user_id, params["order_id"])
 
-    if params["id"] == order.transaction_id do
-      socket = assign(socket, :order, order)
+    if order && params["id"] == order.transaction_id do
+      page_title = "Đơn hàng ##{order.id}"
+
+      socket =
+        socket
+        |> assign(:order, order)
+        |> assign(:page_title, page_title)
+
       handle_order_status(order, socket)
     else
       {:noreply, push_navigate(socket, to: "/")}
@@ -63,7 +69,7 @@ defmodule EcommerceFinalWeb.Public.CheckoutLive.Success do
   end
 
   defp handle_order_status(%Order{payment_type: :"Thanh toán khi nhận hàng"} = _, socket) do
-    {:noreply, {:noreply, assign(socket, :status, :cod)}}
+    {:noreply, assign(socket, :status, :cod)}
   end
 
   defp handle_order_status(%Order{payment_type: :"Thanh toán online"} = order, socket) do

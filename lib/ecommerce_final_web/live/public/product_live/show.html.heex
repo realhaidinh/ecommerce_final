@@ -141,13 +141,8 @@
           </span>
         </div>
         <%= if @related_loading.rating_count do %>
-          <div
-            class="mt-6 min-w-0 flex gap-8 sm:mt-0 justify-items-center"
-          >
-            <div
-              :for={rating <- 1..5}
-              class="text-gray-900 bg-white p-2 border-2 text-sm"
-            >
+          <div class="mt-6 min-w-0 flex gap-8 sm:mt-0 justify-items-center">
+            <div :for={rating <- 1..5} class="text-gray-900 bg-white p-2 border-2 text-sm">
               {rating} Sao (?)
             </div>
           </div>
@@ -180,6 +175,9 @@
         </div>
       <% else %>
         <div id="product-reviews" class="mt-6 divide-y divide-gray-200" phx-update="stream">
+          <span class="only:block hidden" id="reviews-empty">
+            Chưa có đánh giá
+          </span>
           <div
             :for={{id, review} <- @streams.reviews}
             id={id}
@@ -235,12 +233,10 @@
     <div class="grid grid-cols-4 gap-8">
       <div class="animate-pulse space-y-4 rounded-xl bg-white p-4 shadow">
         <div class="h-40 w-full rounded-lg bg-gray-200"></div>
-
         <div class="space-y-2">
           <div class="h-4 w-3/4 rounded bg-gray-200"></div>
           <div class="h-4 w-1/2 rounded bg-gray-200"></div>
         </div>
-
         <div class="h-8 w-24 rounded-md bg-gray-300"></div>
       </div>
     </div>

@@ -77,7 +77,7 @@ defmodule EcommerceFinalWeb.Public.HomeLive do
   end
 
   def fetch_landing_products do
-    Catalog.search_product(%{"limit" => 15})
+    Catalog.search_product(%{"limit" => 16})
     |> Map.get(:products)
   end
 end

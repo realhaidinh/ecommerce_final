@@ -51,9 +51,9 @@ defmodule EcommerceFinal.Orders do
   """
   def get_order!(id), do: Repo.get!(Order, id) |> Repo.preload([:user, line_items: [:product]])
 
-  def get_user_order_by_id!(user_id, id) do
+  def get_user_order_by_id(user_id, id) do
     Order
-    |> Repo.get_by!(id: id, user_id: user_id)
+    |> Repo.get_by(id: id, user_id: user_id)
     |> Repo.preload([:user, line_items: [:product]])
   end
 

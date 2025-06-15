@@ -255,7 +255,11 @@ defmodule EcommerceFinalWeb.Components do
                 id="dropdownDelay"
                 class="flex flex-col justify-between w-1/4 z-10 hidden bg-white divide-y divide-gray-100 shadow"
               >
-                <p class="p-4">Sản phẩm mới thêm</p>
+                <%= if @cart.cart_items == [] do %>
+                  <p class="p-4">Giỏ hàng trống</p>
+                <% else %>
+                  <p class="p-4">Sản phẩm mới thêm</p>
+                <% end %>
 
                 <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownDelayButton">
                   <li :for={item <- @cart.cart_items}>

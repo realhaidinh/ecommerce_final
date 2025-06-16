@@ -245,12 +245,16 @@ defmodule EcommerceFinal.Orders do
   end
 
   def revenue_by_month(filters) do
-    [revenue_map] =
+    revenue_list =
       raw_revenue_by_month(filters)
       |> Enum.map(fn {key, value} ->
         %{key.month => value}
       end)
-
+    revenue_map =
+      case revenue_list do
+      [] -> %{}
+      [revenue_map] -> revenue_map
+    end
     for month <- 1..12 do
       {month, Map.get(revenue_map, month, 0)}
     end

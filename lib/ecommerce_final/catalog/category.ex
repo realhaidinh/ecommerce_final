@@ -3,7 +3,7 @@ defmodule EcommerceFinal.Catalog.Category do
   import Ecto.Changeset
 
   schema "categories" do
-    field :path, :string
+    field :path, :string, default: "0"
     field :level, :integer
     field :title, :string
     field :product_count, :integer, virtual: true

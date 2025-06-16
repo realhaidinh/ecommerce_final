@@ -6,6 +6,7 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.Index do
   def mount(_params, _session, socket) do
     current_year = Date.utc_today().year
     available_years = Orders.distinct_years() |> Enum.map(&Decimal.to_integer/1)
+
     available_years =
       if Enum.member?(available_years, current_year) do
         available_years
@@ -42,12 +43,14 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.Index do
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div class="bg-white rounded-2xl shadow p-4">
           <h2 class="text-sm font-medium text-gray-500">Tổng doanh thu cả năm</h2>
+
           <p class="text-xl font-bold text-gray-800">
             {FormatUtil.money_to_vnd(@total_revenue)}
           </p>
         </div>
         <div class="bg-white rounded-2xl shadow p-4">
           <h2 class="text-sm font-medium text-gray-500">Tổng đơn hàng</h2>
+
           <p class="text-xl font-bold text-gray-800">{@total_orders}</p>
         </div>
         <div class="bg-white rounded-2xl shadow p-4">

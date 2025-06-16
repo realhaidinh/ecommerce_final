@@ -7,21 +7,21 @@ defmodule EcommerceFinalWeb.Public.UserForgotPasswordLive do
     ~H"""
     <div class="mx-auto max-w-sm">
       <.header class="text-center">
-        Forgot your password?
-        <:subtitle>We'll send a password reset link to your inbox</:subtitle>
+        Quên mật khẩu?
+        <:subtitle>Chúng tôi sẽ gửi link đổi mật khẩu đến email của bạn</:subtitle>
       </.header>
 
       <.simple_form for={@form} id="reset_password_form" phx-submit="send_email">
-        <.input field={@form[:email]} type="email" placeholder="Email" required />
+        <.input field={@form[:email]} classes="w-full" type="email" placeholder="Email" required />
         <:actions>
-          <.button phx-disable-with="Sending..." class="w-full">
-            Send password reset instructions
+          <.button phx-disable-with="...">
+            Gửi
           </.button>
         </:actions>
       </.simple_form>
       <p class="text-center text-sm mt-4">
-        <.link href={~p"/users/register"}>Register</.link>
-        | <.link href={~p"/users/log_in"}>Log in</.link>
+        <.link href={~p"/users/register"}>Đăng ký</.link>
+        | <.link href={~p"/users/log_in"}>Đăng nhập</.link>
       </p>
     </div>
     """

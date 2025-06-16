@@ -9,12 +9,12 @@ defmodule EcommerceFinalWeb.Admin.LoginLive do
       </.header>
 
       <.simple_form for={@form} id="login_form" action={~p"/admin/log_in"} phx-update="ignore">
-        <.input field={@form[:email]} type="email" label="Email" required classes={["w-full"]} />
+        <.input field={@form[:email]} type="email" label="Email" required classes="w-full" />
         <.input
           field={@form[:password]}
           type="password"
           label="Password"
-          classes={["w-full"]}
+          classes="w-full"
           required
         />
 

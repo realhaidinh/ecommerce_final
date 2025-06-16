@@ -207,7 +207,7 @@ defmodule EcommerceFinalWeb.CoreComponents do
     <.form :let={f} for={@for} as={@as} {@rest}>
       <div class={@classes}>
         {render_slot(@inner_block, f)}
-        <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
+        <div :for={action <- @actions} class="mt-2 flex items-center justify-center gap-6">
           {render_slot(action, f)}
         </div>
       </div>
@@ -289,7 +289,7 @@ defmodule EcommerceFinalWeb.CoreComponents do
   attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
   attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
-  attr :classes, :list, default: []
+  attr :classes, :string, default: ""
   attr :label_class, :string, default: ""
 
   attr :rest, :global,
@@ -323,7 +323,7 @@ defmodule EcommerceFinalWeb.CoreComponents do
           name={@name}
           value="true"
           checked={@checked}
-          class="rounded border-zinc-300 text-zinc-900 focus:ring-0"
+          class={["rounded border-zinc-300 text-zinc-900 focus:ring-0", @classes]}
           {@rest}
         /> {@label}
       </label>
@@ -342,8 +342,8 @@ defmodule EcommerceFinalWeb.CoreComponents do
         id={@id}
         name={@name}
         class={[
-          "mt-2 block rounded-md border border-gray-300 bg-white shadow-sm focus:border-zinc-400 focus:ring-0 sm:text-sm"
-          | @classes
+          "mt-2 block rounded-md border border-gray-300 bg-white shadow-sm focus:border-zinc-400 focus:ring-0 sm:text-sm",
+          @classes
         ]}
         multiple={@multiple}
         {@rest}
@@ -367,7 +367,8 @@ defmodule EcommerceFinalWeb.CoreComponents do
         class={[
           "mt-2 block rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6 min-h-[6rem]",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
-          @errors != [] && "border-rose-400 focus:border-rose-400"
+          @errors != [] && "border-rose-400 focus:border-rose-400",
+          @classes
         ]}
         {@rest}
       ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
@@ -389,8 +390,8 @@ defmodule EcommerceFinalWeb.CoreComponents do
         class={[
           "mt-2 block rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
-          @errors != [] && "border-rose-400 focus:border-rose-400"
-          | @classes
+          @errors != [] && "border-rose-400 focus:border-rose-400",
+          @classes
         ]}
         {@rest}
       />

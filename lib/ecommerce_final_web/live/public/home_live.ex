@@ -5,14 +5,14 @@ defmodule EcommerceFinalWeb.Public.HomeLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex pt-6 justify-between">
+    <div class="flex pt-6 m-4 justify-between">
       <div class="overflow-y-auto bg-slate-50 p-8 basis-1/5">
-        <span
+        <.link
           class="font-semibold hover:underline hover:cursor-pointer"
-          phx-click={JS.navigate(~p"/categories")}
+          navigate={~p"/categories"}
         >
           DANH MỤC
-        </span>
+        </.link>
         <div class="flex flex-col flex-wrap mt-8" id="root-categories" phx-update="stream">
           <.link
             :for={{dom_id, category} <- @streams.categories}

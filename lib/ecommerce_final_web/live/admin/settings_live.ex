@@ -17,9 +17,9 @@ defmodule EcommerceFinalWeb.Admin.SettingsLive do
           phx-submit="update_email"
           phx-change="validate_email"
         >
-          <.input classes={["w-1/3"]} field={@email_form[:email]} type="email" label="Email" required />
+          <.input classes="w-1/3" field={@email_form[:email]} type="email" label="Email" required />
           <.input
-            classes={["w-1/3"]}
+            classes="w-1/3"
             field={@email_form[:current_password]}
             name="current_password"
             id="current_password_for_email"
@@ -51,20 +51,20 @@ defmodule EcommerceFinalWeb.Admin.SettingsLive do
             classs="w-1/3"
           />
           <.input
-            classes={["w-1/3"]}
+            classes="w-1/3"
             field={@password_form[:password]}
             type="password"
             label="Mât khẩu mới"
             required
           />
           <.input
-            classes={["w-1/3"]}
+            classes="w-1/3"
             field={@password_form[:password_confirmation]}
             type="password"
             label="Xác nhận mật khẩu mới"
           />
           <.input
-            classes={["w-1/3"]}
+            classes="w-1/3"
             field={@password_form[:current_password]}
             name="current_password"
             type="password"

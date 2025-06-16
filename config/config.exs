@@ -22,7 +22,7 @@ config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
 
 # Configures the endpoint
 config :ecommerce_final, EcommerceFinalWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "eshopuit.id.vn", scheme: "https", port: 443],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [html: EcommerceFinalWeb.ErrorHTML, json: EcommerceFinalWeb.ErrorJSON],

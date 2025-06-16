@@ -22,7 +22,7 @@ DATABASE_URL = os.getenv("DATABASE_URL") or ""
 
 engine = create_async_engine(DATABASE_URL, pool_size=10, max_overflow=20)
 
-recommender = ProductRecommender(text_weight=0.6, category_weight=0.4, model_name="vinai/phobert-base")
+recommender = ProductRecommender(text_weight=0.4, category_weight=0.6, model_name="vinai/phobert-base-v2")
 
 security = HTTPBearer()
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")

@@ -16,7 +16,11 @@
     rows={@order.line_items}
     row_click={fn item -> JS.navigate(~p"/products/#{item.product.id}") end}
   >
-    <:col :let={item} label="Sản phẩm">{item.product.title}</:col>
+    <:col :let={item} label="Sản phẩm">
+      <.link href={~p"/products/#{item.product.id}"}>
+        {item.product.title}
+      </.link>
+    </:col>
 
     <:col :let={item} label="Đơn giá">
       {EcommerceFinal.Utils.FormatUtil.money_to_vnd(item.price)}

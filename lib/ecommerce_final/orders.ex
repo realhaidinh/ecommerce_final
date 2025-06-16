@@ -4,6 +4,7 @@ defmodule EcommerceFinal.Orders do
   """
 
   import Ecto.Query, warn: false
+  alias EcommerceFinal.Accounts.User
   alias EcommerceFinal.Cache
   alias EcommerceFinal.Orders.LineItem
   alias EcommerceFinal.ShoppingCart
@@ -21,7 +22,21 @@ defmodule EcommerceFinal.Orders do
 
   """
   def list_orders do
-    Repo.all(Order)
+    Repo.all(
+      from o in Order,
+        left_join: u in assoc(o, :user),
+        order_by: [asc: o.id],
+        select: %Order{
+          id: o.id,
+          inserted_at: o.inserted_at,
+          status: o.status,
+          total_price: o.total_price,
+          user: %User{
+            id: u.id,
+            email: u.email
+          }
+        }
+    )
   end
 
   def list_user_orders(user_id) do

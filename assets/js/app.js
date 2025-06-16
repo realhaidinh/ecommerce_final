@@ -51,43 +51,45 @@ Hooks.DataTable = {
 }
 Hooks.MonthlyChart = {
   mounted() {
-    this.self = this
     this.handleEvent("update_chart", (data) => {
       const { labels, values } = data
-      if (self.chart) {
-        self.chart.destroy()
+      if (this.chart) {
+        this.chart.destroy()
       }
-      self.chart = new Chart(this.el.getContext("2d"), {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Doanh thu',
-            data: values,
-            backgroundColor: 'rgba(59, 130, 246, 0.6)',
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: 'Tháng',
-              }
-            },
-            y: {
-              beginAtZero: true,
-              ticks: {
-                callback: function (value) {
-                  return currencyFormatter.format(value);
-                }
+      this.chart = this.createChart(labels, values)
+    })
+  },
+  createChart(labels, values) {
+    return new Chart(this.el.getContext("2d"), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Doanh thu',
+          data: values,
+          backgroundColor: 'rgba(59, 130, 246, 0.6)',
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Tháng',
+            }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return currencyFormatter.format(value);
               }
             }
           }
         }
-      })
+      }
     })
   }
 }

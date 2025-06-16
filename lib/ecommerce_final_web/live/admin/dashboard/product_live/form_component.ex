@@ -7,7 +7,7 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.ProductLive.FormComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div>
+    <div class="w-full">
       <section class="bg-white">
         <.simple_form
           for={@form}
@@ -16,8 +16,8 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.ProductLive.FormComponent do
           phx-submit="save"
           phx-change="change"
         >
-          <.input field={@form[:title]} type="text" label="Tên sản phẩm" />
-          <.input field={@form[:description]} type="text" label="Mô tả sản phẩm" />
+          <.input field={@form[:title]} type="text" classes="w-full" label="Tên sản phẩm" />
+          <.input field={@form[:description]} type="textarea" classes="w-full" label="Mô tả sản phẩm" />
           <.input field={@form[:price]} type="text" label="Giá bán" />
           <.input field={@form[:stock]} type="number" label="Kho" min="0" />
           <.input
@@ -27,25 +27,25 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.ProductLive.FormComponent do
             label="Danh mục"
             options={category_opts(@changeset)}
           />
-          <div phx-drop-target={@uploads.uploaded_files.ref}>
+          <div class="mt-8" phx-drop-target={@uploads.uploaded_files.ref}>
             <label for={@uploads.uploaded_files.ref}>Ảnh sản phẩm</label>
             <.live_file_input upload={@uploads.uploaded_files} />
           </div>
-
-          <%= for entry <- @uploads.uploaded_files.entries do %>
-            <.live_img_preview entry={entry} width="75" />
-            <div class="py-5">{entry.progress}%</div>
-
-            <button
-              type="button"
-              phx-click="cancel-upload"
-              phx-target={@myself}
-              phx-value-ref={entry.ref}
-              aria-label="cancel"
-            >
-              &times;
-            </button>
-          <% end %>
+          <div class="overflow-x-auto flex gap-4">
+            <%= for entry <- @uploads.uploaded_files.entries do %>
+              <.live_img_preview entry={entry} width="75" />
+              <div class="py-5">{entry.progress}%</div>
+              <button
+                type="button"
+                phx-click="cancel-upload"
+                phx-target={@myself}
+                phx-value-ref={entry.ref}
+                aria-label="cancel"
+              >
+                &times;
+              </button>
+            <% end %>
+          </div>
 
           <:actions>
             <.button phx-disable-with="...">Lưu</.button>

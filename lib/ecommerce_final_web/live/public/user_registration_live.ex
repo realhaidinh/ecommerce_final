@@ -31,9 +31,9 @@ defmodule EcommerceFinalWeb.Public.UserRegistrationLive do
           Oops, something went wrong! Please check the errors below.
         </.error>
 
-        <.input classes={["w-full"]} field={@form[:email]} type="email" label="Email" required />
+        <.input classes="w-full" field={@form[:email]} type="email" label="Email" required />
         <.input
-          classes={["w-full"]}
+          classes="w-full"
           field={@form[:password]}
           type="password"
           label="Password"

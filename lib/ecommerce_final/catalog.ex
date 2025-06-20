@@ -39,17 +39,18 @@ defmodule EcommerceFinal.Catalog do
     Repo.all(query)
   end
 
-  def search_product(%{} = params) do
+  def search_product(params) when is_map(params) do
     page_no = Map.get(params, "page", "1") |> String.to_integer()
     limit = Map.get(params, "limit", 20)
     offset = (page_no - 1) * limit
-
+    min_price = Map.get(params, "min_price") |> get_price()
+    max_price = Map.get(params, "max_price") |> get_price()
     query =
       from p in Product,
         order_by: ^filter_product_order_by(Map.get(params, "sort_by"))
 
     query =
-      case Map.get(params, "keyword", nil) do
+      case Map.get(params, "keyword") do
         nil ->
           query
 
@@ -68,12 +69,17 @@ defmodule EcommerceFinal.Catalog do
       |> product_preload(:rating)
       |> product_preload(:cover)
       |> filter_product_where(params)
+      |> where([p], fragment("(?::int is null or price >= ?)", ^min_price, ^min_price))
+      |> where([p], fragment("(?::int is null or price <= ?)", ^max_price, ^max_price))
       |> Repo.all()
 
     total_page = if total_products == 0, do: 1, else: ceil(total_products / limit)
 
     %{products: products, total_page: total_page}
   end
+
+  defp get_price(price) when is_nil(price) or price === "", do: nil
+  defp get_price(price) when is_binary(price), do: String.to_integer(price)
 
   defp filter_product_where(query, %{"category_ids" => category_ids}) do
     from p in query,
@@ -92,6 +98,12 @@ defmodule EcommerceFinal.Catalog do
 
   defp filter_product_order_by("price_asc"),
     do: [asc: dynamic([p], p.price)]
+
+  defp filter_product_order_by("sales"),
+    do: [desc: dynamic([p], p.sold)]
+
+  defp filter_product_order_by("recent"),
+    do: [desc: dynamic([p], p.inserted_at)]
 
   defp filter_product_order_by(_),
     do: [desc: dynamic([p], p.id)]

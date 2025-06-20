@@ -34,7 +34,11 @@ defmodule EcommerceFinal.Catalog do
     query =
       from p in Product,
         where: fragment("? like unaccent(?)", p.title_unaccented, ^pattern),
-        limit: 5
+        limit: 5,
+        select: %Product{
+          id: p.id,
+          title: p.title
+        }
 
     Repo.all(query)
   end
@@ -173,12 +177,7 @@ defmodule EcommerceFinal.Catalog do
   def get_product!(id, opts) do
     query =
       from(p in Product,
-        where: p.id == ^id,
-        select: %Product{
-          id: p.id,
-          title: p.title,
-          price: p.price
-        }
+        where: p.id == ^id
       )
 
     opts

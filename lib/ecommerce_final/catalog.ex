@@ -47,7 +47,12 @@ defmodule EcommerceFinal.Catalog do
     max_price = Map.get(params, "max_price") |> get_price()
     query =
       from p in Product,
-        order_by: ^filter_product_order_by(Map.get(params, "sort_by"))
+        order_by: ^filter_product_order_by(Map.get(params, "sort_by")),
+        select: %Product{
+        title: p.title,
+        id: p.id,
+        price: p.price
+      }
 
     query =
       case Map.get(params, "keyword") do
@@ -127,6 +132,14 @@ defmodule EcommerceFinal.Catalog do
       from p in Product,
         where: p.id == ^id,
         left_join: r in assoc(p, :reviews),
+        select: %Product{
+          id: p.id,
+          title: p.title,
+          description: p.description,
+          stock: p.stock,
+          sold: p.sold,
+          price: p.price
+        },
         select_merge: %{
           rating: coalesce(avg(r.rating), 0.0),
           rating_count: coalesce(count(r.rating), 0)
@@ -141,6 +154,14 @@ defmodule EcommerceFinal.Catalog do
       from p in Product,
         where: p.id == ^id,
         left_join: r in assoc(p, :reviews),
+        select: %Product{
+          id: p.id,
+          title: p.title,
+          description: p.description,
+          stock: p.stock,
+          sold: p.sold,
+          price: p.price
+        },
         select_merge: %{
           rating: coalesce(avg(r.rating), 0.0),
           rating_count: coalesce(count(r.rating), 0)
@@ -152,7 +173,12 @@ defmodule EcommerceFinal.Catalog do
   def get_product!(id, opts) do
     query =
       from(p in Product,
-        where: p.id == ^id
+        where: p.id == ^id,
+        select: %Product{
+          id: p.id,
+          title: p.title,
+          price: p.price
+        }
       )
 
     opts
@@ -163,7 +189,7 @@ defmodule EcommerceFinal.Catalog do
   defp product_preload(query, :categories), do: query |> preload(:categories)
 
   defp product_preload(query, :images) do
-    preload(query, images: ^from(i in ProductImage))
+    preload(query, images: ^from(i in ProductImage, select: %{url: i.url}))
   end
 
   defp product_preload(query, :cover) do

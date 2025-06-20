@@ -29,10 +29,11 @@ defmodule EcommerceFinalWeb.Public.CartLive.FormComponent do
           <% qty_attr = item_form[:quantity] %>
           <label
             for={qty_attr.id}
-            class="hover:cursor-pointer self-center"
-            phx-click={JS.navigate("/products/#{item.product.id}")}
+            class="hover:cursor-pointer self-center p-2"
           >
+            <.link href={~p"/products/#{item.product.id}"} class="">
             {item.product.title}
+            </.link>
           </label>
           <span class="col-start-2 self-center">
             {EcommerceFinal.Utils.FormatUtil.money_to_vnd(item.product.price)}
@@ -51,7 +52,7 @@ defmodule EcommerceFinalWeb.Public.CartLive.FormComponent do
             {ShoppingCart.total_item_price(item) |> EcommerceFinal.Utils.FormatUtil.money_to_vnd()}
           </span>
           <.link
-            class="rounded-lg p-2 col-start-5 w-10 bg-zinc-900 text-sm font-semibold leading-6 text-white"
+            class="rounded-lg p-2 col-start-5 w-10 bg-zinc-900 h-fit self-center text-sm font-semibold leading-6 text-white"
             phx-click="remove"
             phx-value-product_id={item.product.id}
             data-confirm="Bạn có chắc chắn bỏ sản phẩm này"

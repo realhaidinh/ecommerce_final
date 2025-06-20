@@ -1,6 +1,7 @@
 defmodule EcommerceFinalWeb.Components do
   use Phoenix.Component
   use Gettext, backend: EcommerceFinalWeb.Gettext
+  use EcommerceFinalWeb, :verified_routes
   alias EcommerceFinal.Utils.FormatUtil
   alias EcommerceFinal.ShoppingCart.Cart
   alias EcommerceFinal.Catalog.Product
@@ -222,7 +223,7 @@ defmodule EcommerceFinalWeb.Components do
             </div>
             <.live_component module={EcommerceFinalWeb.Public.SearchComponent} id="search-bar" />
             <div :if={@current_user} class="order-3 flex col-start-6 justify-center">
-              <a
+              <.link
                 id="dropdownDelayButton"
                 href="/cart"
                 data-dropdown-toggle="dropdownDelay"
@@ -249,7 +250,7 @@ defmodule EcommerceFinalWeb.Components do
                 <span class="-top-3 relative bg-white border-2 border-solid rounded-xl px-2">
                   {length(@cart.cart_items)}
                 </span>
-              </a>
+              </.link>
               <!-- Dropdown menu -->
               <div
                 id="dropdownDelay"
@@ -264,14 +265,11 @@ defmodule EcommerceFinalWeb.Components do
                 <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownDelayButton">
                   <li :for={item <- @cart.cart_items}>
                     <div class="flex justify-between m-1.5 p-2">
-                      <p
-                        class="hover:cursor-pointer"
-                        phx-click={JS.navigate("/products/#{item.product.id}")}
-                      >
-                        {item.product.title}
-                      </p>
+                      <.link navigate={~p"/products/#{item.product.id}"}>
+                      {item.product.title}
+                      </.link>
                       <p class="text-orange-500">
-                        {FormatUtil.money_to_vnd(item.price_when_carted)}
+                        {FormatUtil.money_to_vnd(item.product.price)}
                       </p>
                     </div>
                   </li>

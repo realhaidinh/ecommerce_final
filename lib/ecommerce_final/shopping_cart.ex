@@ -4,6 +4,7 @@ defmodule EcommerceFinal.ShoppingCart do
   """
 
   import Ecto.Query, warn: false
+  alias EcommerceFinal.Catalog.Product
   alias EcommerceFinal.Catalog
   alias EcommerceFinal.Repo
 
@@ -24,13 +25,29 @@ defmodule EcommerceFinal.ShoppingCart do
   def get_cart!(id), do: Repo.get!(Cart, id)
 
   def get_cart_by_user_id(user_id) do
+    cart_items_query =
+      from(
+        i in CartItem,
+        left_join: p in assoc(i, :product),
+        select: %CartItem{
+          id: i.id,
+          price_when_carted: i.price_when_carted,
+          quantity: i.quantity,
+          product: %Product{
+            id: p.id,
+            price: p.price,
+            title: p.title
+          }
+        }
+      )
+
     Repo.one(
       from(c in Cart,
         where: c.user_id == ^user_id,
         left_join: i in assoc(c, :cart_items),
         left_join: p in assoc(i, :product),
         order_by: [asc: i.inserted_at],
-        preload: [cart_items: {i, product: p}]
+        preload: [cart_items: ^cart_items_query]
       )
     )
   end

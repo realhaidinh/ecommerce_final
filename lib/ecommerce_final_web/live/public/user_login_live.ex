@@ -25,12 +25,12 @@ defmodule EcommerceFinalWeb.Public.UserLoginLive do
           classes="w-full"
         />
 
-        <:actions>
+        <div class="mt-2 flex items-center justify-between gap-6">
           <.input field={@form[:remember_me]} type="checkbox" label="Lưu phiên" />
           <.link href={~p"/users/reset_password"} class="text-sm font-semibold">
             Quên mật khẩu
           </.link>
-        </:actions>
+        </div>
         <:actions>
           <.button phx-disable-with="..." class="w-full">
             Đăng nhập <span aria-hidden="true">→</span>

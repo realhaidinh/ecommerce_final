@@ -54,7 +54,9 @@ defmodule EcommerceFinalWeb.Bot.DialogFlow do
     "user-#{user_id}"
   end
 
+  def get_project_id, do: @project_id
+
   defp get_url(session_id) do
-    "#{@base_url}/#{@project_id}/agent/sessions/#{session_id}:detectIntent"
+    "#{@base_url}/#{get_project_id()}/agent/sessions/#{session_id}:detectIntent"
   end
 end

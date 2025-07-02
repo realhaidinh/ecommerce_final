@@ -41,7 +41,7 @@ defmodule EcommerceFinalWeb.Public.ChatBotComponent do
             ]}
           >
               <div class={[
-                "leading-relaxed p-3 rounded-2xl shadow-sm break-words",
+                "leading-relaxed p-3 max-w-[75%] rounded-2xl shadow-sm break-words",
                 if(message.sender == :bot, do: "whitespace-pre-wrap bg-white text-gray-800", else: "bg-blue-500 text-white")
               ]}>{message.content}</div>
 

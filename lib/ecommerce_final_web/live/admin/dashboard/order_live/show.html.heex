@@ -1,3 +1,4 @@
+<div class="flex justify-between m-2">
 <.header class="p-4">
   Mã đơn hàng: {@order.id} |
   Trạng thái đơn hàng: {@order.status}
@@ -20,6 +21,7 @@
 >
   Xác nhận đã giao hàng
 </button>
+</div>
 <.data_table
   table_id="order-products-search-table"
   id="order-products"
@@ -43,13 +45,14 @@
   <:col :let={item} label="Số lượng">{item.quantity}</:col>
 
   <:col :let={item} label="Thành tiền">
-    {EcommerceFinal.Utils.FormatUtil.money_to_vnd(item.price * item.quantity)}
+    {FormatUtil.money_to_vnd(item.price * item.quantity)}
   </:col>
 </.data_table>
 
-<h1>Tổng tiền {@order.total_price}</h1>
+<h1>Tổng tiền {FormatUtil.money_to_vnd(@order.total_price)}</h1>
+<p>Khách hàng: {@order.user.email}</p>
 <p>Họ tên người nhận: {@order.buyer_name}</p>
 <p>Địa chỉ nhận hàng: {@order.buyer_address}</p>
 <p>Số điện thoại nhận hàng: {@order.buyer_phone}</p>
-<p>Ngày đặt hàng: {EcommerceFinal.Utils.TimeUtil.pretty_print_with_time(@order.inserted_at)}</p>
+<p>Ngày đặt hàng: {TimeUtil.pretty_print_with_time(@order.inserted_at)}</p>
 <p>Phương thức thanh toán: {@order.payment_type}</p>

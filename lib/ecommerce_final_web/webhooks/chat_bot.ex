@@ -1,8 +1,9 @@
 defmodule EcommerceFinalWeb.Webhooks.ChatBot do
   use EcommerceFinalWeb, :controller
+  alias EcommerceFinal.ShoppingCart
   alias EcommerceFinal.Utils.FormatUtil
   alias EcommerceFinal.Catalog
-
+  alias EcommerceFinalWeb.Bot.DialogFlow
   @secret_key Application.compile_env!(:ecommerce_final, :chat_bot_secret_key)
 
   def authenticate?(conn) do
@@ -23,12 +24,15 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
   end
 
   defp process_request(conn, params) do
+    project_id = DialogFlow.get_project_id()
+
     with {:ok, query_result} <- Map.fetch(params, "queryResult"),
          {:ok, intent} <- Map.fetch(query_result, "intent"),
          {:ok, name} <- Map.fetch(intent, "displayName"),
-         {:ok, fulfillment_text} <- Map.fetch(query_result, "fulfillmentText"),
-         {:ok, params} <- Map.fetch(query_result, "parameters"),
-         {:ok, response} <- handle_intent(name, params) do
+         fulfillment_text = Map.get(query_result, "fulfillmentText", ""),
+         "projects/" <> ^project_id <> "/agent/sessions/" <> session = Map.get(params, "session"),
+         {:ok, parameters} <- Map.fetch(query_result, "parameters"),
+         {:ok, response} <- handle_intent(name, parameters, session) do
       fulfillment_text = fulfillment_text <> response
       json(conn, %{fulfillmentText: fulfillment_text})
     else
@@ -40,7 +44,8 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
         json(conn, %{fulfillmentText: error})
     end
   end
-  defp handle_intent("get_product_detail", %{"product_id" => id}) do
+
+  defp handle_intent("get_product_detail", %{"product_id" => id}, _session) do
     id = trunc(id)
     product = Catalog.get_product(id)
 
@@ -61,41 +66,37 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
     end
   end
 
-  defp handle_intent(_, _params) do
-    :error
+  defp handle_intent("add_to_cart", _parameters, "guest_session") do
+    {:error, "Vui lòng đăng nhập để thực hiện chức năng này"}
+  end
 
-    # %{
-    #   "originalDetectIntentRequest" => %{"payload" => %{}},
-    #   "queryResult" => %{
-    #     "allRequiredParamsPresent" => true,
-    #     "fulfillmentMessages" => [
-    #       %{"text" => %{"text" => ["Mời quý khách xem thông tin sản phẩm"]}}
-    #     ],
-    #     "fulfillmentText" => "Mời quý khách xem thông tin sản phẩm",
-    #     "intent" => %{
-    #       "displayName" => "get_product_detail",
-    #       "name" =>
-    #         "projects/shop-assistant-dwpb/agent/intents/40d36503-574d-4ea3-93b9-dd8016f60f00"
-    #     },
-    #     "intentDetectionConfidence" => 0.6419782,
-    #     "languageCode" => "vi",
-    #     "outputContexts" => [
-    #       %{
-    #         "name" =>
-    #           "projects/shop-assistant-dwpb/agent/sessions/guest_session/contexts/__system_counters__",
-    #         "parameters" => %{
-    #           "no-input" => 0.0,
-    #           "no-match" => 0.0,
-    #           "product_id" => 13.0,
-    #           "product_id.original" => "13"
-    #         }
-    #       }
-    #     ],
-    #     "parameters" => %{"product_id" => 13.0},
-    #     "queryText" => "sản phẩm mã 13"
-    #   },
-    #   "responseId" => "aa06af82-cc15-4db6-ad6e-0d3015c77645-996f169b",
-    #   "session" => "projects/shop-assistant-dwpb/agent/sessions/guest_session"
-    # }
+  defp handle_intent("add_to_cart", %{"url" => url, "product_id" => product_id}, "user-" <> id) do
+    host = EcommerceFinalWeb.Endpoint.host()
+
+    product_id =
+      with {:ok, %URI{host: ^host, path: path}} <- URI.new(url),
+           ["products", product_id | _rest] <- String.split(path, "/", trim: true) do
+        product_id
+      else
+        _ ->
+          if(product_id != "") do
+            trunc(product_id)
+          else
+            nil
+          end
+      end
+
+    with cart <- ShoppingCart.get_cart_by_user_id(id),
+         {:ok, _} <- ShoppingCart.add_item_to_cart(cart, product_id) do
+      response = "Đã thêm sản phẩm vào giỏ hàng"
+      {:ok, response}
+    else
+      _ ->
+        {:error, "Không thể thêm sản phẩm vào giỏ hàng"}
+    end
+  end
+
+  defp handle_intent(_, _params, _) do
+    :error
   end
 end

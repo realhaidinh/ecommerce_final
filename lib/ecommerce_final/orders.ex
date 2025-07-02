@@ -64,12 +64,27 @@ defmodule EcommerceFinal.Orders do
       ** (Ecto.NoResultsError)
 
   """
-  def get_order!(id), do: Repo.get!(Order, id) |> Repo.preload([:user, line_items: [:product]])
-
+  def get_order!(id) do
+    user_query = preload_user()
+    Repo.one!(
+      from o in Order,
+      where: o.id == ^id,
+      preload: [user: ^user_query, line_items: [:product]]
+    )
+  end
+  def preload_user do
+    from u in User,
+    select: %User{
+      email: u.email
+    }
+  end
   def get_user_order_by_id(user_id, id) do
-    Order
-    |> Repo.get_by(id: id, user_id: user_id)
-    |> Repo.preload([:user, line_items: [:product]])
+    user_query = preload_user()
+    Repo.one!(
+      from o in Order,
+      where: o.id == ^id and o.user_id == ^user_id,
+      preload: [user: ^user_query, line_items: [:product]]
+    )
   end
 
   @doc """

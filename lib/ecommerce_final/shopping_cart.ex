@@ -44,9 +44,6 @@ defmodule EcommerceFinal.ShoppingCart do
     Repo.one(
       from(c in Cart,
         where: c.user_id == ^user_id,
-        left_join: i in assoc(c, :cart_items),
-        left_join: p in assoc(i, :product),
-        order_by: [asc: i.inserted_at],
         preload: [cart_items: ^cart_items_query]
       )
     )
@@ -76,10 +73,9 @@ defmodule EcommerceFinal.ShoppingCart do
     {:error, nil}
   end
 
-  def add_item_to_cart(%Cart{} = cart, product_id) do
-    product = Catalog.get_product!(product_id)
-
-    if product.stock > 0 do
+  def add_item_to_cart(cart, product_id) do
+    product = Catalog.get_product(product_id)
+    if product && product.stock > 0 do
       result =
         %CartItem{quantity: 1, price_when_carted: product.price}
         |> CartItem.changeset(%{})

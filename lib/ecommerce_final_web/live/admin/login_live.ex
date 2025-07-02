@@ -5,7 +5,7 @@ defmodule EcommerceFinalWeb.Admin.LoginLive do
     ~H"""
     <div class="mx-auto max-w-sm">
       <.header class="text-center">
-        Log in to account
+        Đăng nhập trang quản lý
       </.header>
 
       <.simple_form for={@form} id="login_form" action={~p"/admin/log_in"} phx-update="ignore">
@@ -17,16 +17,9 @@ defmodule EcommerceFinalWeb.Admin.LoginLive do
           classes="w-full"
           required
         />
-
-        <:actions>
-          <.input field={@form[:remember_me]} type="checkbox" label="Keep me logged in" />
-          <.link href={~p"/admin/reset_password"} class="text-sm font-semibold">
-            Forgot your password?
-          </.link>
-        </:actions>
         <:actions>
           <.button phx-disable-with="Logging in..." class="w-full">
-            Log in <span aria-hidden="true">→</span>
+            Đăng nhập <span aria-hidden="true">→</span>
           </.button>
         </:actions>
       </.simple_form>

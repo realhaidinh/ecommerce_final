@@ -215,7 +215,7 @@ defmodule EcommerceFinalWeb.Components do
             <div id="navbar" class="justify-center hidden w-full md:flex md:w-auto md:order-1">
               <.link
                 class="text-2xl font-medium text-gray-900 md:my-0 "
-                navigate="/"
+                href="/"
                 aria-current="page"
               >
                 Trang chủ
@@ -476,7 +476,7 @@ defmodule EcommerceFinalWeb.Components do
         </div>
 
         <span class="block text-sm text-gray-500 sm:text-center ">
-          © 2024 <.link navigate="/" class="hover:underline">Eshop UIT™</.link>. All Rights Reserved.
+          © 2024 <.link href="/" class="hover:underline">Eshop UIT™</.link>. All Rights Reserved.
         </span>
       </div>
     </footer>

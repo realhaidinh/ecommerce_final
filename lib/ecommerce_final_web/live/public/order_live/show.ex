@@ -2,6 +2,7 @@ defmodule EcommerceFinalWeb.Public.OrderLive.Show do
   use EcommerceFinalWeb, :live_view
   alias EcommerceFinal.Orders
   alias EcommerceFinal.Payos
+  alias EcommerceFinal.Utils.{FormatUtil, TimeUtil}
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket, layout: {EcommerceFinalWeb.Layouts, :public_profile}}
@@ -10,7 +11,7 @@ defmodule EcommerceFinalWeb.Public.OrderLive.Show do
   @impl true
   def handle_params(%{"id" => id}, _uri, socket) do
     order = Orders.get_user_order_by_id(socket.assigns.current_user.id, id)
-
+    if connected?(socket), do: Orders.subscribe("user_order:#{order.id}")
     {:noreply,
      socket
      |> assign(:page_title, "Đơn hàng #{order.id}")
@@ -31,5 +32,10 @@ defmodule EcommerceFinalWeb.Public.OrderLive.Show do
     else
       error -> {:noreply, put_flash(socket, :error, "Xảy ra lỗi #{inspect(error)}")}
     end
+  end
+
+  @impl true
+  def handle_info({_, order}, socket) do
+    {:noreply, assign(socket, :order, order)}
   end
 end

@@ -2,6 +2,7 @@ defmodule EcommerceFinalWeb.Public.CheckoutLive.Success do
   alias EcommerceFinal.Payos
   alias EcommerceFinal.Orders
   alias EcommerceFinal.Orders.Order
+  alias EcommerceFinal.Utils.FormatUtil
   use EcommerceFinalWeb, :live_view
   @impl true
   def render(assigns) do
@@ -11,21 +12,23 @@ defmodule EcommerceFinalWeb.Public.CheckoutLive.Success do
         Đơn hàng {@order.id} {get_order_status(@status)}
       </.header>
 
-      <.table
-        id="order-products"
-        rows={@order.line_items}
-        row_click={fn item -> JS.navigate(~p"/products/#{item.product.id}") end}
-      >
-        <:col :let={item} label="Sản phẩm">{item.product.title}</:col>
+      <.table id="order-products" rows={@order.line_items}>
+        <:col :let={item} label="Sản phẩm">
+          <.link navigate={~p"/products/#{item.product_id}"}>
+            {item.product.title}
+          </.link>
+        </:col>
 
-        <:col :let={item} label="Đơn giá">{item.price}</:col>
+        <:col :let={item} label="Đơn giá">{FormatUtil.money_to_vnd(item.price)}</:col>
 
         <:col :let={item} label="Số lượng">{item.quantity}</:col>
 
-        <:col :let={item} label="Thành tiền">{item.price * item.quantity}</:col>
+        <:col :let={item} label="Thành tiền">
+          {FormatUtil.money_to_vnd(item.price * item.quantity)}
+        </:col>
       </.table>
 
-      <h1>Tổng tiền {@order.total_price}</h1>
+      <h1>Tổng tiền {FormatUtil.money_to_vnd(@order.total_price)}</h1>
 
       <p>Họ tên người nhận: {@order.buyer_name}</p>
 

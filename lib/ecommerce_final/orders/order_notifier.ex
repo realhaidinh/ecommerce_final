@@ -7,16 +7,17 @@ defmodule EcommerceFinal.Orders.OrderNotifier do
   alias EcommerceFinal.Utils.TimeUtil
 
   defp deliver(recipient, subject, body) do
+    html_body =
+      body
+      |> Phoenix.HTML.html_escape()
+      |> Phoenix.HTML.safe_to_string()
+
     email =
       new()
       |> to(recipient)
       |> from(Mailer.get_sender())
       |> subject(subject)
-      |> html_body(
-        body
-        |> Phoenix.HTML.html_escape()
-        |> Phoenix.HTML.safe_to_string()
-      )
+      |> html_body(html_body)
 
     Task.Supervisor.start_child(EcommerceFinal.TaskSupervisor, fn ->
       with {:ok, _metadata} <- Mailer.deliver(email) do
@@ -28,7 +29,7 @@ defmodule EcommerceFinal.Orders.OrderNotifier do
   def deliver_order_paid(%Order{} = order, email) do
     deliver(
       email,
-      "Đơn hàng ##{order.id} đã thanh toán thành công",
+      "Đơn hàng ##{order.id} của quý khách đã thanh toán thành công",
       order_detail_html(%{order: order, email: email, status: "thanh toán thành công"})
     )
   end
@@ -36,8 +37,16 @@ defmodule EcommerceFinal.Orders.OrderNotifier do
   def deliver_order_shipped(%Order{} = order, email) do
     deliver(
       email,
-      "Đơn hàng ##{order.id} đã giao hàng thành công",
+      "Đơn hàng ##{order.id} của quý khách đã giao thành công",
       order_detail_html(%{order: order, email: email, status: "giao thành công"})
+    )
+  end
+
+  def deliver_order_shipping(%Order{} = order, email) do
+    deliver(
+      email,
+      "Đơn hàng ##{order.id} của quý khách đang được giao",
+      order_detail_html(%{order: order, email: email, status: "đang được giao"})
     )
   end
 
@@ -53,7 +62,11 @@ defmodule EcommerceFinal.Orders.OrderNotifier do
     </p>
     <p>THÔNG TIN ĐƠN HÀNG</p>
     <.table id="order-products" rows={@order.line_items}>
-      <:col :let={item} label="Sản phẩm">{item.product.title}</:col>
+      <:col :let={item} label="Sản phẩm">
+        <a href={"https://eshopuit.id.vn/users/orders/#{item.product_id}"}>
+          {item.product.title}
+        </a>
+      </:col>
 
       <:col :let={item} label="Đơn giá">
         <span>

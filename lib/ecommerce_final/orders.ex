@@ -12,6 +12,14 @@ defmodule EcommerceFinal.Orders do
   alias EcommerceFinal.Catalog.Product
   alias EcommerceFinal.Orders.Order
 
+  def subscribe(topic) do
+    Phoenix.PubSub.subscribe(EcommerceFinal.PubSub, topic)
+  end
+
+  def broadcast(msg, topic) do
+    Phoenix.PubSub.broadcast(EcommerceFinal.PubSub, topic, msg)
+  end
+
   @doc """
   Returns the list of orders.
 
@@ -40,13 +48,14 @@ defmodule EcommerceFinal.Orders do
   end
 
   def list_user_orders(user_id) do
+    product_query = preload_product()
+
     Repo.all(
       from o in Order,
         where: o.user_id == ^user_id,
         left_join: i in assoc(o, :line_items),
-        left_join: p in assoc(i, :product),
         order_by: [asc: i.inserted_at],
-        preload: [line_items: {i, product: p}]
+        preload: [line_items: [product: ^product_query]]
     )
   end
 
@@ -66,27 +75,34 @@ defmodule EcommerceFinal.Orders do
   """
   def get_order!(id) do
     user_query = preload_user()
+    product_query = preload_product()
     Repo.one!(
       from o in Order,
-      where: o.id == ^id,
-      preload: [user: ^user_query, line_items: [:product]]
-    )
-  end
-  def preload_user do
-    from u in User,
-    select: %User{
-      email: u.email
-    }
-  end
-  def get_user_order_by_id(user_id, id) do
-    user_query = preload_user()
-    Repo.one!(
-      from o in Order,
-      where: o.id == ^id and o.user_id == ^user_id,
-      preload: [user: ^user_query, line_items: [:product]]
+        where: o.id == ^id,
+        preload: [user: ^user_query, line_items: [product: ^product_query]]
     )
   end
 
+  def preload_user do
+    from u in User,
+      select: %User{
+        email: u.email
+      }
+  end
+
+  def get_user_order_by_id(user_id, id) do
+    user_query = preload_user()
+    product_query = preload_product()
+    Repo.one!(
+      from o in Order,
+        where: o.id == ^id and o.user_id == ^user_id,
+        preload: [user: ^user_query, line_items: [product: ^product_query]]
+    )
+  end
+  defp preload_product do
+    from p in Product,
+        select: %Product{title: p.title}
+  end
   @doc """
   Creates a order.
 
@@ -113,7 +129,7 @@ defmodule EcommerceFinal.Orders do
     line_items =
       Enum.map(cart.cart_items, fn item ->
         %LineItem{
-          product_id: item.product_id,
+          product_id: item.product.id,
           price: item.price_when_carted,
           quantity: item.quantity
         }
@@ -136,8 +152,13 @@ defmodule EcommerceFinal.Orders do
     end)
     |> Repo.transaction()
     |> case do
-      {:ok, %{order: order}} -> {:ok, order}
-      {:error, name, value, _changes_so_far} -> {:error, {name, value}}
+      {:ok, %{order: order}} ->
+        broadcast({:new_order, order}, "user_orders:#{order.user_id}")
+        broadcast({:new_order, order}, "user_order:#{order.id}")
+        {:ok, order}
+
+      {:error, name, value, _changes_so_far} ->
+        {:error, {name, value}}
     end
   end
 
@@ -154,9 +175,14 @@ defmodule EcommerceFinal.Orders do
 
   """
   def update_order(%Order{} = order, attrs) do
-    order
-    |> Order.changeset(attrs)
-    |> Repo.update()
+    {:ok, order} =
+      order
+      |> Order.changeset(attrs)
+      |> Repo.update()
+
+    broadcast({:update_order, order}, "user_orders:#{order.user_id}")
+    broadcast({:update_order, order}, "user_order:#{order.id}")
+    {:ok, order}
   end
 
   @doc """
@@ -195,14 +221,15 @@ defmodule EcommerceFinal.Orders do
 
   def complete_order(order) do
     Cache.reset()
+    changeset = Ecto.Changeset.change(order, status: :"Đã giao hàng")
 
     Ecto.Multi.new()
-    |> Ecto.Multi.update(:order, update_order(order, %{status: "Đã giao hàng"}))
+    |> Ecto.Multi.update(:order, changeset)
     |> Ecto.Multi.update_all(
       :reduce_product_stock,
       fn %{order: order} ->
         from(p in Product,
-          left_join: i in LineItem,
+          join: i in LineItem,
           on: p.id == i.product_id,
           where: i.order_id == ^order.id,
           update: [inc: [sold: i.quantity], inc: [stock: -i.quantity]]
@@ -213,6 +240,8 @@ defmodule EcommerceFinal.Orders do
     |> Repo.transaction()
     |> case do
       {:ok, %{order: order}} ->
+        broadcast({:update_order, order}, "user_orders:#{order.user_id}")
+        broadcast({:update_order, order}, "user_order:#{order.id}")
         {:ok, order}
 
       {1, _} ->
@@ -265,11 +294,13 @@ defmodule EcommerceFinal.Orders do
       |> Enum.map(fn {key, value} ->
         %{key.month => value}
       end)
+
     revenue_map =
       case revenue_list do
-      [] -> %{}
-      [revenue_map] -> revenue_map
-    end
+        [] -> %{}
+        [revenue_map] -> revenue_map
+      end
+
     for month <- 1..12 do
       {month, Map.get(revenue_map, month, 0)}
     end

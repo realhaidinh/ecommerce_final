@@ -14,30 +14,29 @@
   <.table
     id="order-products"
     rows={@order.line_items}
-    row_click={fn item -> JS.navigate(~p"/products/#{item.product.id}") end}
   >
     <:col :let={item} label="Sản phẩm">
-      <.link href={~p"/products/#{item.product.id}"}>
+      <.link href={~p"/products/#{item.product_id}"}>
         {item.product.title}
       </.link>
     </:col>
 
     <:col :let={item} label="Đơn giá">
-      {EcommerceFinal.Utils.FormatUtil.money_to_vnd(item.price)}
+      {FormatUtil.money_to_vnd(item.price)}
     </:col>
 
     <:col :let={item} label="Số lượng">{item.quantity}</:col>
-
-    <:col :let={item} label="Thành tiền">{item.price * item.quantity}</:col>
+    <:col :let={item} label="Thành tiền">{FormatUtil.money_to_vnd(item.price * item.quantity)}</:col>
   </.table>
 
   <div class="self-end">
     Tổng tiền
     <span>
-      {EcommerceFinal.Utils.FormatUtil.money_to_vnd(@order.total_price)}
+      {FormatUtil.money_to_vnd(@order.total_price)}
     </span>
   </div>
   <span class="self-end">Trạng thái đơn hàng: {@order.status}</span>
+  <span>Ngày đặt hàng: {TimeUtil.pretty_print(@order.inserted_at)}</span>
   <div class="buyer-information">
     <p>Họ tên người nhận: {@order.buyer_name}</p>
     <p>Địa chỉ nhận hàng: {@order.buyer_address}</p>
@@ -45,7 +44,7 @@
     <p>Phương thức thanh toán: {@order.payment_type}</p>
   </div>
   <a
-    :if={@order.status == :"Chờ thanh toán"}
+    :if={@order.status == :"Chờ thanh toán" && @order.payment_type == :"Thanh toán online"}
     href={"#{Payos.get_checkout_url(@order.transaction_id)}"}
     rel="noopener noreferrer"
     target="_blank"

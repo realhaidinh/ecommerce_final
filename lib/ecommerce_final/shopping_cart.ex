@@ -30,6 +30,7 @@ defmodule EcommerceFinal.ShoppingCart do
         i in CartItem,
         left_join: p in assoc(i, :product),
         select: %CartItem{
+          cart_id: i.cart_id,
           id: i.id,
           price_when_carted: i.price_when_carted,
           quantity: i.quantity,

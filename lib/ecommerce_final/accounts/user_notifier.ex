@@ -13,8 +13,7 @@ defmodule EcommerceFinal.Accounts.UserNotifier do
       |> text_body(body)
 
     Task.Supervisor.start_child(EcommerceFinal.TaskSupervisor, fn ->
-      with {:ok, metadata} <- Mailer.deliver(email) do
-        IO.inspect(metadata)
+      with {:ok, _metadata} <- Mailer.deliver(email) do
         {:ok, email}
       end
     end)

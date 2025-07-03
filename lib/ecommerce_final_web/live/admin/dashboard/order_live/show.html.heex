@@ -4,7 +4,7 @@
   Trạng thái đơn hàng: {@order.status}
 </.header>
 <button
-  :if={@order.status == :"Đã thanh toán"}
+  :if={shipping?(@order)}
   type="submit"
   phx-click="delivering-confirm"
   data-confirm="Xác nhận giao hàng"
@@ -16,10 +16,10 @@
   :if={@order.status == :"Đang giao hàng"}
   type="submit"
   phx-click="delivered-confirm"
-  data-confirm="Xác nhận đã giao hàng"
+  data-confirm="Xác nhận đã giao hàng thành công cho khách hàng"
   class="bg-black rounded-md p-2 text-white"
 >
-  Xác nhận đã giao hàng
+  Xác nhận đã giao hàng thành công
 </button>
 </div>
 <.data_table
@@ -28,10 +28,9 @@
   rows={@order.line_items}
   searchable="true"
   sortable="true"
-  row_click={fn item -> JS.navigate(~p"/admin/dashboard/catalog/products/#{item.product.id}") end}
 >
   <:col :let={item} label="Sản phẩm">
-    <.link href={~p"/admin/dashboard/catalog/products/#{item.product.id}"}>
+    <.link href={~p"/admin/dashboard/catalog/products/#{item.product_id}"}>
       {item.product.title}
     </.link>
   </:col>

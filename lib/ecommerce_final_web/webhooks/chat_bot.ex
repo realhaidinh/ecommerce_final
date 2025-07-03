@@ -1,5 +1,6 @@
 defmodule EcommerceFinalWeb.Webhooks.ChatBot do
   use EcommerceFinalWeb, :controller
+  alias EcommerceFinal.Orders
   alias EcommerceFinal.ShoppingCart
   alias EcommerceFinal.Utils.FormatUtil
   alias EcommerceFinal.Catalog
@@ -30,7 +31,7 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
          {:ok, intent} <- Map.fetch(query_result, "intent"),
          {:ok, name} <- Map.fetch(intent, "displayName"),
          fulfillment_text = Map.get(query_result, "fulfillmentText", ""),
-         "projects/" <> ^project_id <> "/agent/sessions/" <> session = Map.get(params, "session"),
+         "projects/" <> ^project_id <> "/agent/sessions/" <> session <- Map.get(params, "session"),
          {:ok, parameters} <- Map.fetch(query_result, "parameters"),
          {:ok, response} <- handle_intent(name, parameters, session) do
       fulfillment_text = fulfillment_text <> response
@@ -93,6 +94,36 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
     else
       _ ->
         {:error, "Không thể thêm sản phẩm vào giỏ hàng"}
+    end
+  end
+
+  defp handle_intent("order_tracking", %{"order_id" => order_id}, "user-" <> id) do
+    order_id = trunc(order_id)
+    order = Orders.get_user_order_by_id(id, order_id)
+
+    if order do
+
+      {items, item_count} =
+        Enum.map_reduce(
+          order.line_items,
+          0,
+          &{"\nTên sản phẩm: #{&1.product.title}\nĐơn giá: #{FormatUtil.money_to_vnd(&1.price)}\nSố lượng: #{&1.quantity}",
+           &2 + 1}
+        )
+
+      response =
+        """
+        Đơn hàng ##{order.id}
+        Tình trạng: #{order.status}
+        Hình thức thanh toán: #{order.payment_type}
+        Số lượng sản phẩm: #{item_count}
+        Tổng tiền: #{FormatUtil.money_to_vnd(order.total_price)}
+        Sản phẩm: #{items}
+        """
+
+      {:ok, response}
+    else
+      {:error, "Không tìm thấy đơn hàng"}
     end
   end
 

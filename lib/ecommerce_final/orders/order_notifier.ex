@@ -6,6 +6,8 @@ defmodule EcommerceFinal.Orders.OrderNotifier do
   alias EcommerceFinal.Orders.Order
   alias EcommerceFinal.Utils.TimeUtil
 
+  defp host, do: EcommerceFinalWeb.Endpoint.host()
+
   defp deliver(recipient, subject, body) do
     html_body =
       body
@@ -55,7 +57,7 @@ defmodule EcommerceFinal.Orders.OrderNotifier do
     <p>Xin chào {@email},</p>
     <p>
       Đơn hàng
-      <a href={"https://eshopuit.id.vn/users/orders/#{@order.id}"}>
+      <a href={"#{host()}/users/orders/#{@order.id}"}>
         #{@order.id}
       </a>
       của bạn đã được {@status} ngày {TimeUtil.pretty_print(@order.updated_at)}
@@ -63,7 +65,7 @@ defmodule EcommerceFinal.Orders.OrderNotifier do
     <p>THÔNG TIN ĐƠN HÀNG</p>
     <.table id="order-products" rows={@order.line_items}>
       <:col :let={item} label="Sản phẩm">
-        <a href={"https://eshopuit.id.vn/users/orders/#{item.product_id}"}>
+        <a href={"#{host()}/products/#{item.product_id}"}>
           {item.product.title}
         </a>
       </:col>

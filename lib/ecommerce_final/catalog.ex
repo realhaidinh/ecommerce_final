@@ -55,7 +55,8 @@ defmodule EcommerceFinal.Catalog do
         select: %Product{
         title: p.title,
         id: p.id,
-        price: p.price
+        price: p.price,
+        sold: p.sold
       }
 
     query =

@@ -277,8 +277,7 @@ defmodule EcommerceFinal.Orders do
     unique_customers =
       Repo.one(
         from o in query,
-          select: count(o.user_id),
-          distinct: true
+          select: fragment("count(distinct user_id)")
       ) || 0
 
     %{
@@ -295,8 +294,6 @@ defmodule EcommerceFinal.Orders do
         month = date.month
         Map.put(acc, month, revenue)
       end)
-
-    IO.inspect(revenue_map)
     for month <- 1..12 do
       {month, Map.get(revenue_map, month, 0)}
     end

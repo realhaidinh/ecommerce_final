@@ -28,6 +28,15 @@ defmodule EcommerceFinal.Catalog do
     |> Repo.all()
   end
 
+  def fts_product(keyword) when is_binary(keyword) do
+    Repo.all(from p in Product,
+      where: fragment(
+        "to_tsvector('english', ?) @@ plainto_tsquery('english', unaccent(?))",
+        p.title_unaccented, ^keyword
+      )
+    )
+  end
+  
   def search_product(keyword) when is_binary(keyword) do
     pattern = "%" <> keyword <> "%"
 
@@ -42,7 +51,7 @@ defmodule EcommerceFinal.Catalog do
 
     Repo.all(query)
   end
-
+  
   def search_product(params) when is_map(params) do
     page_no = Map.get(params, "page", "1") |> String.to_integer()
     limit = Map.get(params, "limit", 20)

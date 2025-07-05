@@ -33,7 +33,7 @@ defmodule EcommerceFinal.Orders do
     Repo.all(
       from o in Order,
         left_join: u in assoc(o, :user),
-        order_by: [asc: o.id],
+        order_by: [desc: o.inserted_at],
         select: %Order{
           id: o.id,
           inserted_at: o.inserted_at,

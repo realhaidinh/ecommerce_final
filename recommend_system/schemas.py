@@ -1,11 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
 
-from models import ProductImage
-
-class Image(BaseModel):
-    url: str
-
 class ProductOut(BaseModel):
     id: int
     title: str

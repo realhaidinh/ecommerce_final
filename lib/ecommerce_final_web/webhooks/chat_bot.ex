@@ -69,7 +69,7 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
       outputContexts: [
         %{
           name: "projects/#{project_id}/agent/sessions/#{session}/contexts/get_product_detail-followup",
-          lifespanCount: 2,
+          lifespanCount: 1,
           parameters: %{
             "product_id" => product.id
           }
@@ -178,7 +178,6 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
     {:ok, response}
   end
   defp handle_intent("get_product_detail_related", _params, _, _, query) do
-    IO.inspect(query)
     %{"outputContexts" => context} = query
     [%{
         "parameters" => %{

@@ -5,6 +5,12 @@ import numpy as np
 from scipy.sparse import csr_matrix
 from transformers import AutoTokenizer, AutoModel
 import torch
+import torch.nn.functional as F
+import py_vncorenlp
+import os
+
+save_dir = os.path.expanduser("~/.cache/vncorenlp")
+py_vncorenlp.download_model(save_dir=save_dir)
 
 class ProductRecommender:
     def __init__(self, model_name, text_weight=0.7, category_weight=0.3, ):
@@ -16,17 +22,13 @@ class ProductRecommender:
         self.sim_matrix = None
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModel.from_pretrained(model_name)
+        self.rdrsegmenter = py_vncorenlp.VnCoreNLP(annotators=["wseg"], save_dir=save_dir)
         self.model.eval()
     def get_phobert_embedding(self, text):
-        inputs = self.tokenizer(
-            text,
-            return_tensors="pt",
-            truncation=True,
-            padding=True,
-            max_length=128
-        )
+        sentence = self.rdrsegmenter.word_segment(text)
+        input_ids = torch.tensor([self.tokenizer.encode(sentence)])
         with torch.no_grad():
-            outputs = self.model(**inputs)
+            outputs = self.model(input_ids)
         embedding = outputs.last_hidden_state.mean(dim=1).squeeze().numpy()
         return embedding
     

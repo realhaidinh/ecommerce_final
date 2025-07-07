@@ -184,7 +184,7 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
           "product_id" => id
         }
       } | _]= context
-    {:ok, products} = ProductRecommend.get_product_recommend(trunc(id))
+    products = ProductRecommend.get_product_recommend(trunc(id))
     host = get_host()
     product_list =
       products

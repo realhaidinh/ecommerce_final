@@ -5,10 +5,9 @@ defmodule EcommerceFinal.Catalog do
 
   import Ecto.Query, warn: false
   import EcommerceFinal.Utils.FormatUtil
-  alias EcommerceFinal.Accounts
-  alias EcommerceFinal.Repo
+  alias EcommerceFinal.{Cache, Accounts, Repo}
   alias EcommerceFinal.Catalog.{Category, ProductImage, Product, Review}
-  alias EcommerceFinal.ProductRecommend
+
 
   @doc """
   Returns the list of products.
@@ -248,8 +247,7 @@ defmodule EcommerceFinal.Catalog do
       |> change_product(attrs)
       |> Product.put_embedding()
       |> Repo.insert()
-
-    ProductRecommend.reload_system()
+    Cache.reset()
     product
   end
 
@@ -272,7 +270,7 @@ defmodule EcommerceFinal.Catalog do
       |> Product.put_embedding()
       |> Repo.update()
 
-    ProductRecommend.reload_system()
+    Cache.reset()
     product
   end
 
@@ -292,7 +290,7 @@ defmodule EcommerceFinal.Catalog do
     product =
       Repo.delete(product)
 
-    ProductRecommend.reload_system()
+    Cache.reset()
     product
   end
 
@@ -452,7 +450,7 @@ defmodule EcommerceFinal.Catalog do
       |> change_category(attrs)
       |> Repo.update()
 
-    ProductRecommend.reload_system()
+    Cache.reset()
     category
   end
 
@@ -477,7 +475,7 @@ defmodule EcommerceFinal.Catalog do
           where: c.id == ^category.id or fragment("path <@ ?", ^sub_path)
       )
 
-    ProductRecommend.reload_system()
+    Cache.reset()
     result
   end
 

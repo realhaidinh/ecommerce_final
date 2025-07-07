@@ -23,5 +23,4 @@ defmodule EcommerceFinalWeb.Public.OrderLive.Index do
   def handle_info({_, order}, socket) do
     {:noreply, stream_insert(socket, :orders, order)}
   end
-
 end

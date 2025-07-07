@@ -4,7 +4,6 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
   alias EcommerceFinal.Catalog
   alias EcommerceFinal.ShoppingCart
   alias EcommerceFinal.Utils.TimeUtil
-  alias EcommerceFinal.ProductRecommend
   alias EcommerceFinal.Cache
   @impl true
   def mount(_params, _session, socket) do
@@ -25,8 +24,6 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
         Enum.map(categories, &%{id: &1.id, title: &1.title, url: "/categories/#{&1.id}"})
       end)
 
-    category_ids = Enum.map(product.categories, & &1.id)
-
     socket =
       socket
       |> assign(:page_title, product.title)
@@ -34,7 +31,7 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
       |> assign(:review_page, 1)
       |> assign(:related_loading, %{reviews: true, products: true, rating_count: true})
       |> assign_reviews_async(id)
-      |> assign_related_products_async(id, category_ids)
+      |> assign_related_products_async(id)
       |> assign_rating_count_async(id)
 
     {:noreply, socket}
@@ -61,6 +58,7 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
   def handle_event("load_more_reviews", _, socket) do
     page = socket.assigns.review_page + 1
     product_id = socket.assigns.product.id
+
     socket =
       socket
       |> start_async(:get_reviews, fn ->
@@ -83,10 +81,10 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
     |> stream(:rating_count, [], reset: true)
   end
 
-  defp assign_related_products_async(socket, product_id, category_ids) do
+  defp assign_related_products_async(socket, product_id) do
     socket
     |> start_async(:get_related_products, fn ->
-      get_related_product(product_id, category_ids)
+      get_related_product(product_id)
     end)
     |> stream(:related_products, [], reset: true)
   end
@@ -128,9 +126,7 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
     {:noreply, socket}
   end
 
-  def handle_async(:get_related_products, {:ok, result}, socket) do
-    {_, related_products} = result
-
+  def handle_async(:get_related_products, {:ok, {_, related_products}}, socket) do
     socket =
       socket
       |> stream(:related_products, related_products, reset: true)
@@ -144,17 +140,9 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
     {:noreply, stream_insert(socket, :reviews, review)}
   end
 
-  defp get_related_product(product_id, category_ids) do
+  defp get_related_product(product_id) do
     Cache.get("product-related:#{product_id}", fn ->
-      case ProductRecommend.get_product_recommend(product_id) do
-        {:ok, products} ->
-          products
-
-        :error ->
-          Catalog.search_product(%{"category_ids" => category_ids, "limit" => 8})
-          |> Map.get(:products)
-          |> Enum.reject(&(&1.id == product_id))
-      end
+      Catalog.get_recommend_products(product_id)
     end)
   end
 end

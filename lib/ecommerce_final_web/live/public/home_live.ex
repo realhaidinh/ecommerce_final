@@ -7,10 +7,7 @@ defmodule EcommerceFinalWeb.Public.HomeLive do
     ~H"""
     <div class="flex pt-6 m-4 justify-between">
       <div class="overflow-y-auto bg-slate-50 p-8 basis-1/5">
-        <.link
-          class="font-semibold hover:underline hover:cursor-pointer"
-          navigate={~p"/categories"}
-        >
+        <.link class="font-semibold hover:underline hover:cursor-pointer" navigate={~p"/categories"}>
           DANH MỤC
         </.link>
         <div class="flex flex-col flex-wrap mt-8" id="root-categories" phx-update="stream">

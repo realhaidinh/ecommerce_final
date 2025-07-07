@@ -18,6 +18,10 @@ config :ecommerce_final,
   chat_bot_secret_key: System.fetch_env!("CHAT_BOT_SECRET_KEY"),
   dialogflow_project_id: System.fetch_env!("DIALOGFLOW_PROJECT_ID")
 
+config :ecommerce_final, EcommerceFinal.Repo, types: EcommerceFinal.PostgrexTypes
+
+config :nx, default_backend: {EXLA.Backend, client: :host}
+
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
 
 # Configures the endpoint

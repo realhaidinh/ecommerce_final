@@ -28,8 +28,8 @@ defmodule EcommerceFinalWeb.Public.CategoryLive.Show do
     parent_ids = String.split(category.path, ".", trim: true)
 
     categories =
-      Catalog.list_categories_by_ids(parent_ids) ++ [category]
-      |> Enum.map(&(%{title: &1.title, url: "/categories/#{&1.id}"}))
+      (Catalog.list_categories_by_ids(parent_ids) ++ [category])
+      |> Enum.map(&%{title: &1.title, url: "/categories/#{&1.id}"})
 
     assign(socket, :categories, categories)
   end

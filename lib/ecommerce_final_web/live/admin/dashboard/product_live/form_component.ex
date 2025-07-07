@@ -17,7 +17,12 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.ProductLive.FormComponent do
           phx-change="change"
         >
           <.input field={@form[:title]} type="text" classes="w-full" label="Tên sản phẩm" />
-          <.input field={@form[:description]} type="textarea" classes="w-full" label="Mô tả sản phẩm" />
+          <.input
+            field={@form[:description]}
+            type="textarea"
+            classes="w-full"
+            label="Mô tả sản phẩm"
+          />
           <.input field={@form[:price]} type="text" label="Giá bán" />
           <.input field={@form[:stock]} type="number" label="Kho" min="0" />
           <.input

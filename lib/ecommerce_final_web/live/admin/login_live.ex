@@ -10,13 +10,7 @@ defmodule EcommerceFinalWeb.Admin.LoginLive do
 
       <.simple_form for={@form} id="login_form" action={~p"/admin/log_in"} phx-update="ignore">
         <.input field={@form[:email]} type="email" label="Email" required classes="w-full" />
-        <.input
-          field={@form[:password]}
-          type="password"
-          label="Password"
-          classes="w-full"
-          required
-        />
+        <.input field={@form[:password]} type="password" label="Password" classes="w-full" required />
         <:actions>
           <.button phx-disable-with="Logging in..." class="w-full">
             Đăng nhập <span aria-hidden="true">→</span>

@@ -7,46 +7,50 @@
         </h2>
       </div>
     </div>
-    
+
     <div class="mt-6 flow-root sm:mt-8 ml-8">
       <div class="divide-y divide-gray-200" id="orders" phx-update="stream">
-        <div :for={{id, order} <- @streams.orders} id={id} class="flex flex-wrap items-center gap-y-4 py-6">
+        <div
+          :for={{id, order} <- @streams.orders}
+          id={id}
+          class="flex flex-wrap items-center gap-y-4 py-6"
+        >
           <dl class="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
             <dt class="text-base font-medium text-gray-500 ">Mã đơn hàng:</dt>
-            
+
             <dd class="mt-1.5 text-base font-semibold text-gray-900 ">
               <.link navigate={~p"/users/orders/#{order.id}"} class="hover:underline">
                 {order.id}
               </.link>
             </dd>
           </dl>
-          
+
           <dl class="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
             <dt class="text-base font-medium text-gray-500 ">Ngày đặt hàng:</dt>
-            
+
             <dd class="mt-1.5 text-base font-semibold text-gray-900 ">
               {TimeUtil.pretty_print(order.inserted_at)}
             </dd>
           </dl>
-          
+
           <dl class="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
             <dt class="text-base font-medium text-gray-500 ">Thành tiền:</dt>
-            
+
             <dd class="mt-1.5 text-base font-semibold text-gray-900 ">
               <span>
                 {FormatUtil.money_to_vnd(order.total_price)}
               </span>
             </dd>
           </dl>
-          
+
           <dl class="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
             <dt class="text-base font-medium text-gray-500 ">Trạng thái:</dt>
-            
+
             <dd class="me-2 mt-1.5 inline-flex items-center rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800  ">
               {order.status}
             </dd>
           </dl>
-          
+
           <div class="w-full grid sm:grid-cols-2 lg:flex lg:w-64 lg:items-center justify-center gap-4">
             <.link
               navigate={~p"/users/orders/#{order}"}

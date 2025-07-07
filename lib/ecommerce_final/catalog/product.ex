@@ -13,6 +13,7 @@ defmodule EcommerceFinal.Catalog.Product do
     field :rating_count, :integer, virtual: true
     field :title_unaccented, :string
     field :cover, :string, virtual: true
+    field :embedding, Pgvector.Ecto.Vector
 
     many_to_many :categories, Category,
       join_through: "product_categories",
@@ -30,5 +31,12 @@ defmodule EcommerceFinal.Catalog.Product do
     |> cast(attrs, [:title, :description, :price, :stock])
     |> validate_required([:title, :description, :price, :stock])
     |> validate_number(:price, greater_than: 0)
+  end
+
+  def put_embedding(changeset) do
+    title = get_field(changeset, :title) || ""
+    description = get_field(changeset, :description) || ""
+    embedding = EcommerceFinal.Serving.get_embed(title <> " " <> description) |> Pgvector.new()
+    put_change(changeset, :embedding, embedding)
   end
 end

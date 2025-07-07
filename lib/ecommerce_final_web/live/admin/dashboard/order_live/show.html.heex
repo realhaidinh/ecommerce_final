@@ -1,26 +1,26 @@
 <div class="flex justify-between m-2">
-<.header class="p-4">
-  Mã đơn hàng: {@order.id} |
-  Trạng thái đơn hàng: {@order.status}
-</.header>
-<button
-  :if={shipping?(@order)}
-  type="submit"
-  phx-click="delivering-confirm"
-  data-confirm="Xác nhận giao hàng"
-  class="bg-black rounded-md p-2 text-white"
->
-  Xác nhận giao hàng
-</button>
-<button
-  :if={@order.status == :"Đang giao hàng"}
-  type="submit"
-  phx-click="delivered-confirm"
-  data-confirm="Xác nhận đã giao hàng thành công cho khách hàng"
-  class="bg-black rounded-md p-2 text-white"
->
-  Xác nhận đã giao hàng thành công
-</button>
+  <.header class="p-4">
+    Mã đơn hàng: {@order.id} |
+    Trạng thái đơn hàng: {@order.status}
+  </.header>
+  <button
+    :if={shipping?(@order)}
+    type="submit"
+    phx-click="delivering-confirm"
+    data-confirm="Xác nhận giao hàng"
+    class="bg-black rounded-md p-2 text-white"
+  >
+    Xác nhận giao hàng
+  </button>
+  <button
+    :if={@order.status == :"Đang giao hàng"}
+    type="submit"
+    phx-click="delivered-confirm"
+    data-confirm="Xác nhận đã giao hàng thành công cho khách hàng"
+    class="bg-black rounded-md p-2 text-white"
+  >
+    Xác nhận đã giao hàng thành công
+  </button>
 </div>
 <.data_table
   table_id="order-products-search-table"

@@ -27,12 +27,9 @@ defmodule EcommerceFinalWeb.Public.CartLive.FormComponent do
         <.inputs_for :let={item_form} field={f[:cart_items]}>
           <% item = item_form.data %>
           <% qty_attr = item_form[:quantity] %>
-          <label
-            for={qty_attr.id}
-            class="hover:cursor-pointer self-center p-2"
-          >
+          <label for={qty_attr.id} class="hover:cursor-pointer self-center p-2">
             <.link href={~p"/products/#{item.product.id}"} class="">
-            {item.product.title}
+              {item.product.title}
             </.link>
           </label>
           <span class="col-start-2 self-center">

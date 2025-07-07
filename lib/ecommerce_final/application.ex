@@ -20,7 +20,8 @@ defmodule EcommerceFinal.Application do
       # Start the Finch HTTP client for sending emails
       {Finch, name: EcommerceFinal.Finch},
       {Task.Supervisor, name: EcommerceFinal.TaskSupervisor},
-      {Cachex, name: :ecommerce_cache,} ,
+      {Cachex, name: :ecommerce_cache},
+      {EcommerceFinal.Serving, model_name: "AITeamVN/Vietnamese_Embedding"},
       # Start a worker by calling: EcommerceFinal.Worker.start_link(arg)
       # {EcommerceFinal.Worker, arg},
       # Start to serve requests, typically the last entry

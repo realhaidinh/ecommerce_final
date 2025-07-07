@@ -68,6 +68,7 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
         """
 
       response = %{
+<<<<<<< HEAD
         fulfillmentText: fulfillment_text <> detail,
         outputContexts: [
           %{
@@ -77,6 +78,15 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
             parameters: %{
               "product_id" => product.id
             }
+=======
+      fulfillmentText: fulfillment_text <> detail,
+      outputContexts: [
+        %{
+          name: "projects/#{project_id}/agent/sessions/#{session}/contexts/get_product_detail-followup",
+          lifespanCount: 1,
+          parameters: %{
+            "product_id" => product.id
+>>>>>>> origin/main
           }
         ]
       }

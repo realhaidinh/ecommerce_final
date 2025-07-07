@@ -8,7 +8,6 @@ defmodule EcommerceFinal.Catalog do
   alias EcommerceFinal.{Cache, Accounts, Repo}
   alias EcommerceFinal.Catalog.{Category, ProductImage, Product, Review}
 
-
   @doc """
   Returns the list of products.
 
@@ -28,12 +27,78 @@ defmodule EcommerceFinal.Catalog do
   end
 
   def fts_product(keyword) when is_binary(keyword) do
-    Repo.all(from p in Product,
-      where: fragment(
-        "to_tsvector('english', ?) @@ plainto_tsquery('english', unaccent(?))",
-        p.title_unaccented, ^keyword
-      )
+    Repo.all(
+      from p in Product,
+        where:
+          fragment(
+            "to_tsvector('english', ?) @@ plainto_tsquery('english', unaccent(?))",
+            p.title_unaccented,
+            ^keyword
+          ),
+        limit: 5
     )
+  end
+
+  def get_recommend_products(id, opts \\ []) do
+    limit = Keyword.get(opts, :limit, 8)
+
+    query =
+      """
+      with image as (
+        select product_id, url, row_number() over (partition by product_id order by id) as index
+        from product_images
+      ),
+      product as (
+        select p.id, p.embedding, array_agg(pc.category_id) as category_ids
+        from products p, product_categories pc
+        where p.id = $1 and pc.product_id = p.id
+        group by p.id, p.embedding
+      ),
+      rating as (
+        select product_id, avg(rating) as rating, count(product_id) as rating_count
+        from reviews
+        group by product_id
+      ),
+      category_ids as (
+        select product_id, array_agg(category_id) as ids
+        from product_categories
+        group by product_id
+      )
+      select
+        p0.id, p0.title, p0.price, p0.sold, p0.stock, i.url as cover,
+        coalesce(r.rating, 0) as rating,
+        coalesce(r.rating_count, 0) as rating_count
+      from products as p0
+      join product p1 on true
+      left join image i on i.product_id = p0.id and i.index = 1
+      left join rating r on r.product_id = p0.id
+      join category_ids c_ids on c_ids.product_id = p0.id
+      where p0.id != p1.id
+      order by
+      0.7 * (1 - (p0.embedding <=> p1.embedding))
+      + 0.3 * (cardinality(ARRAY(SELECT UNNEST(p1.category_ids)
+                      INTERSECT
+                      SELECT UNNEST(c_ids.ids)))::float /
+               cardinality(ARRAY(SELECT UNNEST(p1.category_ids)
+                      UNION
+                      SELECT UNNEST(c_ids.ids)))::float)  desc
+      limit $2
+      """
+
+    %Postgrex.Result{rows: rows} = Ecto.Adapters.SQL.query!(Repo, query, [id, limit])
+
+    for [id, title, price, sold, stock, cover, rating, rating_count] <- rows do
+      %Product{
+        id: id,
+        title: title,
+        price: price,
+        sold: sold,
+        stock: stock,
+        cover: cover,
+        rating: Decimal.to_float(rating),
+        rating_count: rating_count
+      }
+    end
   end
 
   def search_product(keyword) when is_binary(keyword) do
@@ -57,15 +122,16 @@ defmodule EcommerceFinal.Catalog do
     offset = (page_no - 1) * limit
     min_price = Map.get(params, "min_price") |> get_price()
     max_price = Map.get(params, "max_price") |> get_price()
+
     query =
       from p in Product,
         order_by: ^filter_product_order_by(Map.get(params, "sort_by")),
         select: %Product{
-        title: p.title,
-        id: p.id,
-        price: p.price,
-        sold: p.sold
-      }
+          title: p.title,
+          id: p.id,
+          price: p.price,
+          sold: p.sold
+        }
 
     query =
       case Map.get(params, "keyword") do
@@ -141,7 +207,7 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def get_product!(id) do
-   Repo.one!(
+    Repo.one!(
       from p in Product,
         where: p.id == ^id,
         left_join: r in assoc(p, :reviews),
@@ -185,7 +251,16 @@ defmodule EcommerceFinal.Catalog do
   def get_product!(id, opts) do
     query =
       from(p in Product,
-        where: p.id == ^id
+        where: p.id == ^id,
+        select: %Product{
+          id: p.id,
+          title: p.title,
+          description: p.description,
+          stock: p.stock,
+          sold: p.sold,
+          price: p.price,
+          embedding: p.embedding
+        }
       )
 
     opts
@@ -247,6 +322,7 @@ defmodule EcommerceFinal.Catalog do
       |> change_product(attrs)
       |> Product.put_embedding()
       |> Repo.insert()
+
     Cache.reset()
     product
   end
@@ -304,7 +380,7 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def change_product(%Product{} = product, attrs \\ %{}) do
-    attrs = Map.put(attrs, "slug", slugify(product.title))
+    # attrs = Map.put(attrs, "slug", slugify(product.title))
 
     product
     |> Product.changeset(attrs)
@@ -318,7 +394,6 @@ defmodule EcommerceFinal.Catalog do
         [] -> [%{url: ""}]
         uploaded_files -> Enum.map(uploaded_files, &%ProductImage{url: &1})
       end
-
 
     Ecto.Changeset.put_assoc(product_chset, :images, images)
   end

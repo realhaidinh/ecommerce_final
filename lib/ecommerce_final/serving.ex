@@ -6,8 +6,9 @@ defmodule EcommerceFinal.Serving do
   end
 
   def get_embed(nil), do: Nx.tensor([0])
-  def get_embed(text) when is_binary(text) do
-    GenServer.call(__MODULE__, {:embed, text}, :infinity)
+
+  def get_embed(input) do
+    GenServer.call(__MODULE__, {:embed, input}, :infinity)
   end
 
   @impl true
@@ -34,7 +35,15 @@ defmodule EcommerceFinal.Serving do
   @impl true
   def handle_call({:embed, text}, from, serving) do
     Task.async(fn ->
-      %{embedding: embed} = Nx.Serving.run(serving, text)
+      embed =
+        case Nx.Serving.run(serving, text) do
+          %{embedding: embed} ->
+            embed
+
+          outputs ->
+            for out <- outputs, do: out.embedding
+        end
+
       {from, embed}
     end)
 

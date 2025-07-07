@@ -1,1 +1,5 @@
-Postgrex.Types.define(EcommerceFinal.PostgrexTypes, Pgvector.extensions() ++ Ecto.Adapters.Postgres.extensions(), [])
+Postgrex.Types.define(
+  EcommerceFinal.PostgrexTypes,
+  Pgvector.extensions() ++ Ecto.Adapters.Postgres.extensions(),
+  []
+)

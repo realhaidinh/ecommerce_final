@@ -9,6 +9,7 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Index do
   @impl true
   def handle_params(params, _uri, socket) do
     page_title = "Tìm sản phẩm: " <> Map.get(params, "keyword", "")
+
     {:noreply,
      socket
      |> assign(:page_title, page_title)

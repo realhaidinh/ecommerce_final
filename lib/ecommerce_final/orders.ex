@@ -76,6 +76,7 @@ defmodule EcommerceFinal.Orders do
   def get_order!(id) do
     user_query = preload_user()
     product_query = preload_product()
+
     Repo.one!(
       from o in Order,
         where: o.id == ^id,
@@ -93,16 +94,19 @@ defmodule EcommerceFinal.Orders do
   def get_user_order_by_id(user_id, id) do
     user_query = preload_user()
     product_query = preload_product()
+
     Repo.one!(
       from o in Order,
         where: o.id == ^id and o.user_id == ^user_id,
         preload: [user: ^user_query, line_items: [product: ^product_query]]
     )
   end
+
   defp preload_product do
     from p in Product,
-        select: %Product{title: p.title}
+      select: %Product{title: p.title}
   end
+
   @doc """
   Creates a order.
 
@@ -294,6 +298,7 @@ defmodule EcommerceFinal.Orders do
         month = date.month
         Map.put(acc, month, revenue)
       end)
+
     for month <- 1..12 do
       {month, Map.get(revenue_map, month, 0)}
     end

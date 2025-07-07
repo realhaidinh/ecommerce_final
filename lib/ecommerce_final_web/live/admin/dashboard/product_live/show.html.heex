@@ -1,6 +1,6 @@
 <div class="flex justify-between">
   <.back navigate="/admin/dashboard/catalog/products/">Trở về danh sách sản phẩm</.back>
-  
+
   <.link class="mt-16" patch={~p"/admin/dashboard/catalog/products/#{@product}/edit"}>
     <.button>Chỉnh sửa sản phẩm</.button>
   </.link>
@@ -10,42 +10,42 @@
   <div class="basis-2/5">
     <.image_gallery images={@product.images} title={@product.title} />
   </div>
-  
+
   <div class="basis-3/5">
     <dl class="divide-y divide-zinc-100">
       <div class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
         <dt class="w-1/4">Tên sản phẩm</dt>
-        
+
         <dd>{@product.title}</dd>
       </div>
-      
+
       <div class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
         <dt class="w-1/4">Giá</dt>
-        
+
         <dd>{EcommerceFinal.Utils.FormatUtil.money_to_vnd(@product.price)}</dd>
       </div>
-      
+
       <div class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
         <dt class="w-1/4">Kho</dt>
-        
+
         <dd>{@product.stock}</dd>
       </div>
-      
+
       <div class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
         <dt class="w-1/4">Đã bán</dt>
-        
+
         <dd>{@product.sold}</dd>
       </div>
-      
+
       <div class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
         <dt class="w-1/4">Đánh giá</dt>
-        
+
         <dd>{@product.rating}</dd>
       </div>
-      
+
       <div class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
         <dt class="w-1/4">Số lượt đánh giá</dt>
-        
+
         <dd>{@product.rating_count}</dd>
       </div>
     </dl>

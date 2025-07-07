@@ -3,10 +3,14 @@ defmodule EcommerceFinal.Cache do
   @ttl :timer.minutes(30)
 
   def get(key, fun) do
-    Cachex.fetch(@cache_name, key, fn ->
-      {:commit, fun.()}
-    end,
-    ttl: @ttl)
+    Cachex.fetch(
+      @cache_name,
+      key,
+      fn ->
+        {:commit, fun.()}
+      end,
+      ttl: @ttl
+    )
   end
 
   def update(key, value) do

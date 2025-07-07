@@ -12,6 +12,7 @@ defmodule EcommerceFinalWeb.Public.OrderLive.Show do
   def handle_params(%{"id" => id}, _uri, socket) do
     order = Orders.get_user_order_by_id(socket.assigns.current_user.id, id)
     if connected?(socket), do: Orders.subscribe("user_order:#{order.id}")
+
     {:noreply,
      socket
      |> assign(:page_title, "Đơn hàng #{order.id}")

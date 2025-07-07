@@ -213,11 +213,7 @@ defmodule EcommerceFinalWeb.Components do
 
           <div class="max-w-screen-xl grid grid-cols-6 justify-between items-center mx-auto">
             <div id="navbar" class="justify-center hidden w-full md:flex md:w-auto md:order-1">
-              <.link
-                class="text-2xl font-medium text-gray-900 md:my-0 "
-                href="/"
-                aria-current="page"
-              >
+              <.link class="text-2xl font-medium text-gray-900 md:my-0 " href="/" aria-current="page">
                 Trang chủ
               </.link>
             </div>
@@ -266,7 +262,7 @@ defmodule EcommerceFinalWeb.Components do
                   <li :for={item <- @cart.cart_items}>
                     <div class="flex justify-between m-1.5 p-2">
                       <.link navigate={~p"/products/#{item.product.id}"}>
-                      {item.product.title}
+                        {item.product.title}
                       </.link>
                       <p class="text-orange-500">
                         {FormatUtil.money_to_vnd(item.product.price)}

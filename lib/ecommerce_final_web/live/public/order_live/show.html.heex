@@ -11,10 +11,7 @@
       Hủy đơn hàng
     </button>
   </div>
-  <.table
-    id="order-products"
-    rows={@order.line_items}
-  >
+  <.table id="order-products" rows={@order.line_items}>
     <:col :let={item} label="Sản phẩm">
       <.link href={~p"/products/#{item.product_id}"}>
         {item.product.title}
@@ -26,7 +23,9 @@
     </:col>
 
     <:col :let={item} label="Số lượng">{item.quantity}</:col>
-    <:col :let={item} label="Thành tiền">{FormatUtil.money_to_vnd(item.price * item.quantity)}</:col>
+    <:col :let={item} label="Thành tiền">
+      {FormatUtil.money_to_vnd(item.price * item.quantity)}
+    </:col>
   </.table>
 
   <div class="self-end">

@@ -48,10 +48,12 @@ defmodule EcommerceFinalWeb.Public.ProductLive.ReviewFormComponent do
       {:ok, review} ->
         review = Map.put(review, :user, user)
         send(self(), {:review_posted, review})
+
         socket =
           socket
           |> put_flash(:info, "Đánh giá đã được đăng")
           |> push_patch(to: socket.assigns.patch)
+
         {:noreply, socket}
 
       {:error, %Ecto.Changeset{} = changeset} ->

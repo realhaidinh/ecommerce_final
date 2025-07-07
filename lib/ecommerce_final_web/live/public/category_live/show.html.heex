@@ -1,10 +1,7 @@
 <div class="m-4">
   <nav class="flex" aria-label="Breadcrumb">
     <div class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-      <.link
-        href="/"
-        class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2  "
-      >
+      <.link href="/" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2  ">
         Trang chủ
       </.link>
       <.icon name="hero-chevron-right-mini" />
@@ -31,11 +28,11 @@
     </div>
   </div>
   <div class="basis-4/5 ml-4">
-  <.live_component
-    id="product-gallery"
-    module={EcommerceFinalWeb.Public.ProductGalleryComponent}
-    params={@params}
-    current_path={@current_path}
-  />
+    <.live_component
+      id="product-gallery"
+      module={EcommerceFinalWeb.Public.ProductGalleryComponent}
+      params={@params}
+      current_path={@current_path}
+    />
   </div>
 </div>

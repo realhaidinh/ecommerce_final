@@ -10,8 +10,8 @@ defmodule EcommerceFinalWeb.Public.UserConfirmationLive do
 
       <.simple_form for={@form} id="confirmation_form" phx-submit="confirm_account">
         <:actions>
-            <input class="w-full" type="hidden" name={@form[:token].name} value={@form[:token].value} />
-            <.button phx-disable-with="..." class="align-center">Xác nhận tài khoản</.button>
+          <input class="w-full" type="hidden" name={@form[:token].name} value={@form[:token].value} />
+          <.button phx-disable-with="..." class="align-center">Xác nhận tài khoản</.button>
         </:actions>
       </.simple_form>
 

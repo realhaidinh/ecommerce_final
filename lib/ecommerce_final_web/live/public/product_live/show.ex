@@ -4,7 +4,6 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
   alias EcommerceFinal.Catalog
   alias EcommerceFinal.ShoppingCart
   alias EcommerceFinal.Utils.TimeUtil
-  alias EcommerceFinal.ProductRecommend
   alias EcommerceFinal.Cache
   @impl true
   def mount(_params, _session, socket) do
@@ -59,6 +58,7 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
   def handle_event("load_more_reviews", _, socket) do
     page = socket.assigns.review_page + 1
     product_id = socket.assigns.product.id
+
     socket =
       socket
       |> start_async(:get_reviews, fn ->
@@ -126,7 +126,7 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
     {:noreply, socket}
   end
 
-  def handle_async(:get_related_products, {:ok, related_products}, socket) do
+  def handle_async(:get_related_products, {:ok, {_, related_products}}, socket) do
     socket =
       socket
       |> stream(:related_products, related_products, reset: true)
@@ -142,7 +142,7 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
 
   defp get_related_product(product_id) do
     Cache.get("product-related:#{product_id}", fn ->
-      ProductRecommend.get_product_recommend(product_id)
+      Catalog.get_recommend_products(product_id)
     end)
   end
 end

@@ -40,6 +40,7 @@ defmodule EcommerceFinal.Catalog do
   end
 
   def get_recommend_products(id, opts \\ []) do
+    id = if is_binary(id), do: String.to_integer(id), else: id
     limit = Keyword.get(opts, :limit, 8)
 
     query =
@@ -227,48 +228,22 @@ defmodule EcommerceFinal.Catalog do
     )
   end
 
-  def get_product(id) do
-    Repo.one(
-      from p in Product,
-        where: p.id == ^id,
-        left_join: r in assoc(p, :reviews),
-        select: %Product{
-          id: p.id,
-          title: p.title,
-          description: p.description,
-          stock: p.stock,
-          sold: p.sold,
-          price: p.price
-        },
-        select_merge: %{
-          rating: coalesce(avg(r.rating), 0.0),
-          rating_count: coalesce(count(r.rating), 0)
-        },
-        group_by: [p.id]
-    )
-  end
-
+  @spec get_product!(any(), any()) :: any()
   def get_product!(id, opts) do
     query =
-      from(p in Product,
+      from p in Product,
         where: p.id == ^id,
-        select: %Product{
-          id: p.id,
-          title: p.title,
-          description: p.description,
-          stock: p.stock,
-          sold: p.sold,
-          price: p.price,
-          embedding: p.embedding
-        }
-      )
+        select: [:id, :title, :price, :sold, :stock, :description]
 
-    opts
-    |> Enum.reduce(query, fn param, acc -> product_preload(acc, param) end)
-    |> Repo.one!()
+    query = Enum.reduce(opts, query, fn param, acc -> product_preload(acc, param) end)
+
+
+    Repo.one!(query)
   end
 
-  defp product_preload(query, :categories), do: query |> preload(:categories)
+  defp product_preload(query, :categories) do
+    preload(query, categories: ^from(c in Category, select: %Category{id: c.id, title: c.title}))
+  end
 
   defp product_preload(query, :images) do
     preload(query, images: ^from(i in ProductImage, select: %ProductImage{url: i.url}))

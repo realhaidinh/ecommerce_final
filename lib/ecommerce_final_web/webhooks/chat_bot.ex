@@ -53,7 +53,7 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
 
   defp handle_intent("get_product_detail", %{"product_id" => id}, session, fulfillment_text, _) do
     id = trunc(id)
-    product = Catalog.get_product(id)
+    product = Catalog.get_product!(id)
     project_id = DialogFlow.get_project_id()
 
     if product do

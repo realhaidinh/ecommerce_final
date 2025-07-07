@@ -75,7 +75,7 @@ defmodule EcommerceFinal.ShoppingCart do
   end
 
   def add_item_to_cart(cart, product_id) do
-    product = Catalog.get_product(product_id)
+    product = Catalog.get_product!(product_id)
 
     if product && product.stock > 0 do
       result =

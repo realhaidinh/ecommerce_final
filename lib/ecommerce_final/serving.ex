@@ -7,7 +7,7 @@ defmodule EcommerceFinal.Serving do
 
   def get_embed(nil), do: Nx.tensor([0])
   def get_embed(text) when is_binary(text) do
-    GenServer.call(__MODULE__, {:embed, text})
+    GenServer.call(__MODULE__, {:embed, text}, :infinity)
   end
 
   @impl true

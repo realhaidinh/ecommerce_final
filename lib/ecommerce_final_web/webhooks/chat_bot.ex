@@ -9,7 +9,7 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
   alias EcommerceFinal.ProductRecommend
 
   @secret_key Application.compile_env!(:ecommerce_final, :chat_bot_secret_key)
-  
+
   defp get_host(), do: EcommerceFinalWeb.Endpoint.host()
 
   def authenticate?(conn) do
@@ -81,7 +81,7 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
       {:error, "Không tìm thấy sản phẩm có mã #{id}."}
     end
   end
-  
+
 
   defp handle_intent("add_to_cart", _parameters, "guest_session", _, _) do
     {:error, "Vui lòng đăng nhập để thực hiện chức năng này"}
@@ -119,7 +119,7 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
   defp handle_intent("order_tracking", _, "guest_session", _, _) do
     {:error, "Vui lòng đăng nhập để thực hiện chức năng này"}
   end
-  
+
   defp handle_intent("order_tracking", %{"order_id" => order_id}, "user-" <> id, _, _) do
     order_id = trunc(order_id)
     order = Orders.get_user_order_by_id(id, order_id)
@@ -178,7 +178,6 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
     {:ok, response}
   end
   defp handle_intent("get_product_detail_related", _params, _, _, query) do
-    IO.inspect(query)
     %{"outputContexts" => context} = query
     [%{
         "parameters" => %{
@@ -194,7 +193,7 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
       end)
       |> Enum.join("\n------\n")
 
-    fulfillment_text = 
+    fulfillment_text =
       """
       Shop xin gửi danh sách sản phẩm liên quan:
       #{product_list}

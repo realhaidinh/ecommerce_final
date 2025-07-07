@@ -27,14 +27,17 @@ defmodule EcommerceFinal.Catalog.Product do
 
   @doc false
   def changeset(product, attrs) do
-    chset =
     product
     |> cast(attrs, [:title, :description, :price, :stock])
     |> validate_required([:title, :description, :price, :stock])
     |> validate_number(:price, greater_than: 0)
-    title = get_field(chset, :title)
-    description = get_field(chset, :description)
-    embedding = EcommerceFinal.Serving.get_embed(title <> description) |> Pgvector.new()
-    put_change(chset, :embedding, embedding)
   end
+
+  def put_embedding(changeset) do
+    title = get_field(changeset, :title) || ""
+    description = get_field(changeset, :description) || ""
+    embedding = EcommerceFinal.Serving.get_embed(title <> description) |> Pgvector.new()
+    put_change(changeset, :embedding, embedding)
+  end
+
 end

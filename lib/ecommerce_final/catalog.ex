@@ -36,7 +36,7 @@ defmodule EcommerceFinal.Catalog do
       )
     )
   end
-  
+
   def search_product(keyword) when is_binary(keyword) do
     pattern = "%" <> keyword <> "%"
 
@@ -51,7 +51,7 @@ defmodule EcommerceFinal.Catalog do
 
     Repo.all(query)
   end
-  
+
   def search_product(params) when is_map(params) do
     page_no = Map.get(params, "page", "1") |> String.to_integer()
     limit = Map.get(params, "limit", 20)
@@ -197,7 +197,7 @@ defmodule EcommerceFinal.Catalog do
   defp product_preload(query, :categories), do: query |> preload(:categories)
 
   defp product_preload(query, :images) do
-    preload(query, images: ^from(i in ProductImage, select: %{url: i.url}))
+    preload(query, images: ^from(i in ProductImage, select: %ProductImage{url: i.url}))
   end
 
   defp product_preload(query, :cover) do
@@ -246,6 +246,7 @@ defmodule EcommerceFinal.Catalog do
     product =
       %Product{}
       |> change_product(attrs)
+      |> Product.put_embedding()
       |> Repo.insert()
 
     ProductRecommend.reload_system()
@@ -268,6 +269,7 @@ defmodule EcommerceFinal.Catalog do
     product =
       product
       |> change_product(attrs)
+      |> Product.put_embedding()
       |> Repo.update()
 
     ProductRecommend.reload_system()
@@ -313,7 +315,13 @@ defmodule EcommerceFinal.Catalog do
   end
 
   defp build_product_images_assoc(product_chset, uploaded_files) do
-    images = Enum.map(uploaded_files, &%ProductImage{url: &1})
+    images =
+      case uploaded_files do
+        [] -> [%{url: ""}]
+        uploaded_files -> Enum.map(uploaded_files, &%ProductImage{url: &1})
+      end
+
+
     Ecto.Changeset.put_assoc(product_chset, :images, images)
   end
 

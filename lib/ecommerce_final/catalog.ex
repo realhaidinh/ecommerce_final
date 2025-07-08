@@ -76,8 +76,8 @@ defmodule EcommerceFinal.Catalog do
       join category_ids c_ids on c_ids.product_id = p0.id
       where p0.id != p1.id
       order by
-      0.7 * (1 - (p0.embedding <=> p1.embedding))
-      + 0.3 * (cardinality(ARRAY(SELECT UNNEST(p1.category_ids)
+      0.5 * (1 - (p0.embedding <=> p1.embedding))
+      + 0.5 * (cardinality(ARRAY(SELECT UNNEST(p1.category_ids)
                       INTERSECT
                       SELECT UNNEST(c_ids.ids)))::float /
                cardinality(ARRAY(SELECT UNNEST(p1.category_ids)
@@ -634,12 +634,14 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def create_review(attrs \\ %{}) do
+    Cache.reset()
     %Review{}
     |> Review.changeset(attrs)
     |> Repo.insert()
   end
 
   def create_review(user_id, product_id, attrs \\ %{}) do
+    Cache.reset()
     %Review{
       user_id: user_id,
       product_id: product_id

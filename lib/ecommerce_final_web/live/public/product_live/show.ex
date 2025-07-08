@@ -12,22 +12,9 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
-    product_key = "product:#{id}"
-
-    {_, product} =
-      Cache.get(product_key, fn ->
-        Catalog.get_product!(id, [:rating, :categories, :images])
-      end)
-
-    product =
-      Map.update!(product, :categories, fn categories ->
-        Enum.map(categories, &%{id: &1.id, title: &1.title, url: "/categories/#{&1.id}"})
-      end)
-
     socket =
       socket
-      |> assign(:page_title, product.title)
-      |> assign(:product, product)
+      |> assign_product(id)
       |> assign(:review_page, 1)
       |> assign(:related_loading, %{reviews: true, products: true, rating_count: true})
       |> assign_reviews_async(id)
@@ -67,6 +54,24 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
       |> assign(:review_page, page)
 
     {:noreply, socket}
+  end
+
+  defp assign_product(socket, id) do
+    product_key = "product:#{id}"
+
+    {_, product} =
+      Cache.get(product_key, fn ->
+        Catalog.get_product!(id, [:rating, :categories, :images])
+      end)
+
+    product =
+      Map.update!(product, :categories, fn categories ->
+        Enum.map(categories, &%{id: &1.id, title: &1.title, url: "/categories/#{&1.id}"})
+      end)
+  
+    socket
+    |> assign(:page_title, product.title)
+    |> assign(:product, product)  
   end
 
   defp assign_reviews_async(socket, product_id) do
@@ -137,7 +142,12 @@ defmodule EcommerceFinalWeb.Public.ProductLive.Show do
 
   @impl true
   def handle_info({:review_posted, review}, socket) do
-    {:noreply, stream_insert(socket, :reviews, review)}
+    socket =
+      socket
+      |> stream_insert(:reviews, review)
+      |> assign_product(review.product_id)
+
+    {:noreply, socket}
   end
 
   defp get_related_product(product_id) do

@@ -8,7 +8,7 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.CategoryLive.Index do
     {:ok,
      socket
      |> assign(:page_title, "Quản lý danh mục")
-     |> stream(:categories, Catalog.list_root_categories())}
+     |> stream(:categories, Catalog.list_root_categories(preload: :product_count))}
   end
 
   @impl true

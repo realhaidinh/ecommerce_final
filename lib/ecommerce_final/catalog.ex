@@ -56,7 +56,7 @@ defmodule EcommerceFinal.Catalog do
         group by p.id, p.embedding
       ),
       rating as (
-        select product_id, avg(rating) as rating, count(product_id) as rating_count
+        select product_id, avg(rating) as rating
         from reviews
         group by product_id
       ),
@@ -67,8 +67,7 @@ defmodule EcommerceFinal.Catalog do
       )
       select
         p0.id, p0.title, p0.price, p0.sold, p0.stock, i.url as cover,
-        coalesce(r.rating, 0) as rating,
-        coalesce(r.rating_count, 0) as rating_count
+        coalesce(r.rating, 0) as rating
       from products as p0
       join product p1 on true
       left join image i on i.product_id = p0.id and i.index = 1
@@ -76,8 +75,8 @@ defmodule EcommerceFinal.Catalog do
       join category_ids c_ids on c_ids.product_id = p0.id
       where p0.id != p1.id
       order by
-      0.5 * (1 - (p0.embedding <=> p1.embedding))
-      + 0.5 * (cardinality(ARRAY(SELECT UNNEST(p1.category_ids)
+        (1 - (p0.embedding <=> p1.embedding))
+      + (cardinality(ARRAY(SELECT UNNEST(p1.category_ids)
                       INTERSECT
                       SELECT UNNEST(c_ids.ids)))::float /
                cardinality(ARRAY(SELECT UNNEST(p1.category_ids)
@@ -88,7 +87,7 @@ defmodule EcommerceFinal.Catalog do
 
     %Postgrex.Result{rows: rows} = Ecto.Adapters.SQL.query!(Repo, query, [id, limit])
 
-    for [id, title, price, sold, stock, cover, rating, rating_count] <- rows do
+    for [id, title, price, sold, stock, cover, rating] <- rows do
       %Product{
         id: id,
         title: title,
@@ -96,8 +95,7 @@ defmodule EcommerceFinal.Catalog do
         sold: sold,
         stock: stock,
         cover: cover,
-        rating: Decimal.to_float(rating),
-        rating_count: rating_count
+        rating: Decimal.to_float(rating)
       }
     end
   end
@@ -432,11 +430,15 @@ defmodule EcommerceFinal.Catalog do
     )
   end
 
-  def list_root_categories() do
+  def list_root_categories(opts\\[]) do
     from(c in Category,
-      where: c.path == "0"
+      where: c.level == 1,
+      select: %Category{
+        id: c.id,
+        title: c.title,
+      }
     )
-    |> category_preload(:product_count)
+    |> category_preload(opts[:preload])
     |> Repo.all()
   end
 
@@ -454,6 +456,8 @@ defmodule EcommerceFinal.Catalog do
     |> Repo.all()
   end
 
+  defp category_preload(query, nil), do: query
+  
   defp category_preload(query, :product_count) do
     from c in query,
       left_join: pc in "product_categories",

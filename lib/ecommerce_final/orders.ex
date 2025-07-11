@@ -54,7 +54,7 @@ defmodule EcommerceFinal.Orders do
       from o in Order,
         where: o.user_id == ^user_id,
         left_join: i in assoc(o, :line_items),
-        order_by: [asc: i.inserted_at],
+        order_by: [desc: i.inserted_at],
         preload: [line_items: [product: ^product_query]]
     )
   end
@@ -157,6 +157,7 @@ defmodule EcommerceFinal.Orders do
     |> Repo.transaction()
     |> case do
       {:ok, %{order: order}} ->
+        broadcast({:new_order, order}, "orders")
         broadcast({:new_order, order}, "user_orders:#{order.user_id}")
         broadcast({:new_order, order}, "user_order:#{order.id}")
         {:ok, order}
@@ -186,6 +187,7 @@ defmodule EcommerceFinal.Orders do
 
     broadcast({:update_order, order}, "user_orders:#{order.user_id}")
     broadcast({:update_order, order}, "user_order:#{order.id}")
+    broadcast({:new_order, order}, "orders")
     {:ok, order}
   end
 
@@ -246,6 +248,7 @@ defmodule EcommerceFinal.Orders do
       {:ok, %{order: order}} ->
         broadcast({:update_order, order}, "user_orders:#{order.user_id}")
         broadcast({:update_order, order}, "user_order:#{order.id}")
+        broadcast({:new_order, order}, "orders")
         {:ok, order}
 
       {1, _} ->

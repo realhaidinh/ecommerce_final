@@ -20,7 +20,7 @@ config :ecommerce_final,
 
 config :ecommerce_final, EcommerceFinal.Repo, types: EcommerceFinal.PostgrexTypes
 
-config :nx, default_backend: {EXLA.Backend, client: :host}
+config :nx, default_backend: Torchx.Backend
 
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
 

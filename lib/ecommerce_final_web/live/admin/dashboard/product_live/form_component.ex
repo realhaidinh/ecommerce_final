@@ -135,9 +135,8 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.ProductLive.FormComponent do
 
   def save_product(socket, :new, product_params) do
     case Catalog.create_product(product_params) do
-      {:ok, product} ->
-        notify_parent({:saved, product})
-        {:noreply, push_patch(socket, to: socket.assigns.patch)}
+      {:ok, _product} ->
+        {:noreply, push_navigate(socket, to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}

@@ -46,57 +46,43 @@ defmodule EcommerceFinal.Catalog do
     query =
       """
       with image as (
-      select 
-        product_id,
-        url,
-        row_number() over (partition by product_id order by id) as index
-      from product_images
+        select product_id, url, row_number() over (partition by product_id order by id) as index
+        from product_images
       ),
-      target_product AS (
-        SELECT
-          p.id,
-          p.embedding,
-          array_agg(pc.category_id) AS category_ids
-        FROM products p
-        JOIN product_categories pc ON p.id = pc.product_id
-        WHERE p.id = $1
-        GROUP BY p.id, p.embedding
+      product as (
+        select p.id, p.embedding, array_agg(pc.category_id) as category_ids
+        from products p, product_categories pc
+        where p.id = $1 and pc.product_id = p.id
+        group by p.id, p.embedding
       ),
-      product_data AS (
-        SELECT
-          p.id,
-          p.title,
-          p.price,
-          p.sold,
-          p.stock,
-          i.url AS cover,
-          COALESCE(r.rating, 0) AS rating,
-          p.embedding,
-          array_agg(pc.category_id) AS category_ids
-        FROM products p
-        LEFT JOIN image i ON i.product_id = p.id AND i.index = 1
-        LEFT JOIN reviews r ON r.product_id = p.id
-        LEFT JOIN product_categories pc ON p.id = pc.product_id
-        WHERE p.id != $1
-        GROUP BY p.id, p.title, p.price, p.sold, p.stock, i.url, r.rating, p.embedding
+      rating as (
+        select product_id, avg(rating) as rating
+        from reviews
+        group by product_id
+      ),
+      category_ids as (
+        select product_id, array_agg(category_id) as ids
+        from product_categories
+        group by product_id
       )
-      SELECT
-        pd.id,
-        pd.title,
-        pd.price,
-        pd.sold,
-        pd.stock,
-        pd.cover,
-        pd.rating
-      FROM product_data pd, target_product tp
-      ORDER BY
-        (1 - (pd.embedding <=> tp.embedding))
-        +(
-            CARDINALITY(ARRAY(SELECT UNNEST(tp.category_ids) INTERSECT SELECT UNNEST(pd.category_ids)))::FLOAT
-            /
-            CARDINALITY(ARRAY(SELECT UNNEST(tp.category_ids) UNION SELECT UNNEST(pd.category_ids)))::FLOAT
-          ) DESC
-      LIMIT $2;
+      select
+        p0.id, p0.title, p0.price, p0.sold, p0.stock, i.url as cover,
+        coalesce(r.rating, 0) as rating
+      from products as p0
+      join product p1 on true
+      left join image i on i.product_id = p0.id and i.index = 1
+      left join rating r on r.product_id = p0.id
+      join category_ids c_ids on c_ids.product_id = p0.id
+      where p0.id != p1.id
+      order by
+        (1 - (p0.embedding <=> p1.embedding))
+      + (cardinality(ARRAY(SELECT UNNEST(p1.category_ids)
+                      INTERSECT
+                      SELECT UNNEST(c_ids.ids)))::float /
+               cardinality(ARRAY(SELECT UNNEST(p1.category_ids)
+                      UNION
+                      SELECT UNNEST(c_ids.ids)))::float)  desc
+      limit $2
       """
 
     %Postgrex.Result{rows: rows} = Ecto.Adapters.SQL.query!(Repo, query, [id, limit])

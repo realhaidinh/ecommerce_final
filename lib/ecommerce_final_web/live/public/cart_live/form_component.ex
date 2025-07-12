@@ -41,7 +41,7 @@ defmodule EcommerceFinalWeb.Public.CartLive.FormComponent do
             min="0"
             max={item.product.stock}
             autocomplete="off"
-            class="block self-center rounded-lg w-1/3 text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6"
+            class="block self-center rounded-lg w-1/3 min-w-[48px] text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6"
           />
           <span class="col-start-4 self-center">
             {ShoppingCart.total_item_price(item) |> FormatUtil.money_to_vnd()}

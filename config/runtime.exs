@@ -19,6 +19,15 @@ import Config
 if System.get_env("PHX_SERVER") do
   config :ecommerce_final, EcommerceFinalWeb.Endpoint, server: true
 end
+config :ecommerce_final, EcommerceFinal.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  url: System.get_env("DATABASE_URL"),
+  ssl: [
+    verify: :verify_peer,
+    cacertfile: System.get_env("DATABASE_CERT")
+  ],
+  stacktrace: true,
+  show_sensitive_data_on_connection_error: true
 
 if config_env() == :prod do
   database_url =

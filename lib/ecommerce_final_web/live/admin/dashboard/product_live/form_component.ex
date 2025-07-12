@@ -102,8 +102,11 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.ProductLive.FormComponent do
     uploaded_files =
       consume_uploaded_entries(socket, :uploaded_files, fn %{path: path}, entry ->
         dest = get_dest_path(entry.client_name)
-        File.cp!(path, dest)
-        {:ok, "/uploads/products/#{Path.basename(dest)}"}
+        image = File.read!(path)
+        name = Path.basename(dest)
+        Phoenix.PubSub.broadcast(EcommerceFinal.PubSub, "images", {:new_product_image, name, image})
+        #File.cp!(path, dest)
+        {:ok, "/uploads/products/#{name}"}
       end)
 
     product_params = Map.put(product_params, "uploaded_files", uploaded_files)

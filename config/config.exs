@@ -83,3 +83,13 @@ config :swoosh, :json_library, JSON
 import_config "#{config_env()}.exs"
 
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+
+config :libcluster,
+  topologies: [
+    example: [
+      strategy: Cluster.Strategy.Epmd,
+      config: [
+        hosts: [:"node2@10.104.0.4", :"node3@10.104.0.5"]
+      ]
+    ]
+  ]

@@ -41,6 +41,7 @@ defmodule EcommerceFinal.MixProject do
       {:exla, "~> 0.9.0"},
       {:pgvector, "~> 0.3.0"},
       {:ecto_sql, "~> 3.10"},
+      {:libcluster, "~> 3.5"},
       {:axon, "~> 0.7.0"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},

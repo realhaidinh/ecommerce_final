@@ -5,7 +5,6 @@ defmodule EcommerceFinal.Orders do
 
   import Ecto.Query, warn: false
   alias EcommerceFinal.Accounts.User
-  alias EcommerceFinal.Cache
   alias EcommerceFinal.Orders.LineItem
   alias EcommerceFinal.ShoppingCart
   alias EcommerceFinal.Repo
@@ -226,7 +225,6 @@ defmodule EcommerceFinal.Orders do
   end
 
   def complete_order(order) do
-    Cache.reset()
     changeset = Ecto.Changeset.change(order, status: :"Đã giao hàng")
 
     Ecto.Multi.new()

@@ -5,7 +5,6 @@ defmodule EcommerceFinal.Application do
   use Application
 
   @google_auth_json Application.compile_env!(:ecommerce_final, :google_auth_json)
-  import Cachex.Spec
   @impl true
   def start(_type, _args) do
     credentials = File.read!(@google_auth_json) |> JSON.decode!()
@@ -21,9 +20,6 @@ defmodule EcommerceFinal.Application do
       # Start the Finch HTTP client for sending emails
       {Finch, name: EcommerceFinal.Finch},
       {Task.Supervisor, name: EcommerceFinal.TaskSupervisor},
-      {Cachex, [name: :ecommerce_cache, 
-        router: router(module: Cachex.Router.Ring, options: [monitor: true])]
-        },
       {EcommerceFinal.Serving, model_name: "AITeamVN/Vietnamese_Embedding"},
       
       # Start a worker by calling: EcommerceFinal.Worker.start_link(arg)

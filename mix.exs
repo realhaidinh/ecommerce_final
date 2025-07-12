@@ -69,8 +69,7 @@ defmodule EcommerceFinal.MixProject do
       {:tzdata, "~> 1.1"},
       {:resend, "~> 0.4.0"},
       {:mail, "~> 0.3.0"},
-      {:unidecode, "~> 1.0.0"},
-      {:cachex, "~> 4.0"}
+      {:unidecode, "~> 1.0.0"}
     ]
   end
 

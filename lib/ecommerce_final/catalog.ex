@@ -5,7 +5,7 @@ defmodule EcommerceFinal.Catalog do
 
   import Ecto.Query, warn: false
   import EcommerceFinal.Utils.FormatUtil
-  alias EcommerceFinal.{Cache, Accounts, Repo}
+  alias EcommerceFinal.{Accounts, Repo}
   alias EcommerceFinal.Catalog.{Category, ProductImage, Product, Review}
 
   @doc """
@@ -290,14 +290,10 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def create_product(attrs \\ %{}) do
-    product =
-      %Product{}
-      |> change_product(attrs)
-      |> Product.put_embedding()
-      |> Repo.insert()
-
-    Cache.reset()
-    product
+    %Product{}
+    |> change_product(attrs)
+    |> Product.put_embedding()
+    |> Repo.insert()
   end
 
   @doc """
@@ -313,14 +309,10 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def update_product(%Product{} = product, attrs) do
-    product =
-      product
-      |> change_product(attrs)
-      |> Product.put_embedding()
-      |> Repo.update()
-
-    Cache.reset()
     product
+    |> change_product(attrs)
+    |> Product.put_embedding()
+    |> Repo.update()
   end
 
   @doc """
@@ -336,11 +328,7 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def delete_product(%Product{} = product) do
-    product =
-      Repo.delete(product)
-
-    Cache.reset()
-    product
+    Repo.delete(product)
   end
 
   @doc """
@@ -499,13 +487,9 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def update_category(%Category{} = category, attrs) do
-    category =
-      category
-      |> change_category(attrs)
-      |> Repo.update()
-
-    Cache.reset()
     category
+    |> change_category(attrs)
+    |> Repo.update()
   end
 
   @doc """
@@ -522,15 +506,10 @@ defmodule EcommerceFinal.Catalog do
   """
   def delete_category(%Category{} = category) do
     sub_path = get_subcategory_path(category)
-
-    result =
-      Repo.delete_all(
-        from c in Category,
-          where: c.id == ^category.id or fragment("path <@ ?", ^sub_path)
-      )
-
-    Cache.reset()
-    result
+    Repo.delete_all(
+      from c in Category,
+        where: c.id == ^category.id or fragment("path <@ ?", ^sub_path)
+    )
   end
 
   @doc """
@@ -638,14 +617,12 @@ defmodule EcommerceFinal.Catalog do
 
   """
   def create_review(attrs \\ %{}) do
-    Cache.reset()
     %Review{}
     |> Review.changeset(attrs)
     |> Repo.insert()
   end
 
   def create_review(user_id, product_id, attrs \\ %{}) do
-    Cache.reset()
     %Review{
       user_id: user_id,
       product_id: product_id

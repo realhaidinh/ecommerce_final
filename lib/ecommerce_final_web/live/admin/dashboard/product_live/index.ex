@@ -36,7 +36,6 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.ProductLive.Index do
   def handle_event("delete", %{"id" => id}, socket) do
     product = Catalog.get_product!(id)
     {:ok, product} = Catalog.delete_product(product)
-    EcommerceFinal.Cache.delete("product:#{product.id}")
     {:noreply, stream_delete(socket, :products, product)}
   end
 end

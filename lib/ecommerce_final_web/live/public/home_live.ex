@@ -35,7 +35,7 @@ defmodule EcommerceFinalWeb.Public.HomeLive do
             </div>
           </div>
         <% else %>
-          <div class="grid grid-cols-4 gap-8 mt-8" id="catalog-products" phx-update="stream">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mt-8" id="catalog-products" phx-update="stream">
             <.product_card
               :for={{dom_id, product} <- @streams.landing_products}
               id={dom_id}

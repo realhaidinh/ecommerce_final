@@ -6,7 +6,7 @@ defmodule EcommerceFinalWeb.Public.HomeLive do
   def render(assigns) do
     ~H"""
     <div class="flex pt-6 m-4 justify-between">
-      <div class="overflow-y-auto bg-slate-50 p-8 basis-1/5">
+      <div class="bg-slate-50 p-8 basis-1/5">
         <.link class="font-semibold hover:underline hover:cursor-pointer" navigate={~p"/categories"}>
           DANH MỤC
         </.link>
@@ -24,7 +24,7 @@ defmodule EcommerceFinalWeb.Public.HomeLive do
       <div class="flex p-4 bg-slate-50 basis-[75%] flex-col">
         <span class="font-semibold">Sản phẩm bạn có thể quan tâm</span>
         <%= if @loading do %>
-          <div class="grid grid-cols-4 gap-8 mt-8">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mt-8">
             <div :for={_ <- 1..4} class="animate-pulse space-y-4 rounded-xl bg-white p-4 shadow">
               <div class="h-40 w-full rounded-lg bg-gray-200"></div>
               <div class="space-y-2">

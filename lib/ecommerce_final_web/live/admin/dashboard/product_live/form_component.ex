@@ -102,10 +102,9 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.ProductLive.FormComponent do
     uploaded_files =
       consume_uploaded_entries(socket, :uploaded_files, fn %{path: path}, entry ->
         dest = get_dest_path(entry.client_name)
-        image = File.read!(path)
         name = Path.basename(dest)
-        Phoenix.PubSub.broadcast(EcommerceFinal.PubSub, "images", {:new_product_image, name, image})
-        #File.cp!(path, dest)
+        home = System.user_home()
+        System.cmd("rsync", ["-e", "ssh -i #{home}/.ssh/id_ed25520", path, "root@10.104.0.5:/var/www/ecommerce/products/#{name}"])
         {:ok, "/uploads/products/#{name}"}
       end)
 

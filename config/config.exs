@@ -89,7 +89,7 @@ config :libcluster,
     example: [
       strategy: Cluster.Strategy.Epmd,
       config: [
-        hosts: [:"node2@10.104.0.4", :"node3@10.104.0.5"]
+        hosts: [:"node2@10.104.0.4"]
       ]
     ]
   ]

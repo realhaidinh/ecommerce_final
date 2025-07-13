@@ -9,8 +9,10 @@ defmodule EcommerceFinalWeb.Webhooks.Payment do
       with {:ok, data} <- verify_payment_webhook_data(params),
            "success" <- data["desc"] do
         if order = Orders.get_order_by_transaction_id(data["paymentLinkId"]) do
-          {:ok, order} = Orders.update_order(order, %{status: :"Đã thanh toán"})
-          OrderNotifier.deliver_order_paid(order, order.user.email)
+          if(order.status != :"Đã thanh toán") do
+            {:ok, order} = Orders.update_order(order, %{status: :"Đã thanh toán"})
+            OrderNotifier.deliver_order_paid(order, order.user.email)
+          end
           true
         else
           false

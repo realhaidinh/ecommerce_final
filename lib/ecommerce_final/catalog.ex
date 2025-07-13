@@ -39,6 +39,48 @@ defmodule EcommerceFinal.Catalog do
     )
   end
 
+  def hybrid_search_product(keyword) when is_binary(keyword) do
+    sql = """
+    WITH semantic_search AS (
+        SELECT id, RANK () OVER (ORDER BY embedding <=> $2) AS rank
+        FROM products
+        ORDER BY embedding <=> $2
+        LIMIT 20
+    ),
+    keyword_search AS (
+        SELECT id, RANK () OVER (ORDER BY ts_rank_cd(to_tsvector('english', title_unaccented), query) DESC)
+        FROM products, plainto_tsquery('english', unaccent($1)) query
+        WHERE to_tsvector('english', title_unaccented) @@ query
+        ORDER BY ts_rank_cd(to_tsvector('english', title_unaccented), query) DESC
+        LIMIT 20
+    ),
+    result as (
+      SELECT
+        COALESCE(semantic_search.id, keyword_search.id) AS id
+      FROM semantic_search
+      FULL OUTER JOIN keyword_search ON semantic_search.id = keyword_search.id
+      ORDER BY COALESCE(1.0 / ($3 + semantic_search.rank), 0.0) +
+          COALESCE(1.0 / ($3 + keyword_search.rank), 0.0) DESC
+      LIMIT 5
+    )
+    SELECT p.id, p.title, p.price
+    FROM products p
+    WHERE p.id in (SELECT id FROM result)
+    """
+    
+    krf_value = 60
+    keyword_embedding = EcommerceFinal.TextEmbedding.get_embed(keyword)
+    %Postgrex.Result{rows: rows} = Ecto.Adapters.SQL.query!(Repo, sql, [keyword, keyword_embedding, krf_value])
+    
+    for [id, title, price] <- rows do
+      %Product{
+        id: id,
+        title: title,
+        price: price
+      }
+    end
+  end
+
   def get_recommend_products(id, opts \\ []) do
     id = if is_binary(id), do: String.to_integer(id), else: id
     limit = Keyword.get(opts, :limit, 8)

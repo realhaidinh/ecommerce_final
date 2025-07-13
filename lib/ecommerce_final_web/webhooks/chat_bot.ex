@@ -168,7 +168,7 @@ defmodule EcommerceFinalWeb.Webhooks.ChatBot do
   defp handle_intent("search_product", %{"keyword" => keyword}, _, _, _) do
     host = get_host()
 
-    products = Catalog.fts_product(keyword)
+    products = Catalog.hybrid_search_product(keyword)
 
     response =
       if products == [] do

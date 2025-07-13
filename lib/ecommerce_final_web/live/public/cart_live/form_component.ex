@@ -17,7 +17,7 @@ defmodule EcommerceFinalWeb.Public.CartLive.FormComponent do
       </div>
       <.simple_form
         :let={f}
-        for={ShoppingCart.change_cart(@cart)}
+        for={@changeset}
         classes={["grid grid-cols-5 justify-items-center gap-y-8"]}
         phx-target={@myself}
         phx-change="update"
@@ -25,11 +25,9 @@ defmodule EcommerceFinalWeb.Public.CartLive.FormComponent do
         autocomplete="off"
       >
         <.inputs_for :let={%{data: item} = item_form} field={f[:cart_items]}>
-          <label for={item_form[:quantity].id} class="hover:cursor-pointer self-center p-2">
-            <.link href={~p"/products/#{item.product.id}"} class="">
-              {item.product.title}
-            </.link>
-          </label>
+          <.link href={~p"/products/#{item.product.id}"} class="self-center p-2">
+            {item.product.title}
+          </.link>
           <span class="col-start-2 self-center">
             {FormatUtil.money_to_vnd(item.product.price)}
           </span>
@@ -77,6 +75,10 @@ defmodule EcommerceFinalWeb.Public.CartLive.FormComponent do
 
   @impl true
   def update(assigns, socket) do
+    socket = 
+    socket
+    |> assign(assigns)
+    |> assign(:changeset, ShoppingCart.change_cart(assigns[:cart]))
     {:ok, assign(socket, assigns)}
   end
 

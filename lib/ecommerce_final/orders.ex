@@ -53,7 +53,7 @@ defmodule EcommerceFinal.Orders do
       from o in Order,
         where: o.user_id == ^user_id,
         left_join: i in assoc(o, :line_items),
-        order_by: [desc: i.inserted_at],
+        order_by: [desc: o.inserted_at],
         preload: [line_items: [product: ^product_query]]
     )
   end

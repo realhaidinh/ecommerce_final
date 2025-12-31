@@ -2,6 +2,7 @@ defmodule EcommerceFinalWeb.Public.CheckoutLive.FormComponent do
   alias EcommerceFinal.Payos
   alias EcommerceFinal.Orders
   alias EcommerceFinal.Orders.Order
+  alias EcommerceFinal.Utils.FormatUtil
   use EcommerceFinalWeb, :live_component
 
   @impl true
@@ -11,11 +12,11 @@ defmodule EcommerceFinalWeb.Public.CheckoutLive.FormComponent do
       <.table id="order-products" rows={@cart.cart_items}>
         <:col :let={item} label="Sản phẩm">{item.product.title}</:col>
 
-        <:col :let={item} label="Đơn giá">{item.price_when_carted}</:col>
+        <:col :let={item} label="Đơn giá">{FormatUtil.money_to_vnd(item.price_when_carted)}</:col>
 
         <:col :let={item} label="Số lượng">{item.quantity}</:col>
 
-        <:col :let={item} label="Thành tiền">{item.price_when_carted * item.quantity}</:col>
+        <:col :let={item} label="Thành tiền">{FormatUtil.money_to_vnd(item.price_when_carted * item.quantity)}</:col>
       </.table>
 
       <.simple_form for={@changeset} id="order-form" phx-target={@myself} phx-submit="pay">

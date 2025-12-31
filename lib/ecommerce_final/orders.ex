@@ -5,7 +5,6 @@ defmodule EcommerceFinal.Orders do
 
   import Ecto.Query, warn: false
   alias EcommerceFinal.Accounts.User
-  alias EcommerceFinal.Cache
   alias EcommerceFinal.Orders.LineItem
   alias EcommerceFinal.ShoppingCart
   alias EcommerceFinal.Repo
@@ -54,7 +53,7 @@ defmodule EcommerceFinal.Orders do
       from o in Order,
         where: o.user_id == ^user_id,
         left_join: i in assoc(o, :line_items),
-        order_by: [desc: i.inserted_at],
+        order_by: [desc: o.inserted_at],
         preload: [line_items: [product: ^product_query]]
     )
   end
@@ -226,7 +225,6 @@ defmodule EcommerceFinal.Orders do
   end
 
   def complete_order(order) do
-    Cache.reset()
     changeset = Ecto.Changeset.change(order, status: :"Đã giao hàng")
 
     Ecto.Multi.new()

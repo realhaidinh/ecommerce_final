@@ -29,6 +29,7 @@ defmodule EcommerceFinal.ShoppingCart do
       from(
         i in CartItem,
         left_join: p in assoc(i, :product),
+        order_by: [desc: [i.inserted_at]],
         select: %CartItem{
           cart_id: i.cart_id,
           id: i.id,

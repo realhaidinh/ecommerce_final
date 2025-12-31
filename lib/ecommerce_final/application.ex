@@ -3,25 +3,36 @@ defmodule EcommerceFinal.Application do
   # for more information on OTP Applications
   @moduledoc false
   use Application
-
+  
+  defp build_serving() do
+    model_name = "AITeamVN/Vietnamese_Embedding"
+    {:ok, model_info} = Bumblebee.load_model({:hf, model_name}, backend: Torchx.Backend)
+    {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, model_name})
+    
+    Bumblebee.Text.text_embedding(model_info, tokenizer,
+      output_attribute: :hidden_state,
+      embedding_processor: :l2_norm
+    )
+  end
+  
   @google_auth_json Application.compile_env!(:ecommerce_final, :google_auth_json)
-
+  
   @impl true
   def start(_type, _args) do
     credentials = File.read!(@google_auth_json) |> JSON.decode!()
     source = {:service_account, credentials}
-
+    topologies = Application.get_env(:libcluster, :topologies)
     children = [
       EcommerceFinalWeb.Telemetry,
       EcommerceFinal.Repo,
       {Goth, name: EcommerceFinal.Goth, source: source},
       {DNSCluster, query: Application.get_env(:ecommerce_final, :dns_cluster_query) || :ignore},
+      {Cluster.Supervisor, [topologies, [name: EcommerceFinal.ClusterSupervisor]]},
       {Phoenix.PubSub, name: EcommerceFinal.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: EcommerceFinal.Finch},
       {Task.Supervisor, name: EcommerceFinal.TaskSupervisor},
-      {Cachex, name: :ecommerce_cache},
-      {EcommerceFinal.Serving, model_name: "AITeamVN/Vietnamese_Embedding"},
+      {Nx.Serving, name: TextEmbedding.Serving, serving: build_serving(), batch_timeout: 100, batch_size: 4},      
       # Start a worker by calling: EcommerceFinal.Worker.start_link(arg)
       # {EcommerceFinal.Worker, arg},
       # Start to serve requests, typically the last entry

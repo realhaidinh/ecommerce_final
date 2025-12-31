@@ -36,7 +36,7 @@ defmodule EcommerceFinal.Catalog.Product do
   def put_embedding(changeset) do
     title = get_field(changeset, :title) || ""
     description = get_field(changeset, :description) || ""
-    embedding = EcommerceFinal.Serving.get_embed(title <> " " <> description) |> Pgvector.new()
+    embedding = EcommerceFinal.TextEmbedding.get_embed(title <> " " <> description) |> Pgvector.new()
     put_change(changeset, :embedding, embedding)
   end
 end

@@ -464,16 +464,13 @@ defmodule EcommerceFinalWeb.Components do
       <div class="w-full p-4">
         <div class="sm:flex sm:items-center sm:justify-between">
           <.link href="/" class="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
-            <img src="/uploads/logo.png" class="sm:h-16 sm:w-16 md:h-24 md:w-24" alt="Eshop UIT Logo" />
-            <span class="self-center text-2xl font-semibold whitespace-nowrap ">
-              Eshop UIT
-            </span>
+            <img src="/uploads/logo.png" class="h-16 w-16 md:h-24 md:w-24" alt="Eshop UIT Logo" />
           </.link>
+        <div class="block text-sm text-gray-500 sm:text-center ">
+          © 2024 <.link href="/" class="hover:underline">Eshop UIT™</.link>. All Rights Reserved.
+        </div>
         </div>
 
-        <span class="block text-sm text-gray-500 sm:text-center ">
-          © 2024 <.link href="/" class="hover:underline">Eshop UIT™</.link>. All Rights Reserved.
-        </span>
       </div>
     </footer>
     """

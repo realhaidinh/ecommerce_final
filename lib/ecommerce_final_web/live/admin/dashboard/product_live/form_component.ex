@@ -102,8 +102,10 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.ProductLive.FormComponent do
     uploaded_files =
       consume_uploaded_entries(socket, :uploaded_files, fn %{path: path}, entry ->
         dest = get_dest_path(entry.client_name)
-        File.cp!(path, dest)
-        {:ok, "/uploads/products/#{Path.basename(dest)}"}
+        name = Path.basename(dest)
+        home = System.user_home()
+        System.cmd("rsync", ["-e", "ssh -i #{home}/.ssh/id_ed25520", path, "root@10.104.0.5:/var/www/ecommerce/products/#{name}"])
+        {:ok, "/uploads/products/#{name}"}
       end)
 
     product_params = Map.put(product_params, "uploaded_files", uploaded_files)
@@ -133,9 +135,8 @@ defmodule EcommerceFinalWeb.Admin.Dashboard.ProductLive.FormComponent do
 
   def save_product(socket, :new, product_params) do
     case Catalog.create_product(product_params) do
-      {:ok, product} ->
-        notify_parent({:saved, product})
-        {:noreply, push_patch(socket, to: socket.assigns.patch)}
+      {:ok, _product} ->
+        {:noreply, push_navigate(socket, to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}

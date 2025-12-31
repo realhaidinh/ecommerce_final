@@ -38,9 +38,9 @@ defmodule EcommerceFinal.MixProject do
       {:phoenix_ecto, "~> 4.5"},
       {:bumblebee, "~> 0.6.2"},
       {:nx, "~> 0.9.0"},
-      {:exla, "~> 0.9.0"},
       {:pgvector, "~> 0.3.0"},
       {:ecto_sql, "~> 3.10"},
+      {:libcluster, "~> 3.5"},
       {:axon, "~> 0.7.0"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},
@@ -50,6 +50,7 @@ defmodule EcommerceFinal.MixProject do
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
+      {:torchx, "~> 0.9.0"},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.1.1",
@@ -68,8 +69,7 @@ defmodule EcommerceFinal.MixProject do
       {:tzdata, "~> 1.1"},
       {:resend, "~> 0.4.0"},
       {:mail, "~> 0.3.0"},
-      {:unidecode, "~> 1.0.0"},
-      {:cachex, "~> 4.0"}
+      {:unidecode, "~> 1.0.0"}
     ]
   end
 

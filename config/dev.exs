@@ -1,14 +1,6 @@
 import Config
 
-# Configure your database
-config :ecommerce_final, EcommerceFinal.Repo,
-  username: "postgres",
-  password: "admin",
-  hostname: "localhost",
-  database: "ecommerce_final_dev",
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -19,7 +11,7 @@ config :ecommerce_final, EcommerceFinal.Repo,
 # Binding to loopback ipv4 address prevents access from other machines.
 config :ecommerce_final, EcommerceFinalWeb.Endpoint,
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [ip: {0, 0, 0, 0}, port: 4000],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,

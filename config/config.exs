@@ -20,7 +20,7 @@ config :ecommerce_final,
 
 config :ecommerce_final, EcommerceFinal.Repo, types: EcommerceFinal.PostgrexTypes
 
-config :nx, default_backend: {EXLA.Backend, client: :host}
+config :nx, default_backend: Torchx.Backend
 
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
 
@@ -83,3 +83,13 @@ config :swoosh, :json_library, JSON
 import_config "#{config_env()}.exs"
 
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+
+config :libcluster,
+  topologies: [
+    example: [
+      strategy: Cluster.Strategy.Epmd,
+      config: [
+        hosts: [:"node2@10.104.0.4"]
+      ]
+    ]
+  ]

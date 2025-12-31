@@ -1,7 +1,7 @@
 defmodule EcommerceFinalWeb.Public.CheckoutLive.Success do
   alias EcommerceFinal.Payos
   alias EcommerceFinal.Orders
-  alias EcommerceFinal.Orders.Order
+  alias EcommerceFinal.Orders.{Order, OrderNotifier}
   alias EcommerceFinal.Utils.FormatUtil
   use EcommerceFinalWeb, :live_view
   @impl true
@@ -80,6 +80,10 @@ defmodule EcommerceFinalWeb.Public.CheckoutLive.Success do
            Payos.get_payment_link_information(order.transaction_id) do
       case payment_data["status"] do
         "PAID" ->
+          if(order.status != :"Đã thanh toán") do
+            {:ok, order} = Orders.update_order(order, %{status: :"Đã thanh toán"})
+            OrderNotifier.deliver_order_paid(order, order.user.email)
+          end
           {:noreply, assign(socket, :status, :paid)}
 
         "PENDING" ->
